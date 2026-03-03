@@ -10,29 +10,52 @@ public class GameInputManager : MonoBehaviour
     private LayerMask _ballLayerMask;
 
     private Camera _mainCamera;
-
+    private IDraggable _currentDraggedObject;
     private void Awake()
     {
         _mainCamera = Camera.main; // TODO: STOP USING CAMERA.MAIN, CACHE THAT IN A SINGLETON OR PASS IT VIA INSPECTOR
     }
 
+    private void Update()
+    {
+        if (_currentDraggedObject != null)
+        {
+            _currentDraggedObject.OnDragUpdate(GetMouseWorldPosition());
+        }
+    }
+
     public void OnClick(InputAction.CallbackContext context)
     {
-        if (context.performed)
+        if (context.performed && _currentDraggedObject == null)
         {
             HandleClick();
         }
     }
 
+    /// <summary>
+    /// Handles the Drag input action. Starts or ends the drag state.
+    /// </summary>
     public void OnDrag(InputAction.CallbackContext context)
     {
         if (context.performed)
         {
-            //Start drag
+            Vector2 mousePosition = GetMouseWorldPosition();
+            LayerMask allMask = ~0;
+            RaycastHit2D hit = Physics2D.Raycast(mousePosition, Vector2.zero, 0f, allMask);
+
+            if (hit.collider != null && hit.collider.TryGetComponent(out IDraggable draggable))
+            {
+                _currentDraggedObject = draggable;
+                _currentDraggedObject.OnDragStart();
+            }
         }
-        if(context.canceled)
+        else if (context.canceled)
         {
-            //End drag
+            if (_currentDraggedObject != null)
+            {
+                _currentDraggedObject.OnDragEnd();
+                _currentDraggedObject = null;
+            }
         }
     }
 
@@ -67,4 +90,15 @@ public class GameInputManager : MonoBehaviour
             ball.ReceiveClick();
         }
     }
+
+    #region Helpers
+    /// <summary>
+    /// Converts current mouse screen position to world coordinates.
+    /// </summary>
+    private Vector2 GetMouseWorldPosition()
+    {
+        return _mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+    }
+    #endregion
+
 }

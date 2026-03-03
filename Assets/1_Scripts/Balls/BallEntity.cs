@@ -6,7 +6,7 @@ using UnityEngine;
 /// Main controller for ball entities. Manages physics and delegates logic to behavior.
 /// </summary>
 [RequireComponent(typeof(Rigidbody2D), typeof(CircleCollider2D))]
-public class BallEntity : MonoBehaviour
+public class BallEntity : MonoBehaviour, IDraggable
 {
     [Required]
     [SerializeField]
@@ -19,6 +19,7 @@ public class BallEntity : MonoBehaviour
     private Rigidbody2D _rb;
     private BallBehavior _runtimeBehavior;
     private CircleCollider2D _collider;
+    private bool _isBeingDragged;
 
     /// <summary>
     /// Exposes the configuration data.
@@ -162,4 +163,39 @@ public class BallEntity : MonoBehaviour
         // Apply visual and physical properties defined in the ScriptableObject
         UpdateVisualsAndPhysics();
     }
+
+    #region Drag
+
+    /// <summary>
+    /// Sets the ball to Kinematic to allow manual position updates via drag.
+    /// </summary>
+    public void OnDragStart()
+    {
+        _isBeingDragged = true;
+        _rb.bodyType = RigidbodyType2D.Kinematic;
+        _rb.linearVelocity = Vector2.zero;
+        _runtimeBehavior?.OnDragStart(this);
+    }
+
+    /// <summary>
+    /// Updates the position during the drag.
+    /// TODO LATER: THE DRAG ADD FORCE TO THE BALL INSTEAD OF TELEPORTING IT, TO PRESERVE PHYSICAL INTERACTIONS WITH OTHER OBJECTS.
+    /// ON RELEASE, WE REPLACE HIS ACTUAL VELOCITY BY HIS LAST BEFORE DRAGGING
+    /// </summary>
+    public void OnDragUpdate(Vector2 position)
+    {
+        transform.position = position;
+    }
+
+    /// <summary>
+    /// Resets the ball to Dynamic to resume physical interactions.
+    /// </summary>
+    public void OnDragEnd()
+    {
+        _isBeingDragged = false;
+        _rb.bodyType = RigidbodyType2D.Dynamic;
+        _runtimeBehavior?.OnDragEnd(this);
+    }
+
+    #endregion
 }

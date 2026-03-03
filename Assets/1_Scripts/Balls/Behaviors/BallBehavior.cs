@@ -33,6 +33,16 @@ public abstract class BallBehavior
     }
 
     /// <summary>
+    /// Triggered when the ball starts being dragged.
+    /// </summary>
+    public virtual void OnDragStart(BallEntity ball) { }
+
+    /// <summary>
+    /// Triggered when the ball is released after a drag.
+    /// </summary>
+    public virtual void OnDragEnd(BallEntity ball) { }
+
+    /// <summary>
     /// Triggered when the ball collides with another physics object.
     /// </summary>
     public virtual void OnCollisionEnter(BallEntity ball, Collision2D collision) { }
