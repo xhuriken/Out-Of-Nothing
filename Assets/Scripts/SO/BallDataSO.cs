@@ -33,6 +33,12 @@ public class BallDataSO : ScriptableObject
     public float radius = 0.5f;
 
     /// <summary>
+    /// The specific prefab containing the visual components (ParticleSystem, Shaders, etc.) for this ball.
+    /// Must contain a BallEntity component.
+    /// </summary>
+    public BallEntity prefab;
+
+    /// <summary>
     /// Template behavior to be cloned by instances.
     /// </summary>
     [SerializeReference]

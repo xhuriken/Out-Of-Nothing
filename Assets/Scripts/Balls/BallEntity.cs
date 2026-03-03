@@ -23,18 +23,17 @@ public class BallEntity : MonoBehaviour
     /// <summary>
     /// Exposes the configuration data.
     /// </summary>
-    public BallDataSO Data
-    {
-        get { return _data; }
-    }
+    public BallDataSO Data => _data;
 
     /// <summary>
     /// Exposes the Rigidbody2D component.
     /// </summary>
-    public Rigidbody2D Rb
-    {
-        get { return _rb; }
-    }
+    public Rigidbody2D Rb => _rb;
+
+    /// <summary>
+    /// Exposes the Disc renderer component. (From shapes lib)
+    /// </summary>
+    public Disc Renderer => _renderer;
 
     private void Awake()
     {
@@ -120,5 +119,47 @@ public class BallEntity : MonoBehaviour
 
         if (_rb == null) _rb = GetComponent<Rigidbody2D>();
         if (_rb != null) _rb.gravityScale = 0f;
+    }
+
+    /// <summary>
+    /// Handles the technical process of duplication.
+    /// Called by behaviors to perform the standard spawn.
+    /// </summary>
+    public void PerformDefaultDuplicate()
+    {
+        BallEntity newBall = BallPoolManager.Instance.SpawnBall(_data, transform.position);
+
+        // Ejection force using current mass
+        Vector2 ejectionDirection = Random.insideUnitCircle.normalized;
+        newBall.Rb.AddForce(ejectionDirection * 5f, ForceMode2D.Impulse);
+
+        // TODO: Trigger DOTween visual feedback here
+    }
+
+    /// <summary>
+    /// Initializes or resets the ball with new configuration data.
+    /// Used primarily by the BallPoolManager when recycling instances from the pool.
+    /// </summary>
+    /// <param name="newData">The ball configuration to apply.</param>
+    public void Initialize(BallDataSO newData)
+    {
+        _data = newData;
+
+        // Reset runtime tracking variables to prevent state carry-over from previous life
+        _currentClickCount = 0;
+        _lastClickTime = 0f;
+
+        // Prototype Pattern: Clone the behavior to ensure independent logic state
+        if (_data != null && _data.behaviorTemplate != null)
+        {
+            _runtimeBehavior = _data.behaviorTemplate.Clone();
+        }
+        else
+        {
+            _runtimeBehavior = null;
+        }
+
+        // Apply visual and physical properties defined in the ScriptableObject
+        UpdateVisualsAndPhysics();
     }
 }

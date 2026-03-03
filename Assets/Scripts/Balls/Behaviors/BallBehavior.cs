@@ -23,9 +23,14 @@ public abstract class BallBehavior
     public virtual void OnClick(BallEntity ball) { }
 
     /// <summary>
-    /// Triggered when the ball needs to duplicate.
+    /// Default duplication logic. Can be overridden for specific behaviors.
     /// </summary>
-    public virtual void OnDuplicate(BallEntity ball) { }
+    /// <param name="ball">The source ball entity.</param>
+    public virtual void OnDuplicate(BallEntity ball)
+    {
+        // Executes the standard duplication defined in the entity
+        ball.PerformDefaultDuplicate();
+    }
 
     /// <summary>
     /// Triggered when the ball collides with another physics object.
