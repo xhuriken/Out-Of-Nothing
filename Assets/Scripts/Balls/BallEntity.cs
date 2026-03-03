@@ -116,7 +116,7 @@ public class BallEntity : MonoBehaviour
         _renderer.Radius = _data.radius;
 
         if (_collider == null) _collider = GetComponent<CircleCollider2D>();
-        if (_collider != null) _collider.radius = _data.radius;
+        if (_collider != null) _collider.radius = _data.radius + (_renderer.Thickness/2);
 
         if (_rb == null) _rb = GetComponent<Rigidbody2D>();
         if (_rb != null) _rb.gravityScale = 0f;
