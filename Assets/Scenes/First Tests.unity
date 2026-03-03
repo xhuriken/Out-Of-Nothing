@@ -670,6 +670,7 @@ GameObject:
   - component: {fileID: 1744566711}
   - component: {fileID: 1744566710}
   - component: {fileID: 1744566714}
+  - component: {fileID: 1744566715}
   m_Layer: 0
   m_Name: ZONE
   m_TagString: Untagged
@@ -748,7 +749,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ShapesRuntime::Shapes.Rectangle
   blendMode: 1
   scaleMode: 0
-  color: {r: 1, g: 1, b: 1, a: 1}
+  color: {r: 0.7264151, g: 0.7264151, b: 0.7264151, a: 1}
   detailLevel: 2
   culling: 0
   boundsPadding: 0
@@ -763,8 +764,8 @@ MonoBehaviour:
   stencilReadMask: 255
   stencilWriteMask: 255
   pivot: 1
-  width: 1
-  height: 1
+  width: 18
+  height: 10
   type: 3
   cornerRadiusMode: 0
   cornerRadii: {x: 0.25, y: 0.25, z: 0.25, w: 0.25}
@@ -817,9 +818,56 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4f99a94b5a5ed64bb212ab9ab135e76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameZone
-  width: 17
-  height: 10
-  rendering: {fileID: 1744566712}
+  _width: 18
+  _height: 10
+  _rendering: {fileID: 1744566712}
+  _tickness: 0.1
+--- !u!68 &1744566715
+EdgeCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1744566709}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_EdgeRadius: 0
+  m_Points:
+  - {x: -8.9, y: 4.9}
+  - {x: 8.9, y: 4.9}
+  - {x: 8.9, y: -4.9}
+  - {x: -8.9, y: -4.9}
+  - {x: -8.9, y: 4.9}
+  m_AdjacentStartPoint: {x: 0, y: 0}
+  m_AdjacentEndPoint: {x: 0, y: 0}
+  m_UseAdjacentStartPoint: 0
+  m_UseAdjacentEndPoint: 0
 --- !u!1 &2066636070
 GameObject:
   m_ObjectHideFlags: 0
