@@ -1,0 +1,133 @@
+<ComponentCategories>
+
+	<!-- ========================= -->
+	<!-- 2D Animation              -->
+	<!-- ========================= -->
+	<Category name="2D Animation" icon="SpriteRenderer Icon">
+		<Component name="Sprite Library" icon="SpriteRenderer Icon" type="UnityEngine.U2D.Animation.SpriteLibrary" />
+		<Component name="Sprite Resolver" icon="SpriteRenderer Icon" type="UnityEngine.U2D.Animation.SpriteResolver" />
+		<Component name="Sprite Skin" icon="SpriteRenderer Icon" type="UnityEngine.U2D.Animation.SpriteSkin" />
+	</Category>
+
+	<!-- ========================= -->
+	<!-- Audio                     -->
+	<!-- ========================= -->
+	<Category name="Audio" icon="AudioSource Icon">
+		<Component name="Audio Source" icon="AudioSource Icon" type="UnityEngine.AudioSource" />
+		<Component name="Audio Listener" icon="AudioListener Icon" type="UnityEngine.AudioListener" />
+		<Component name="Audio Reverb Zone" icon="AudioSource Icon" type="UnityEngine.AudioReverbZone" />
+		<Component name="Audio Reverb Filter" icon="AudioSource Icon" type="UnityEngine.AudioReverbFilter" />
+		<Component name="Audio Echo Filter" icon="AudioSource Icon" type="UnityEngine.AudioEchoFilter" />
+		<Component name="Audio Low Pass Filter" icon="AudioSource Icon" type="UnityEngine.AudioLowPassFilter" />
+		<Component name="Audio High Pass Filter" icon="AudioSource Icon" type="UnityEngine.AudioHighPassFilter" />
+		<Component name="Audio Distortion Filter" icon="AudioSource Icon" type="UnityEngine.AudioDistortionFilter" />
+		<Component name="Audio Chorus Filter" icon="AudioSource Icon" type="UnityEngine.AudioChorusFilter" />
+	</Category>
+
+	<!-- ========================= -->
+	<!-- Effects                   -->
+	<!-- ========================= -->
+	<Category name="Effects" icon="ParticleSystem Icon">
+		<Component name="Particle System" icon="ParticleSystem Icon" type="UnityEngine.ParticleSystem" />
+		<Component name="Trail Renderer" icon="TrailRenderer Icon" type="UnityEngine.TrailRenderer" />
+		<Component name="Line Renderer" icon="LineRenderer Icon" type="UnityEngine.LineRenderer" />
+		<Component name="Lens Flare" icon="LensFlare Icon" type="UnityEngine.LensFlare" />
+		<Component name="Halo" icon="DefaultAsset Icon" type="UnityEngine.Halo" />
+		<Component name="Projector" icon="Projector Icon" type="UnityEngine.Projector" />
+		<Component name="Visual Effect" icon="VisualEffect Icon" type="UnityEngine.VFX.VisualEffect" />
+	</Category>
+
+	<!-- ========================= -->
+	<!-- Layout (UI)               -->
+	<!-- ========================= -->
+	<Category name="Layout" icon="Canvas Icon">
+		<Component name="Rect Transform" icon="RectTransform Icon" type="UnityEngine.RectTransform" />
+		<Component name="Canvas" icon="Canvas Icon" type="UnityEngine.Canvas" />
+		<Component name="Canvas Scaler" icon="CanvasScaler Icon" type="UnityEngine.UI.CanvasScaler" />
+		<Component name="Canvas Group" icon="CanvasGroup Icon" type="UnityEngine.CanvasGroup" />
+		<Component name="Content Size Fitter" icon="LayoutElement Icon" type="UnityEngine.UI.ContentSizeFitter" />
+		<Component name="Layout Element" icon="LayoutElement Icon" type="UnityEngine.UI.LayoutElement" />
+		<Component name="Horizontal Layout Group" icon="HorizontalLayoutGroup Icon" type="UnityEngine.UI.HorizontalLayoutGroup" />
+		<Component name="Vertical Layout Group" icon="VerticalLayoutGroup Icon" type="UnityEngine.UI.VerticalLayoutGroup" />
+		<Component name="Grid Layout Group" icon="GridLayoutGroup Icon" type="UnityEngine.UI.GridLayoutGroup" />
+	</Category>
+
+	<!-- ========================= -->
+	<!-- Mesh                      -->
+	<!-- ========================= -->
+	<Category name="Mesh" icon="MeshRenderer Icon">
+		<Component name="Mesh Filter" icon="MeshFilter Icon" type="UnityEngine.MeshFilter" />
+		<Component name="Mesh Renderer" icon="MeshRenderer Icon" type="UnityEngine.MeshRenderer" />
+		<Component name="Skinned Mesh Renderer" icon="SkinnedMeshRenderer Icon" type="UnityEngine.SkinnedMeshRenderer" />
+	</Category>
+
+	<!-- ========================= -->
+	<!-- Miscellaneous             -->
+	<!-- ========================= -->
+	<Category name="Miscellaneous" icon="DefaultAsset Icon">
+		<Component name="Animator" icon="Animator Icon" type="UnityEngine.Animator" />
+		<Component name="Animation" icon="Animation Icon" type="UnityEngine.Animation" />
+		<Component name="Grid" icon="Grid Icon" type="UnityEngine.Grid" />
+	</Category>
+
+	<!-- ========================= -->
+	<!-- Navigation                -->
+	<!-- ========================= -->
+	<Category name="Navigation" icon="NavMeshAgent Icon">
+		<Component name="NavMesh Agent" icon="NavMeshAgent Icon" type="UnityEngine.AI.NavMeshAgent" />
+		<Component name="NavMesh Obstacle" icon="NavMeshObstacle Icon" type="UnityEngine.AI.NavMeshObstacle" />
+		<Component name="OffMesh Link" icon="NavMeshLink Icon" type="UnityEngine.AI.OffMeshLink" />
+	</Category>
+
+	<!-- ========================= -->
+	<!-- Physics                   -->
+	<!-- ========================= -->
+	<Category name="Physics" icon="Rigidbody Icon">
+		<Component name="Rigidbody" icon="Rigidbody Icon" type="UnityEngine.Rigidbody" />
+		<Component name="Character Controller" icon="CharacterController Icon" type="UnityEngine.CharacterController" />
+		<Component name="Box Collider" icon="BoxCollider Icon" type="UnityEngine.BoxCollider" />
+		<Component name="Sphere Collider" icon="SphereCollider Icon" type="UnityEngine.SphereCollider" />
+	</Category>
+
+	<!-- ========================= -->
+	<!-- Physics 2D                -->
+	<!-- ========================= -->
+	<Category name="Physics 2D" icon="Rigidbody2D Icon">
+		<Component name="Rigidbody 2D" icon="Rigidbody2D Icon" type="UnityEngine.Rigidbody2D" />
+		<Component name="Box Collider 2D" icon="BoxCollider2D Icon" type="UnityEngine.BoxCollider2D" />
+		<Component name="Circle Collider 2D" icon="CircleCollider2D Icon" type="UnityEngine.CircleCollider2D" />
+	</Category>
+
+	<!-- ========================= -->
+	<!-- Rendering                 -->
+	<!-- ========================= -->
+	<Category name="Rendering" icon="Camera Icon">
+		<Component name="Camera" icon="Camera Icon" type="UnityEngine.Camera" />
+		<Component name="Sprite Renderer" icon="SpriteRenderer Icon" type="UnityEngine.SpriteRenderer" />
+		<Component name="Reflection Probe" icon="ReflectionProbe Icon" type="UnityEngine.ReflectionProbe" />
+	</Category>
+
+	<!-- ========================= -->
+	<!-- UI                        -->
+	<!-- ========================= -->
+	<Category name="UI" icon="Canvas Icon">
+		<Component name="Button" icon="Button Icon" type="UnityEngine.UI.Button" />
+		<Component name="Toggle" icon="Toggle Icon" type="UnityEngine.UI.Toggle" />
+		<Component name="Slider" icon="Slider Icon" type="UnityEngine.UI.Slider" />
+	</Category>
+
+	<!-- ========================= -->
+	<!-- Video                     -->
+	<!-- ========================= -->
+	<Category name="Video" icon="VideoPlayer Icon">
+		<Component name="Video Player" icon="VideoPlayer Icon" type="UnityEngine.Video.VideoPlayer" />
+	</Category>
+
+	<!-- ========================= -->
+	<!-- Playables                 -->
+	<!-- ========================= -->
+	<Category name="Playables" icon="PlayableDirector Icon">
+		<Component name="Playable Director" icon="PlayableDirector Icon" type="UnityEngine.Playables.PlayableDirector" />
+	</Category>
+
+</ComponentCategories>

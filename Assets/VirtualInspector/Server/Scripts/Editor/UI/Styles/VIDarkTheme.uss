@@ -1,0 +1,61 @@
+/* ============================================================
+   Virtual Inspector — Color Design Tokens
+   ============================================================ */
+
+:root {
+    /* ---------- BACKGROUNDS ---------- */
+    --vi-bg-root: #0D0F16;
+    --vi-bg-tree-item-hover: #2B2B2B;
+    --vi-bg-panel: #0F1118;
+    --vi-border-panel: #1D2230;
+    --vi-bg-field:#11131b;
+    --vi-bg-field-selected:#1A2334;
+    --vi-bg-field-hover:#1A1D29;
+    --vi-bg-field-pressed:#232742;
+
+    --vi-field-label:#E2E8FF;
+    --vi-field-label-bis:#8A92A6;
+    --vi-border-subfield-hover:#3C455A;
+    --vi-border-subfield-focus:#4C8AFF;
+
+    --vi-bg-dropdown-field:#0F131B;
+    --vi-dropdown-field-label:#E0E4EA;
+    --vi-dropdown-field-arrow:#9BA3B0;
+
+    --vi-title-label:white;
+    --vi-subtitle-label:#9AA0B4;
+    --vi-bg-launcher-button:#2A5FFF;
+    --vi-launcher-button-label:white;
+    --vi-launcher-section-label:white;
+    --vi-launcher-changelog-label:#C6C9D6;
+    --vi-launcher-footer-label:#666;
+
+    --vi-label:#AAB3C7;
+    --vi-label-selected:#FFFFFF;
+    --vi-border-field:#2A2F3E;
+    --vi-border-tab:#2D3348;
+    --vi-tab-label:#687089;
+
+    --vi-tab-selected:#1A1D27;
+    --vi-tab-label-selected:#AEB7CE;
+
+    --vi-bg-search-bar:#AEB7CE;
+    --vi-border-search-bar:#2A2F3E;
+    --vi-search-bar-label:#505769;
+
+    /* ---------- ICONS ---------- */
+    --vi-icon-default: #d4e3ff;
+
+    --vi-bg-on: #38C070;
+    --vi-bg-off: #8B2C2C;
+
+    --vi-border-overlay: rgba(0,0,0,0.4);
+    --vi-label-overlay: white;
+    --vi-bg-success: rgba(40, 140, 72, 1);
+    --vi-bg-error: rgba(140, 40, 40, 1);
+
+    --vi-bg-card-inner: #11131b;
+    --vi-bg-card-border: rgba(255,255,255,0.18);
+
+    --vi-bg-pro-upgrade-button: #FF8A3D;
+}

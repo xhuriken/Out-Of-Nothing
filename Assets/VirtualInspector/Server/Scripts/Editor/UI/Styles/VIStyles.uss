@@ -1,0 +1,940 @@
+
+/* On enlève totalement l'indent et la flèche de base du TreeView Unity */
+.unity-tree-view__item-indentation,
+.unity-tree-view__item-toggle {
+    width: 0;
+    flex-basis: 0;
+    padding: 0;
+    margin: 0;
+    display: none;
+}
+
+/* ----------- RESET UNITY BACKGROUND ----------- */
+
+.unity-tree-view__item,
+.unity-tree-view__item:hover{
+    background-color: transparent !important;
+    border-color: transparent !important;
+}
+
+.unity-tree-view__item--selected {
+    background-color: #FFFFFF !important;
+    border-color: transparent !important;
+}
+
+/* ---------- NOTRE HOVER ---------- */
+
+.unity-tree-view__item:hover {
+    background-color: var(--vi-bg-tree-item-hover) !important;
+}
+
+.vi-root {
+    background-color: var(--vi-bg-root);
+}
+
+.hierarchy {
+    margin-top: 10px;
+
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+
+    border-width: 1px;
+    border-color: var(--vi-border-panel);
+
+    background-color: var(--vi-bg-panel);
+
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+#unity-dragger
+{
+     background-color: var(--vi-bg-panel);
+}
+
+.treeview
+{
+     background-color: var(--vi-bg-panel);
+}
+
+/* Hover (non sélectionné) */
+.tree-item:hover {
+    background-color: var(--vi-bg-field);
+}
+
+/* ---- LAYOUT ---- */
+
+.tree-item {
+    flex-direction: row;
+    align-items: center;
+    padding-left: 4px;
+    padding-right: 4px;
+     align-items: center; 
+    height: 28px;
+    background-color: transparent;
+}
+
+
+.unity-collection-view__item--selected .tree-item {
+    background-color: var(--vi-bg-field-selected);   
+}
+
+
+/* TEXT COLORS */
+.tree-label {
+    color:  var(--vi-label);
+}
+
+.unity-collection-view__item--selected .tree-label {
+    color: var(--vi-label-selected);
+}
+
+/* Indentation container */
+.indent {
+    width: 0px;
+}
+
+
+/* Indentation block */
+.indent {
+    width: 0px; /* C# override only */
+}
+
+
+/* ---- ARROW ---- */
+
+
+.foldout-arrow {
+   opacity: 1;
+    width: 16px;
+    height: 16px;
+    margin-right: 0px;
+
+}
+
+
+/* ---- ICON ---- */
+
+.tree-icon {
+    opacity: 1;
+    width: 16px;
+    height: 16px;
+    margin-right: 0px;
+}
+
+
+.indent,
+.arrow-wrapper,
+.tree-icon,
+.tree-label {
+    align-self: center;
+}
+
+.arrow-wrapper 
+{ 
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    opacity:1;
+        background-color: transparent;
+
+}
+
+.tabs {
+    flex-direction: row;
+    height: 32px;
+    margin-bottom: 6px;
+}
+
+.tab {
+
+
+
+    background-color: var(--vi-bg-panel);
+    
+    
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+
+    border-width: 1px;
+    border-color: var(--vi-border-tab);
+    
+    color: var(--vi-tab-label);
+    padding: 6px 14px;
+    margin-right: 6px;
+}
+
+.tab-active {
+    background-color: var(--vi-tab-selected);
+    border-radius: 6px;
+    color: var(--vi-tab-label-selected);
+    padding: 6px 14px;
+    margin-right: 6px;
+}
+
+.search-bar {
+    height: 32px;
+    margin-bottom: 10px;
+    margin-left: 0px;
+    margin-right: 0px;
+    color: var(--vi-search-bar-label);
+}
+
+.search-bar:focus .placeHolder
+{
+    opacity:0;
+}
+
+.search-bar #unity-text-input
+{
+    border-width: 1px;
+    background-color: var(--vi-bg-field);
+}
+
+.vi-search--normal {
+    border-color: var(--vi-border-search-bar);
+}
+
+.vi-search--hover {
+    border-color: var(--vi-border-subfield-hover);
+}
+
+.vi-search--focus {
+    border-color: var(--vi-border-subfield-focus);
+}
+
+
+.dropdown-field > .unity-base-field__input {
+    background-color: var(--vi-bg-field);
+    border-radius: 5px;
+    padding-left: 8px;
+    font-size: 12px;
+    color: var(--vi-field-label);
+}
+
+/* ================= COMPONENT CARD ================= */
+
+.vi-component-card {
+    background-color: var(--vi-bg-field);
+    border-radius: 8px;
+    border-width: 1px;
+    border-color: var(--vi-border-field);
+    margin-top: 12px;
+}
+
+/* ---------- Header ---------- */
+
+.vi-component-header {
+    height: 28px;
+    padding-left: 6px;
+    padding-right: 10px;
+    background-color: var(--vi-bg-root);
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom-width: 1px;
+    border-bottom-color: var(--vi-border-field);
+}
+
+/* ---------- Fold Arrow ---------- */
+
+.vi-component-fold {
+    width: 14px;
+    height: 14px;
+    margin-right: 4px;
+    background-image: resource("ArrowNavigationRight");
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.8;
+}
+
+/* ---------- Toggle ---------- */
+
+.vi-component-toggle {
+    margin-right: 6px;
+}
+
+/* ---------- Icon ---------- */
+
+.vi-component-icon {
+    width: 14px;
+    height: 14px;
+    margin-right: 6px;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+/* ---------- Title ---------- */
+
+.vi-component-title {
+    font-size: 12px;
+    color: var(--vi-field-label);
+    -unity-font-style: bold;
+}
+
+/* ---------- Body ---------- */
+
+.vi-component-body {
+    padding: 10px;
+}
+
+/* ================= VECTOR3 FIELD ================= */
+
+/* ====== Subfield container (comme .subfield) ====== */
+.vi-subfield {
+    background-color: var(--vi-bg-field);       /* --bg-field */
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--vi-border-field);      /* --border-field */
+    border-right-color: var(--vi-border-field);
+    border-top-color: var(--vi-border-field);
+    border-bottom-color: var(--vi-border-field);
+
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+
+    height: 22px;
+    padding-left: 6px;
+    padding-right: 6px;
+
+    flex-direction: row;
+    align-items: center;
+
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+/* ====== Axis label  ====== */
+.vi-axis {
+    width: 12px;
+    min-width: 12px; 
+    margin-right: 4px;              
+    font-size: 11px;
+    color: var(--vi-field-label-bis);                  
+    -unity-text-align: middle-center;
+}
+
+.vi-subfield__input {
+    background-color: transparent;
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-top-width: 0px;
+    border-bottom-width: 0px;
+
+    padding-left: 0px;
+    padding-right: 0px;
+
+    color: var(--vi-field-label);
+    font-size: 12px;
+    -unity-text-align: middle-left;
+
+     flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 64px;    
+    max-width: 100%;
+}
+
+
+.vi-subfield:hover {
+    border-left-color: var(--vi-border-subfield-hover);
+    border-right-color: var(--vi-border-subfield-hover);
+    border-top-color: var(--vi-border-subfield-hover);
+    border-bottom-color: var(--vi-border-subfield-hover);
+}
+
+.vi-subfield:focus {
+    border-left-color: var(--vi-border-subfield-focus);
+    border-right-color: var(--vi-border-subfield-focus);
+    border-top-color: var(--vi-border-subfield-focus);
+    border-bottom-color: var(--vi-border-subfield-focus);
+}
+
+.vi-axis {
+    cursor: resize-horizontal;
+}
+
+.vi-axis:hover {
+    color: var(--vi-field-label);
+}
+
+/* ===== Color Field ===== */
+
+.vi-color-field {
+    height: 22px;
+}
+
+
+.vi-color-field .unity-color-field__input {
+    border-radius: 4px;
+}
+
+/* ================= ARRAY ================= */
+
+.vi-array {
+}
+
+/* ---------- Header ---------- */
+
+.vi-array-header {
+    height: 24px;
+    padding-left: 0px;
+    padding-right: 0px;
+    align-items: center;
+}
+
+.vi-array-fold {
+    width: 12px;
+    height: 12px;
+    margin-right: 4px;
+    background-image: resource("ArrowNavigationRight");
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.vi-array-label {
+    font-size: 11px;
+    flex-grow: 1;
+}
+
+.vi-array-size {
+    color: var(--vi-field-label-bis);
+    font-size: 10px;
+    margin-right: 6px;
+}
+
+.vi-array-btn {
+    width: 18px;
+    height: 18px;
+    margin-left: 2px;
+    font-size: 12px;
+}
+
+/* ---------- Body ---------- */
+
+.vi-array-body {
+    margin-left: 12px;
+    margin-top: 4px;
+    flex-direction: column;
+}
+
+.vi-array-element {
+    margin-top: 4px;
+}
+
+/* ===== Reorderable Array ===== */
+
+.vi-array-row {
+    margin-top: 4px;
+}
+
+.vi-array-handle {
+    width: 14px;
+    margin-right: 4px;
+    color: var(--vi-field-label-bis);
+}
+
+.vi-array-handle:hover {
+    color: var(--vi-field-label);
+}
+
+.vi-array-content {
+    flex-grow: 1;
+}
+
+.vi-array-size-field {
+    height: 18px;
+    background-color: var(--vi-bg-field);
+    border-radius: 4px;
+
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+
+    border-left-color: var(--vi-border-field);
+    border-right-color: var(--vi-border-field);
+    border-top-color: var(--vi-border-field);
+    border-bottom-color: var(--vi-border-field);
+
+    color: var(--vi-field-label);
+    font-size: 11px;
+    margin-right: 6px;
+}
+
+.vi-array-size-field .unity-text-input {
+    background-color: transparent;
+    border-width: 0;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+/* ===== Array Buttons ===== */
+
+.vi-array-btn {
+    width: 18px;
+    height: 18px;
+    margin-left: 2px;
+
+    background-color: var(--vi-bg-field);
+    border-radius: 4px;
+
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+
+    border-left-color: var(--vi-border-field);
+    border-right-color: var(--vi-border-field);
+    border-top-color: var(--vi-border-field);
+    border-bottom-color: var(--vi-border-field);
+
+    color: var(--vi-field-label);
+    font-size: 12px;
+}
+
+/* Hover */
+.vi-array-btn:hover {
+    background-color: var(--vi-bg-field-hover);
+}
+
+/* Pressed */
+.vi-array-btn:active {
+    background-color: var(--vi-bg-field-pressed);
+}
+
+.unity-list-view__item:hover {
+    background-color: var(--vi-bg-root);
+}
+
+.unity-collection-view__item--selected {
+    background-color: var(--vi-bg-field-selected);
+}
+
+.unity-collection-view__item--selected:hover {
+    background-color: var(--vi-bg-field-selected);
+}
+
+/* ===== Struct Foldout ===== */
+
+.vi-struct {
+    margin-top: 6px;
+}
+
+/* ---------- Header ---------- */
+
+.vi-struct-header {
+    height: 22px;
+    padding-left: 0px;
+    align-items: center;
+}
+
+.vi-struct-arrow {
+    width: 12px;
+    height: 12px;
+    margin-right: 4px;
+    background-image: resource("ArrowNavigationRight");
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.8;
+}
+
+.vi-struct-title {
+    font-size: 11px;
+}
+
+/* ---------- Content ---------- */
+
+.vi-struct-content {
+    margin-left: 16px;
+    margin-top: 4px;
+    flex-direction: column;
+}
+
+/* ===== Inspector Scrollbar ===== */
+
+#InspectorScrollView > .unity-scroll-view__vertical-scroller {
+    width: 10px;
+}
+
+#InspectorScrollView .unity-scroller__thumb {
+    background-color: var(--vi-border-field);
+    border-radius: 4px;
+}
+
+#InspectorScrollView .unity-scroller__thumb:hover {
+    background-color: var(--vi-border-subfield-hover);
+}
+
+/* ===== Custom Checkbox (Entity) ===== */
+
+/* ===== Custom Checkbox (Entity) ===== */
+
+.vi-checkbox {
+   
+    margin-right: 8px;
+    margin-bottom: 8px;
+
+    justify-content: center;
+    align-items: center;
+}
+
+/* Box */
+.vi-checkbox-box {
+   
+
+    background-color: var(--vi-bg-field);
+    border-radius: 4px;
+
+    border-width: 1px;
+    border-color: var(--vi-border-field);
+
+    justify-content: center;
+    align-items: center;
+}
+
+/* Check icon */
+.vi-checkbox-icon {
+    width: 95%;
+    height: 95%;
+
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+
+     -unity-background-image-tint-color: var(--vi-icon-default);
+}
+
+/* Checked */
+/* .vi-checkbox-box:has(.vi-checkbox-icon) {
+    border-color: var(--vi-border-subfield-focus);
+} */
+
+/* Hover */
+.vi-checkbox:hover .vi-checkbox-box {
+    background-color: var(--vi-bg-field-hover);
+}
+
+.vi-string-field {
+    height: 22px;
+}
+
+/* ===== Object Field ===== */
+
+.vi-object-field {
+    height: 22px;
+    padding-left: 6px;
+    padding-right: 6px;
+
+    background-color: var(--vi-bg-field);
+    border-radius: 5px;
+
+    border-width: 1px;
+    border-color: var(--vi-border-field);
+
+    justify-content: center;
+}
+
+.vi-object-field:hover {
+    background-color: var(--vi-bg-field-hover);
+}
+
+.vi-object-field__label {
+    color: var(--vi-field-label);
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+/* ===== Object Field Loop Button ===== */
+
+.vi-object-loop {
+    width: 22px;
+    height: 22px;
+    margin-left: 4px;
+
+    background-color: var(--vi-bg-field);
+    border-radius: 5px;
+
+    border-width: 1px;
+    border-color: var(--vi-border-field);
+    padding: 0;
+
+    justify-content: center;
+    align-items: center;
+}
+
+.vi-object-loop:hover {
+    background-color: var(--vi-bg-field-hover);
+}
+
+/* Loop icon */
+.vi-object-loop-icon {
+    width: 12px;
+    height: 12px;
+
+    background-image: resource("Search Icon");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* ================= TOOLBAR ================= */
+
+.vi-toolbar {
+    height: 32px;
+    padding: 4px 6px;
+
+    background-color: var(--vi-bg-root);
+}
+
+/* ---------- Buttons ---------- */
+
+.vi-toolbar-button {
+    height: 22px;
+    padding: 0 10px;
+
+    background-color: var(--vi-bg-field);
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: var(--vi-border-field);
+
+    color: var(--vi-field-label);
+    font-size: 12px;
+}
+
+.vi-toolbar-button:hover {
+    background-color: var(--vi-bg-field-hover);
+}
+
+/* ---------- Live Edit ---------- */
+
+.vi-toolbar-live-edit {
+    height: 22px;
+    padding: 0 12px;
+
+    border-radius: 5px;
+
+    border-width: 1px;
+    border-color: transparent;
+
+    font-size: 12px;
+    -unity-font-style: bold;
+    color: white;
+}
+
+.vi-toolbar-live-edit.off {
+    background-color: var(--vi-bg-off);
+}
+
+.vi-toolbar-live-edit.on {
+    background-color: var(--vi-bg-on);
+}
+
+.vi-toolbar-live-edit:hover {
+    opacity: 0.9;
+}
+
+.vi-toolbar .vi-field-label {
+    font-size: 10px;
+    opacity: 0.8;
+}
+
+/* ================= TOOLBAR FIELD LAYOUT FIX ================= */
+
+.vi-toolbar .vi-field {
+    flex-direction: row;
+    align-items: center;
+}
+
+.vi-toolbar .vi-field-label {
+    width: 60px;
+    min-width: 60px;
+    max-width: 60px;
+
+    margin-right: 6px;
+    flex-shrink: 0;
+}
+
+.vi-toolbar .vi-subfield,
+.vi-toolbar .vi-string-field,
+.vi-toolbar .vi-int-field {
+    flex-grow: 1;
+    flex-shrink: 0;
+    min-width: 0;
+}
+
+.vi-toolbar-button.running {
+    background-color: var(--vi-bg-off);
+}
+
+/* ================= AUTH STATUS OVERLAY ================= */
+
+.vi-auth-overlay {
+    position: absolute;
+    top: 32px;           
+    left: 10px;
+    right: 10px;
+    height: 32px;
+
+    border-radius: 6px;
+
+    border-width: 1px;
+    border-color: var(--vi-border-overlay);
+
+    justify-content: center;
+    align-items: center;
+}
+
+/* Success */
+.vi-auth-overlay.success {
+    background-color: var(--vi-bg-success);
+}
+
+/* Error */
+.vi-auth-overlay.error {
+    background-color: var(--vi-bg-error);
+}
+
+.vi-auth-label {
+    font-size: 12px;
+    -unity-font-style: bold;
+    color: var(--vi-label-overlay);
+    -unity-text-align: middle-center;
+}
+
+
+
+.dropdown-field {
+    height: 22px;
+    border-radius: 4px;
+    border-width: 1px;
+    border-color: var(--vi-border-field);
+    background-color: var(--vi-bg-dropdown-field);
+    flex-direction: row;
+    align-items: center;
+}
+
+.dropdown-label {
+    color: var(--vi-dropdown-field-label);
+    font-size: 12px;
+    padding-left: 8px;
+    padding-right: 6px;
+    -unity-text-align: middle-left;
+}
+
+.dropdown-arrow {
+    width: 12px;
+    height: 12px;
+    margin-right: 6px;
+    opacity: 0.7;
+
+    transition-property: rotate, opacity;
+    transition-duration: 120ms;
+    transition-timing-function: ease-out;
+}
+
+.dropdown-field:hover .dropdown-arrow {
+    opacity: 1.0;
+}
+
+
+
+.vi-launcher-root {
+    padding: 24px;
+    background-color: var(--vi-bg-root);
+}
+
+.vi-launcher-header {
+    margin-bottom: 20px;
+}
+
+#title {
+    font-size: 20px;
+    color: var(--vi-title-label);
+}
+
+#subtitle {
+    font-size: 12px;
+    color: var(--vi-subtitle-label);
+}
+
+.vi-launcher-main-button {
+    height: 32px;
+    margin-bottom: 24px;
+    background-color: var(--vi-bg-launcher-button);
+    color: var(--vi-launcher-button-label);
+    border-radius: 6px;
+}
+
+.vi-launcher-section {
+    margin-top: 16px;
+    margin-bottom: 8px;
+    color: var(--vi-launcher-section-label);
+    -unity-font-style: bold;
+}
+
+.vi-launcher-changelog {
+    flex-direction: row;
+    color: var(--vi-launcher-changelog-label);
+    font-size: 12px;
+}
+
+.vi-launcher-link {
+    height: 26px;
+    margin-top: 4px;
+}
+
+.vi-launcher-footer {
+    margin-top: 12px;
+    font-size: 11px;
+    color: var(--vi-launcher-footer-label);
+}
+
+.vi-card-border {
+    flex-grow: 1;
+    background-color: var(--vi-bg-card-border);
+    padding-left: 1px;
+    padding-right: 1px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+}
+
+.vi-card-inner {
+    flex-grow: 1;
+    background-color: var(--vi-bg-card-inner);
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    flex-direction: column;
+}
+
+.vi-toolbar-button-ProUpgrade {
+    height: 22px;
+    padding: 0 10px;
+
+    background-color: var(--vi-bg-pro-upgrade-button);
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: var(--vi-border-field);
+
+    color: var(--vi-field-label);
+    font-size: 12px;
+}
+
+.vi-toolbar-button-ProUpgrade:hover {
+    background-color: var(--vi-bg-pro-upgrade-button);
+}

@@ -1,0 +1,1477 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1522732535, guid: 14f1d8e597460d945ad96266b99e92c5, type: 3}
+  m_Name: ProjectManifest
+  m_EditorClassIdentifier: VIInternal.dll::Strix.VirtualInspector.Client.VIClientProjectManifest
+  tags:
+  - Untagged
+  - Respawn
+  - Finish
+  - EditorOnly
+  - MainCamera
+  - Player
+  - GameController
+  layersName:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - Water
+  - UI
+  layersID: 0000000001000000020000000400000005000000
+  componentsRoot:
+  - Name: Sprite Library
+    FullTypeName: UnityEngine.U2D.Animation.SpriteLibrary
+    IconPath: SpriteRenderer Icon
+    CategoryPath: 2D Animation
+    tempCategoryId: 0
+  - Name: Sprite Resolver
+    FullTypeName: UnityEngine.U2D.Animation.SpriteResolver
+    IconPath: SpriteRenderer Icon
+    CategoryPath: 2D Animation
+    tempCategoryId: 0
+  - Name: Sprite Skin
+    FullTypeName: UnityEngine.U2D.Animation.SpriteSkin
+    IconPath: SpriteRenderer Icon
+    CategoryPath: 2D Animation
+    tempCategoryId: 0
+  - Name: Audio Chorus Filter
+    FullTypeName: UnityEngine.AudioChorusFilter
+    IconPath: AudioSource Icon
+    CategoryPath: Audio
+    tempCategoryId: 0
+  - Name: Audio Distortion Filter
+    FullTypeName: UnityEngine.AudioDistortionFilter
+    IconPath: AudioSource Icon
+    CategoryPath: Audio
+    tempCategoryId: 0
+  - Name: Audio Echo Filter
+    FullTypeName: UnityEngine.AudioEchoFilter
+    IconPath: AudioSource Icon
+    CategoryPath: Audio
+    tempCategoryId: 0
+  - Name: Audio High Pass Filter
+    FullTypeName: UnityEngine.AudioHighPassFilter
+    IconPath: AudioSource Icon
+    CategoryPath: Audio
+    tempCategoryId: 0
+  - Name: Audio Listener
+    FullTypeName: UnityEngine.AudioListener
+    IconPath: AudioListener Icon
+    CategoryPath: Audio
+    tempCategoryId: 0
+  - Name: Audio Low Pass Filter
+    FullTypeName: UnityEngine.AudioLowPassFilter
+    IconPath: AudioSource Icon
+    CategoryPath: Audio
+    tempCategoryId: 0
+  - Name: Audio Reverb Filter
+    FullTypeName: UnityEngine.AudioReverbFilter
+    IconPath: AudioSource Icon
+    CategoryPath: Audio
+    tempCategoryId: 0
+  - Name: Audio Reverb Zone
+    FullTypeName: UnityEngine.AudioReverbZone
+    IconPath: AudioSource Icon
+    CategoryPath: Audio
+    tempCategoryId: 0
+  - Name: Audio Source
+    FullTypeName: UnityEngine.AudioSource
+    IconPath: AudioSource Icon
+    CategoryPath: Audio
+    tempCategoryId: 0
+  - Name: Halo
+    FullTypeName: UnityEngine.Halo
+    IconPath: DefaultAsset Icon
+    CategoryPath: Effects
+    tempCategoryId: 0
+  - Name: Lens Flare
+    FullTypeName: UnityEngine.LensFlare
+    IconPath: LensFlare Icon
+    CategoryPath: Effects
+    tempCategoryId: 0
+  - Name: Line Renderer
+    FullTypeName: UnityEngine.LineRenderer
+    IconPath: LineRenderer Icon
+    CategoryPath: Effects
+    tempCategoryId: 0
+  - Name: Particle System
+    FullTypeName: UnityEngine.ParticleSystem
+    IconPath: ParticleSystem Icon
+    CategoryPath: Effects
+    tempCategoryId: 0
+  - Name: Projector
+    FullTypeName: UnityEngine.Projector
+    IconPath: Projector Icon
+    CategoryPath: Effects
+    tempCategoryId: 0
+  - Name: Trail Renderer
+    FullTypeName: UnityEngine.TrailRenderer
+    IconPath: TrailRenderer Icon
+    CategoryPath: Effects
+    tempCategoryId: 0
+  - Name: Visual Effect
+    FullTypeName: UnityEngine.VFX.VisualEffect
+    IconPath: VisualEffect Icon
+    CategoryPath: Effects
+    tempCategoryId: 0
+  - Name: Canvas
+    FullTypeName: UnityEngine.Canvas
+    IconPath: Canvas Icon
+    CategoryPath: Layout
+    tempCategoryId: 0
+  - Name: Canvas Group
+    FullTypeName: UnityEngine.CanvasGroup
+    IconPath: CanvasGroup Icon
+    CategoryPath: Layout
+    tempCategoryId: 0
+  - Name: Canvas Scaler
+    FullTypeName: UnityEngine.UI.CanvasScaler
+    IconPath: CanvasScaler Icon
+    CategoryPath: Layout
+    tempCategoryId: 0
+  - Name: Content Size Fitter
+    FullTypeName: UnityEngine.UI.ContentSizeFitter
+    IconPath: LayoutElement Icon
+    CategoryPath: Layout
+    tempCategoryId: 0
+  - Name: Grid Layout Group
+    FullTypeName: UnityEngine.UI.GridLayoutGroup
+    IconPath: GridLayoutGroup Icon
+    CategoryPath: Layout
+    tempCategoryId: 0
+  - Name: Horizontal Layout Group
+    FullTypeName: UnityEngine.UI.HorizontalLayoutGroup
+    IconPath: HorizontalLayoutGroup Icon
+    CategoryPath: Layout
+    tempCategoryId: 0
+  - Name: Layout Element
+    FullTypeName: UnityEngine.UI.LayoutElement
+    IconPath: LayoutElement Icon
+    CategoryPath: Layout
+    tempCategoryId: 0
+  - Name: Rect Transform
+    FullTypeName: UnityEngine.RectTransform
+    IconPath: RectTransform Icon
+    CategoryPath: Layout
+    tempCategoryId: 0
+  - Name: Vertical Layout Group
+    FullTypeName: UnityEngine.UI.VerticalLayoutGroup
+    IconPath: VerticalLayoutGroup Icon
+    CategoryPath: Layout
+    tempCategoryId: 0
+  - Name: Mesh Filter
+    FullTypeName: UnityEngine.MeshFilter
+    IconPath: MeshFilter Icon
+    CategoryPath: Mesh
+    tempCategoryId: 0
+  - Name: Mesh Renderer
+    FullTypeName: UnityEngine.MeshRenderer
+    IconPath: MeshRenderer Icon
+    CategoryPath: Mesh
+    tempCategoryId: 0
+  - Name: Skinned Mesh Renderer
+    FullTypeName: UnityEngine.SkinnedMeshRenderer
+    IconPath: SkinnedMeshRenderer Icon
+    CategoryPath: Mesh
+    tempCategoryId: 0
+  - Name: Animation
+    FullTypeName: UnityEngine.Animation
+    IconPath: Animation Icon
+    CategoryPath: Miscellaneous
+    tempCategoryId: 0
+  - Name: Animator
+    FullTypeName: UnityEngine.Animator
+    IconPath: Animator Icon
+    CategoryPath: Miscellaneous
+    tempCategoryId: 0
+  - Name: Grid
+    FullTypeName: UnityEngine.Grid
+    IconPath: Grid Icon
+    CategoryPath: Miscellaneous
+    tempCategoryId: 0
+  - Name: NavMesh Agent
+    FullTypeName: UnityEngine.AI.NavMeshAgent
+    IconPath: NavMeshAgent Icon
+    CategoryPath: Navigation
+    tempCategoryId: 0
+  - Name: NavMesh Obstacle
+    FullTypeName: UnityEngine.AI.NavMeshObstacle
+    IconPath: NavMeshObstacle Icon
+    CategoryPath: Navigation
+    tempCategoryId: 0
+  - Name: OffMesh Link
+    FullTypeName: UnityEngine.AI.OffMeshLink
+    IconPath: NavMeshLink Icon
+    CategoryPath: Navigation
+    tempCategoryId: 0
+  - Name: Box Collider
+    FullTypeName: UnityEngine.BoxCollider
+    IconPath: BoxCollider Icon
+    CategoryPath: Physics
+    tempCategoryId: 0
+  - Name: Character Controller
+    FullTypeName: UnityEngine.CharacterController
+    IconPath: CharacterController Icon
+    CategoryPath: Physics
+    tempCategoryId: 0
+  - Name: Rigidbody
+    FullTypeName: UnityEngine.Rigidbody
+    IconPath: Rigidbody Icon
+    CategoryPath: Physics
+    tempCategoryId: 0
+  - Name: Sphere Collider
+    FullTypeName: UnityEngine.SphereCollider
+    IconPath: SphereCollider Icon
+    CategoryPath: Physics
+    tempCategoryId: 0
+  - Name: Box Collider 2D
+    FullTypeName: UnityEngine.BoxCollider2D
+    IconPath: BoxCollider2D Icon
+    CategoryPath: Physics 2D
+    tempCategoryId: 0
+  - Name: Circle Collider 2D
+    FullTypeName: UnityEngine.CircleCollider2D
+    IconPath: CircleCollider2D Icon
+    CategoryPath: Physics 2D
+    tempCategoryId: 0
+  - Name: Rigidbody 2D
+    FullTypeName: UnityEngine.Rigidbody2D
+    IconPath: Rigidbody2D Icon
+    CategoryPath: Physics 2D
+    tempCategoryId: 0
+  - Name: Playable Director
+    FullTypeName: UnityEngine.Playables.PlayableDirector
+    IconPath: PlayableDirector Icon
+    CategoryPath: Playables
+    tempCategoryId: 0
+  - Name: Camera
+    FullTypeName: UnityEngine.Camera
+    IconPath: Camera Icon
+    CategoryPath: Rendering
+    tempCategoryId: 0
+  - Name: Reflection Probe
+    FullTypeName: UnityEngine.ReflectionProbe
+    IconPath: ReflectionProbe Icon
+    CategoryPath: Rendering
+    tempCategoryId: 0
+  - Name: Sprite Renderer
+    FullTypeName: UnityEngine.SpriteRenderer
+    IconPath: SpriteRenderer Icon
+    CategoryPath: Rendering
+    tempCategoryId: 0
+  - Name: BallEntity
+    FullTypeName: BallEntity
+    IconPath: 
+    CategoryPath: Scripts
+    tempCategoryId: 0
+  - Name: GameZone
+    FullTypeName: GameZone
+    IconPath: 
+    CategoryPath: Scripts
+    tempCategoryId: 0
+  - Name: DOTweenComponent
+    FullTypeName: DG.Tweening.Core.DOTweenComponent
+    IconPath: 
+    CategoryPath: Scripts/DG/Tweening/Core
+    tempCategoryId: 0
+  - Name: AmmoBar
+    FullTypeName: Shapes.AmmoBar
+    IconPath: 
+    CategoryPath: Scripts/Shapes
+    tempCategoryId: 0
+  - Name: ChargeBar
+    FullTypeName: Shapes.ChargeBar
+    IconPath: 
+    CategoryPath: Scripts/Shapes
+    tempCategoryId: 0
+  - Name: Compass
+    FullTypeName: Shapes.Compass
+    IconPath: 
+    CategoryPath: Scripts/Shapes
+    tempCategoryId: 0
+  - Name: Cone
+    FullTypeName: Shapes.Cone
+    IconPath: 
+    CategoryPath: Scripts/Shapes
+    tempCategoryId: 0
+  - Name: Crosshair
+    FullTypeName: Shapes.Crosshair
+    IconPath: 
+    CategoryPath: Scripts/Shapes
+    tempCategoryId: 0
+  - Name: Cuboid
+    FullTypeName: Shapes.Cuboid
+    IconPath: 
+    CategoryPath: Scripts/Shapes
+    tempCategoryId: 0
+  - Name: Disc
+    FullTypeName: Shapes.Disc
+    IconPath: 
+    CategoryPath: Scripts/Shapes
+    tempCategoryId: 0
+  - Name: FpsController
+    FullTypeName: Shapes.FpsController
+    IconPath: 
+    CategoryPath: Scripts/Shapes
+    tempCategoryId: 0
+  - Name: IMCanvasSample
+    FullTypeName: Shapes.IMCanvasSample
+    IconPath: 
+    CategoryPath: Scripts/Shapes
+    tempCategoryId: 0
+  - Name: IMColorPickerInteraction
+    FullTypeName: Shapes.IMColorPickerInteraction
+    IconPath: 
+    CategoryPath: Scripts/Shapes
+    tempCategoryId: 0
+  - Name: IMColorPickerRenderer
+    FullTypeName: Shapes.IMColorPickerRenderer
+    IconPath: 
+    CategoryPath: Scripts/Shapes
+    tempCategoryId: 0
+  - Name: ImmediateModeCanvas
+    FullTypeName: Shapes.ImmediateModeCanvas
+    IconPath: 
+    CategoryPath: Scripts/Shapes
+    tempCategoryId: 0
+  - Name: ImmediateModePanel
+    FullTypeName: Shapes.ImmediateModePanel
+    IconPath: 
+    CategoryPath: Scripts/Shapes
+    tempCategoryId: 0
+  - Name: ImmediateModeShapeDrawer
+    FullTypeName: Shapes.ImmediateModeShapeDrawer
+    IconPath: 
+    CategoryPath: Scripts/Shapes
+    tempCategoryId: 0
+  - Name: IMPanelSample
+    FullTypeName: Shapes.IMPanelSample
+    IconPath: 
+    CategoryPath: Scripts/Shapes
+    tempCategoryId: 0
+  - Name: Line
+    FullTypeName: Shapes.Line
+    IconPath: 
+    CategoryPath: Scripts/Shapes
+    tempCategoryId: 0
+  - Name: Polygon
+    FullTypeName: Shapes.Polygon
+    IconPath: 
+    CategoryPath: Scripts/Shapes
+    tempCategoryId: 0
+  - Name: Polyline
+    FullTypeName: Shapes.Polyline
+    IconPath: 
+    CategoryPath: Scripts/Shapes
+    tempCategoryId: 0
+  - Name: ProceduralTree
+    FullTypeName: Shapes.ProceduralTree
+    IconPath: 
+    CategoryPath: Scripts/Shapes
+    tempCategoryId: 0
+  - Name: Quad
+    FullTypeName: Shapes.Quad
+    IconPath: 
+    CategoryPath: Scripts/Shapes
+    tempCategoryId: 0
+  - Name: Rectangle
+    FullTypeName: Shapes.Rectangle
+    IconPath: 
+    CategoryPath: Scripts/Shapes
+    tempCategoryId: 0
+  - Name: RegularPolygon
+    FullTypeName: Shapes.RegularPolygon
+    IconPath: 
+    CategoryPath: Scripts/Shapes
+    tempCategoryId: 0
+  - Name: ShapeGroup
+    FullTypeName: Shapes.ShapeGroup
+    IconPath: 
+    CategoryPath: Scripts/Shapes
+    tempCategoryId: 0
+  - Name: ShapesTextPool
+    FullTypeName: Shapes.ShapesTextPool
+    IconPath: 
+    CategoryPath: Scripts/Shapes
+    tempCategoryId: 0
+  - Name: Sphere
+    FullTypeName: Shapes.Sphere
+    IconPath: 
+    CategoryPath: Scripts/Shapes
+    tempCategoryId: 0
+  - Name: SpinningColorDiscs
+    FullTypeName: Shapes.SpinningColorDiscs
+    IconPath: 
+    CategoryPath: Scripts/Shapes
+    tempCategoryId: 0
+  - Name: TextMeshProShapes
+    FullTypeName: Shapes.TextMeshProShapes
+    IconPath: 
+    CategoryPath: Scripts/Shapes
+    tempCategoryId: 0
+  - Name: Torus
+    FullTypeName: Shapes.Torus
+    IconPath: 
+    CategoryPath: Scripts/Shapes
+    tempCategoryId: 0
+  - Name: Triangle
+    FullTypeName: Shapes.Triangle
+    IconPath: 
+    CategoryPath: Scripts/Shapes
+    tempCategoryId: 0
+  - Name: VIClientMonobehaviour
+    FullTypeName: Strix.VirtualInspector.Client.VIClientMonobehaviour
+    IconPath: 
+    CategoryPath: Scripts/Strix/VirtualInspector/Client
+    tempCategoryId: 0
+  - Name: Player
+    FullTypeName: Strix.VirtualInspector.Demo.Player
+    IconPath: 
+    CategoryPath: Scripts/Strix/VirtualInspector/Demo
+    tempCategoryId: 0
+  - Name: PlayerChild
+    FullTypeName: Strix.VirtualInspector.Demo.PlayerChild
+    IconPath: 
+    CategoryPath: Scripts/Strix/VirtualInspector/Demo
+    tempCategoryId: 0
+  - Name: PlayerUnsupported
+    FullTypeName: Strix.VirtualInspector.Demo.PlayerUnsupported
+    IconPath: 
+    CategoryPath: Scripts/Strix/VirtualInspector/Demo
+    tempCategoryId: 0
+  - Name: Rotation
+    FullTypeName: Strix.VirtualInspector.Demo.Rotation
+    IconPath: 
+    CategoryPath: Scripts/Strix/VirtualInspector/Demo
+    tempCategoryId: 0
+  - Name: TextContainer
+    FullTypeName: TMPro.TextContainer
+    IconPath: 
+    CategoryPath: Scripts/TMPro
+    tempCategoryId: 0
+  - Name: TextMeshPro
+    FullTypeName: TMPro.TextMeshPro
+    IconPath: 
+    CategoryPath: Scripts/TMPro
+    tempCategoryId: 0
+  - Name: TextMeshProUGUI
+    FullTypeName: TMPro.TextMeshProUGUI
+    IconPath: 
+    CategoryPath: Scripts/TMPro
+    tempCategoryId: 0
+  - Name: TMP_Dropdown
+    FullTypeName: TMPro.TMP_Dropdown
+    IconPath: 
+    CategoryPath: Scripts/TMPro
+    tempCategoryId: 0
+  - Name: TMP_InputField
+    FullTypeName: TMPro.TMP_InputField
+    IconPath: 
+    CategoryPath: Scripts/TMPro
+    tempCategoryId: 0
+  - Name: TMP_ScrollbarEventHandler
+    FullTypeName: TMPro.TMP_ScrollbarEventHandler
+    IconPath: 
+    CategoryPath: Scripts/TMPro
+    tempCategoryId: 0
+  - Name: TMP_SelectionCaret
+    FullTypeName: TMPro.TMP_SelectionCaret
+    IconPath: 
+    CategoryPath: Scripts/TMPro
+    tempCategoryId: 0
+  - Name: TMP_SpriteAnimator
+    FullTypeName: TMPro.TMP_SpriteAnimator
+    IconPath: 
+    CategoryPath: Scripts/TMPro
+    tempCategoryId: 0
+  - Name: TMP_SubMesh
+    FullTypeName: TMPro.TMP_SubMesh
+    IconPath: 
+    CategoryPath: Scripts/TMPro
+    tempCategoryId: 0
+  - Name: TMP_SubMeshUI
+    FullTypeName: TMPro.TMP_SubMeshUI
+    IconPath: 
+    CategoryPath: Scripts/TMPro
+    tempCategoryId: 0
+  - Name: AnimatorMessageListener
+    FullTypeName: Unity.VisualScripting.AnimatorMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: CoroutineRunner
+    FullTypeName: Unity.VisualScripting.CoroutineRunner
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: GlobalMessageListener
+    FullTypeName: Unity.VisualScripting.GlobalMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: SceneVariables
+    FullTypeName: Unity.VisualScripting.SceneVariables
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: ScriptMachine
+    FullTypeName: Unity.VisualScripting.ScriptMachine
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: StateMachine
+    FullTypeName: Unity.VisualScripting.StateMachine
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnBecameInvisibleMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnBecameInvisibleMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnBecameVisibleMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnBecameVisibleMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnBeginDragMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnBeginDragMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnButtonClickMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnButtonClickMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnCancelMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnCancelMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnCollisionEnter2DMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnCollisionEnter2DMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnCollisionEnterMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnCollisionEnterMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnCollisionExit2DMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnCollisionExit2DMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnCollisionExitMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnCollisionExitMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnCollisionStay2DMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnCollisionStay2DMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnCollisionStayMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnCollisionStayMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnControllerColliderHitMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnControllerColliderHitMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnDeselectMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnDeselectMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnDragMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnDragMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnDropdownValueChangedMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnDropdownValueChangedMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnDropMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnDropMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnEndDragMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnEndDragMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnInputFieldEndEditMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnInputFieldEndEditMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnInputFieldValueChangedMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnInputFieldValueChangedMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnJointBreak2DMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnJointBreak2DMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnJointBreakMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnJointBreakMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnMouseDownMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnMouseDownMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnMouseDragMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnMouseDragMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnMouseEnterMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnMouseEnterMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnMouseExitMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnMouseExitMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnMouseOverMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnMouseOverMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnMouseUpAsButtonMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnMouseUpAsButtonMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnMouseUpMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnMouseUpMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnMoveMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnMoveMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnParticleCollisionMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnParticleCollisionMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnPointerClickMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnPointerClickMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnPointerDownMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnPointerDownMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnPointerEnterMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnPointerEnterMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnPointerExitMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnPointerExitMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnPointerUpMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnPointerUpMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnScrollbarValueChangedMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnScrollbarValueChangedMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnScrollMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnScrollMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnScrollRectValueChangedMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnScrollRectValueChangedMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnSelectMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnSelectMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnSliderValueChangedMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnSliderValueChangedMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnSubmitMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnSubmitMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnToggleValueChangedMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnToggleValueChangedMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnTransformChildrenChangedMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnTransformChildrenChangedMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnTransformParentChangedMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnTransformParentChangedMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnTriggerEnter2DMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnTriggerEnter2DMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnTriggerEnterMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnTriggerEnterMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnTriggerExit2DMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnTriggerExit2DMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnTriggerExitMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnTriggerExitMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnTriggerStay2DMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnTriggerStay2DMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: UnityOnTriggerStayMessageListener
+    FullTypeName: Unity.VisualScripting.UnityOnTriggerStayMessageListener
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: Variables
+    FullTypeName: Unity.VisualScripting.Variables
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: VariablesSaver
+    FullTypeName: Unity.VisualScripting.VariablesSaver
+    IconPath: 
+    CategoryPath: Scripts/Unity/VisualScripting
+    tempCategoryId: 0
+  - Name: Button
+    FullTypeName: UnityEngine.UI.Button
+    IconPath: Button Icon
+    CategoryPath: UI
+    tempCategoryId: 0
+  - Name: Slider
+    FullTypeName: UnityEngine.UI.Slider
+    IconPath: Slider Icon
+    CategoryPath: UI
+    tempCategoryId: 0
+  - Name: Toggle
+    FullTypeName: UnityEngine.UI.Toggle
+    IconPath: Toggle Icon
+    CategoryPath: UI
+    tempCategoryId: 0
+  - Name: AnchoredJoint2D
+    FullTypeName: UnityEngine.AnchoredJoint2D
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: AreaEffector2D
+    FullTypeName: UnityEngine.AreaEffector2D
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: ArticulationBody
+    FullTypeName: UnityEngine.ArticulationBody
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: AudioBehaviour
+    FullTypeName: UnityEngine.AudioBehaviour
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: Behaviour
+    FullTypeName: UnityEngine.Behaviour
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: BillboardRenderer
+    FullTypeName: UnityEngine.BillboardRenderer
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: BuoyancyEffector2D
+    FullTypeName: UnityEngine.BuoyancyEffector2D
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: CanvasRenderer
+    FullTypeName: UnityEngine.CanvasRenderer
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: CapsuleCollider
+    FullTypeName: UnityEngine.CapsuleCollider
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: CapsuleCollider2D
+    FullTypeName: UnityEngine.CapsuleCollider2D
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: CharacterJoint
+    FullTypeName: UnityEngine.CharacterJoint
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: Cloth
+    FullTypeName: UnityEngine.Cloth
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: Collider
+    FullTypeName: UnityEngine.Collider
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: Collider2D
+    FullTypeName: UnityEngine.Collider2D
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: CompositeCollider2D
+    FullTypeName: UnityEngine.CompositeCollider2D
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: ConfigurableJoint
+    FullTypeName: UnityEngine.ConfigurableJoint
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: ConstantForce
+    FullTypeName: UnityEngine.ConstantForce
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: ConstantForce2D
+    FullTypeName: UnityEngine.ConstantForce2D
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: CustomCollider2D
+    FullTypeName: UnityEngine.CustomCollider2D
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: DistanceJoint2D
+    FullTypeName: UnityEngine.DistanceJoint2D
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: EdgeCollider2D
+    FullTypeName: UnityEngine.EdgeCollider2D
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: Effector2D
+    FullTypeName: UnityEngine.Effector2D
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: FixedJoint
+    FullTypeName: UnityEngine.FixedJoint
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: FixedJoint2D
+    FullTypeName: UnityEngine.FixedJoint2D
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: FlareLayer
+    FullTypeName: UnityEngine.FlareLayer
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: FrictionJoint2D
+    FullTypeName: UnityEngine.FrictionJoint2D
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: GridLayout
+    FullTypeName: UnityEngine.GridLayout
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: HingeJoint
+    FullTypeName: UnityEngine.HingeJoint
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: HingeJoint2D
+    FullTypeName: UnityEngine.HingeJoint2D
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: Joint
+    FullTypeName: UnityEngine.Joint
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: Joint2D
+    FullTypeName: UnityEngine.Joint2D
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: Light
+    FullTypeName: UnityEngine.Light
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: LightProbeGroup
+    FullTypeName: UnityEngine.LightProbeGroup
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: LightProbeProxyVolume
+    FullTypeName: UnityEngine.LightProbeProxyVolume
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: LODGroup
+    FullTypeName: UnityEngine.LODGroup
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: MeshCollider
+    FullTypeName: UnityEngine.MeshCollider
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: MonoBehaviour
+    FullTypeName: UnityEngine.MonoBehaviour
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: OcclusionArea
+    FullTypeName: UnityEngine.OcclusionArea
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: OcclusionPortal
+    FullTypeName: UnityEngine.OcclusionPortal
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: ParticleSystemForceField
+    FullTypeName: UnityEngine.ParticleSystemForceField
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: ParticleSystemRenderer
+    FullTypeName: UnityEngine.ParticleSystemRenderer
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: PhysicsUpdateBehaviour2D
+    FullTypeName: UnityEngine.PhysicsUpdateBehaviour2D
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: PlatformEffector2D
+    FullTypeName: UnityEngine.PlatformEffector2D
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: PointEffector2D
+    FullTypeName: UnityEngine.PointEffector2D
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: PolygonCollider2D
+    FullTypeName: UnityEngine.PolygonCollider2D
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: RelativeJoint2D
+    FullTypeName: UnityEngine.RelativeJoint2D
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: Renderer
+    FullTypeName: UnityEngine.Renderer
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: Skybox
+    FullTypeName: UnityEngine.Skybox
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: SliderJoint2D
+    FullTypeName: UnityEngine.SliderJoint2D
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: SpringJoint
+    FullTypeName: UnityEngine.SpringJoint
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: SpringJoint2D
+    FullTypeName: UnityEngine.SpringJoint2D
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: SpriteMask
+    FullTypeName: UnityEngine.SpriteMask
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: StreamingController
+    FullTypeName: UnityEngine.StreamingController
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: SurfaceEffector2D
+    FullTypeName: UnityEngine.SurfaceEffector2D
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: TargetJoint2D
+    FullTypeName: UnityEngine.TargetJoint2D
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: Terrain
+    FullTypeName: UnityEngine.Terrain
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: TerrainCollider
+    FullTypeName: UnityEngine.TerrainCollider
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: TextMesh
+    FullTypeName: UnityEngine.TextMesh
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: Tree
+    FullTypeName: UnityEngine.Tree
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: WheelCollider
+    FullTypeName: UnityEngine.WheelCollider
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: WheelJoint2D
+    FullTypeName: UnityEngine.WheelJoint2D
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: WindZone
+    FullTypeName: UnityEngine.WindZone
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine
+    tempCategoryId: 0
+  - Name: AimConstraint
+    FullTypeName: UnityEngine.Animations.AimConstraint
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/Animations
+    tempCategoryId: 0
+  - Name: LookAtConstraint
+    FullTypeName: UnityEngine.Animations.LookAtConstraint
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/Animations
+    tempCategoryId: 0
+  - Name: ParentConstraint
+    FullTypeName: UnityEngine.Animations.ParentConstraint
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/Animations
+    tempCategoryId: 0
+  - Name: PositionConstraint
+    FullTypeName: UnityEngine.Animations.PositionConstraint
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/Animations
+    tempCategoryId: 0
+  - Name: RotationConstraint
+    FullTypeName: UnityEngine.Animations.RotationConstraint
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/Animations
+    tempCategoryId: 0
+  - Name: ScaleConstraint
+    FullTypeName: UnityEngine.Animations.ScaleConstraint
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/Animations
+    tempCategoryId: 0
+  - Name: BaseInput
+    FullTypeName: UnityEngine.EventSystems.BaseInput
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/EventSystems
+    tempCategoryId: 0
+  - Name: EventSystem
+    FullTypeName: UnityEngine.EventSystems.EventSystem
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/EventSystems
+    tempCategoryId: 0
+  - Name: EventTrigger
+    FullTypeName: UnityEngine.EventSystems.EventTrigger
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/EventSystems
+    tempCategoryId: 0
+  - Name: Physics2DRaycaster
+    FullTypeName: UnityEngine.EventSystems.Physics2DRaycaster
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/EventSystems
+    tempCategoryId: 0
+  - Name: PhysicsRaycaster
+    FullTypeName: UnityEngine.EventSystems.PhysicsRaycaster
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/EventSystems
+    tempCategoryId: 0
+  - Name: StandaloneInputModule
+    FullTypeName: UnityEngine.EventSystems.StandaloneInputModule
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/EventSystems
+    tempCategoryId: 0
+  - Name: PlayerInput
+    FullTypeName: UnityEngine.InputSystem.PlayerInput
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/InputSystem
+    tempCategoryId: 0
+  - Name: PlayerInputManager
+    FullTypeName: UnityEngine.InputSystem.PlayerInputManager
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/InputSystem
+    tempCategoryId: 0
+  - Name: TouchSimulation
+    FullTypeName: UnityEngine.InputSystem.EnhancedTouch.TouchSimulation
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/InputSystem/EnhancedTouch
+    tempCategoryId: 0
+  - Name: OnScreenButton
+    FullTypeName: UnityEngine.InputSystem.OnScreen.OnScreenButton
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/InputSystem/OnScreen
+    tempCategoryId: 0
+  - Name: OnScreenStick
+    FullTypeName: UnityEngine.InputSystem.OnScreen.OnScreenStick
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/InputSystem/OnScreen
+    tempCategoryId: 0
+  - Name: InputSystemUIInputModule
+    FullTypeName: UnityEngine.InputSystem.UI.InputSystemUIInputModule
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/InputSystem/UI
+    tempCategoryId: 0
+  - Name: MultiplayerEventSystem
+    FullTypeName: UnityEngine.InputSystem.UI.MultiplayerEventSystem
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/InputSystem/UI
+    tempCategoryId: 0
+  - Name: TrackedDeviceRaycaster
+    FullTypeName: UnityEngine.InputSystem.UI.TrackedDeviceRaycaster
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/InputSystem/UI
+    tempCategoryId: 0
+  - Name: VirtualMouseInput
+    FullTypeName: UnityEngine.InputSystem.UI.VirtualMouseInput
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/InputSystem/UI
+    tempCategoryId: 0
+  - Name: TrackedPoseDriver
+    FullTypeName: UnityEngine.InputSystem.XR.TrackedPoseDriver
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/InputSystem/XR
+    tempCategoryId: 0
+  - Name: SortingGroup
+    FullTypeName: UnityEngine.Rendering.SortingGroup
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/Rendering
+    tempCategoryId: 0
+  - Name: GridInformation
+    FullTypeName: UnityEngine.Tilemaps.GridInformation
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/Tilemaps
+    tempCategoryId: 0
+  - Name: Tilemap
+    FullTypeName: UnityEngine.Tilemaps.Tilemap
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/Tilemaps
+    tempCategoryId: 0
+  - Name: TilemapCollider2D
+    FullTypeName: UnityEngine.Tilemaps.TilemapCollider2D
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/Tilemaps
+    tempCategoryId: 0
+  - Name: TilemapRenderer
+    FullTypeName: UnityEngine.Tilemaps.TilemapRenderer
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/Tilemaps
+    tempCategoryId: 0
+  - Name: SignalReceiver
+    FullTypeName: UnityEngine.Timeline.SignalReceiver
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/Timeline
+    tempCategoryId: 0
+  - Name: CinemachinePixelPerfect
+    FullTypeName: UnityEngine.U2D.CinemachinePixelPerfect
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/U2D
+    tempCategoryId: 0
+  - Name: PixelPerfectCamera
+    FullTypeName: UnityEngine.U2D.PixelPerfectCamera
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/U2D
+    tempCategoryId: 0
+  - Name: SpriteShapeController
+    FullTypeName: UnityEngine.U2D.SpriteShapeController
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/U2D
+    tempCategoryId: 0
+  - Name: SpriteShapeObjectPlacement
+    FullTypeName: UnityEngine.U2D.SpriteShapeObjectPlacement
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/U2D
+    tempCategoryId: 0
+  - Name: SpriteShapeRenderer
+    FullTypeName: UnityEngine.U2D.SpriteShapeRenderer
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/U2D
+    tempCategoryId: 0
+  - Name: CCDSolver2D
+    FullTypeName: UnityEngine.U2D.IK.CCDSolver2D
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/U2D/IK
+    tempCategoryId: 0
+  - Name: FabrikSolver2D
+    FullTypeName: UnityEngine.U2D.IK.FabrikSolver2D
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/U2D/IK
+    tempCategoryId: 0
+  - Name: IKManager2D
+    FullTypeName: UnityEngine.U2D.IK.IKManager2D
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/U2D/IK
+    tempCategoryId: 0
+  - Name: LimbSolver2D
+    FullTypeName: UnityEngine.U2D.IK.LimbSolver2D
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/U2D/IK
+    tempCategoryId: 0
+  - Name: AspectRatioFitter
+    FullTypeName: UnityEngine.UI.AspectRatioFitter
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/UI
+    tempCategoryId: 0
+  - Name: Dropdown
+    FullTypeName: UnityEngine.UI.Dropdown
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/UI
+    tempCategoryId: 0
+  - Name: GraphicRaycaster
+    FullTypeName: UnityEngine.UI.GraphicRaycaster
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/UI
+    tempCategoryId: 0
+  - Name: Image
+    FullTypeName: UnityEngine.UI.Image
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/UI
+    tempCategoryId: 0
+  - Name: InputField
+    FullTypeName: UnityEngine.UI.InputField
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/UI
+    tempCategoryId: 0
+  - Name: Mask
+    FullTypeName: UnityEngine.UI.Mask
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/UI
+    tempCategoryId: 0
+  - Name: Outline
+    FullTypeName: UnityEngine.UI.Outline
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/UI
+    tempCategoryId: 0
+  - Name: PositionAsUV1
+    FullTypeName: UnityEngine.UI.PositionAsUV1
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/UI
+    tempCategoryId: 0
+  - Name: RawImage
+    FullTypeName: UnityEngine.UI.RawImage
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/UI
+    tempCategoryId: 0
+  - Name: RectMask2D
+    FullTypeName: UnityEngine.UI.RectMask2D
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/UI
+    tempCategoryId: 0
+  - Name: Scrollbar
+    FullTypeName: UnityEngine.UI.Scrollbar
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/UI
+    tempCategoryId: 0
+  - Name: ScrollRect
+    FullTypeName: UnityEngine.UI.ScrollRect
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/UI
+    tempCategoryId: 0
+  - Name: Selectable
+    FullTypeName: UnityEngine.UI.Selectable
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/UI
+    tempCategoryId: 0
+  - Name: Shadow
+    FullTypeName: UnityEngine.UI.Shadow
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/UI
+    tempCategoryId: 0
+  - Name: Text
+    FullTypeName: UnityEngine.UI.Text
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/UI
+    tempCategoryId: 0
+  - Name: ToggleGroup
+    FullTypeName: UnityEngine.UI.ToggleGroup
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/UI
+    tempCategoryId: 0
+  - Name: PanelEventHandler
+    FullTypeName: UnityEngine.UIElements.PanelEventHandler
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/UIElements
+    tempCategoryId: 0
+  - Name: PanelInputConfiguration
+    FullTypeName: UnityEngine.UIElements.PanelInputConfiguration
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/UIElements
+    tempCategoryId: 0
+  - Name: PanelRaycaster
+    FullTypeName: UnityEngine.UIElements.PanelRaycaster
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/UIElements
+    tempCategoryId: 0
+  - Name: UIDocument
+    FullTypeName: UnityEngine.UIElements.UIDocument
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/UIElements
+    tempCategoryId: 0
+  - Name: UIRenderer
+    FullTypeName: UnityEngine.UIElements.UIRenderer
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/UIElements
+    tempCategoryId: 0
+  - Name: WorldDocumentRaycaster
+    FullTypeName: UnityEngine.UIElements.WorldDocumentRaycaster
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/UIElements
+    tempCategoryId: 0
+  - Name: InputSystemEventSystem
+    FullTypeName: UnityEngine.UIElements.InputSystem.InputSystemEventSystem
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/UIElements/InputSystem
+    tempCategoryId: 0
+  - Name: VFXRenderer
+    FullTypeName: UnityEngine.VFX.VFXRenderer
+    IconPath: 
+    CategoryPath: UnityComponents/UnityEngine/VFX
+    tempCategoryId: 0
+  - Name: Video Player
+    FullTypeName: UnityEngine.Video.VideoPlayer
+    IconPath: VideoPlayer Icon
+    CategoryPath: Video
+    tempCategoryId: 0
+  xmlPath: VirtualInspector/predefined_components.xml
+  sceneEntries:
+  - id: 7881447870420812221
+    guid: 2cda990e2423bbf4892e6590ba056729
+    path: Assets/Scenes/First Tests.unity
+    name: First Tests
+    buildIndex: 0
+  - id: 7527366871009345230
+    guid: 2325b345d9810c24a919c462927b2078
+    path: Assets/Shapes/Samples/Color Picker.unity
+    name: Color Picker
+    buildIndex: -1
+  - id: 16798450158777223875
+    guid: 1c746ffda7825e24780d680a666fb428
+    path: Assets/Shapes/Samples/FPS HUD.unity
+    name: FPS HUD
+    buildIndex: -1
+  - id: 15133550409226405079
+    guid: 8afa9121d1bcb244582ba4bae29b08f3
+    path: Assets/Shapes/Samples/IMCanvas.unity
+    name: IMCanvas
+    buildIndex: -1
+  - id: 4606267400968471776
+    guid: b5c8ff0ed1ac629418c3a8fd0e6edc0e
+    path: Assets/Shapes/Samples/Procedural Tree.unity
+    name: Procedural Tree
+    buildIndex: -1
+  - id: 16703212703663258865
+    guid: 3df8d809b1a6fe44e89804f35a3ebd62
+    path: Assets/Shapes/Samples/Shapes Gallery.unity
+    name: Shapes Gallery
+    buildIndex: -1
+  - id: 3660454507111018834
+    guid: 27e4ee520652895418fac16b492ab366
+    path: Assets/Shapes/Samples/Spinning Color Discs.unity
+    name: Spinning Color Discs
+    buildIndex: -1
+  - id: 3767624190822324810
+    guid: 6a01559914fe1a148886031f6173bb60
+    path: Assets/VirtualInspector/Demo/Scenes/Demo.unity
+    name: Demo
+    buildIndex: -1
+  - id: 16222635726309754470
+    guid: 075b0b2ac53a04741addc6b8bf7cb0ab
+    path: Assets/VirtualInspector/Demo/Scenes/InspectorScene.unity
+    name: InspectorScene
+    buildIndex: -1

@@ -1,0 +1,17 @@
+Urban Street Light
+Author/Publisher: Full Barrel Productions
+Source: https://www.fab.com/listings/b3ab4452-e4c2-45af-85a8-96af2da84eae
+
+License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+Summary: https://creativecommons.org/licenses/by/4.0/
+Legal code: https://creativecommons.org/licenses/by/4.0/legalcode
+
+Key terms:
+- Attribution required.
+- Indicate if changes were made.
+- No additional restrictions may be applied that would prevent recipients from exercising CC BY rights.
+
+Recommended attribution:
+“Urban Street Light” by Full Barrel Productions, used under CC BY 4.0.
+License: https://creativecommons.org/licenses/by/4.0/
+Changes: Unity import, material/texture adjustments, prefabs/LODs.

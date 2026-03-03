@@ -1,0 +1,81 @@
+/* ============================================================
+   Virtual Inspector — Color Design Tokens
+   ============================================================ */
+
+:root {
+    /* ---------- BACKGROUNDS ---------- */
+
+    --vi-bg-root: #2D2D2D;
+    --vi-bg-panel: #323232;
+    --vi-border-panel: #1F1F1F;
+
+    --vi-bg-tree-item-hover: #3E3E3E;
+
+    --vi-bg-field: #3A3A3A;
+    --vi-bg-field-selected: #3A6EA5;
+    --vi-bg-field-hover: #444444;
+    --vi-bg-field-pressed: #2F6DB3;
+
+    /* ---------- FIELDS & LABELS ---------- */
+
+    --vi-field-label: #E6E6E6;
+    --vi-field-label-bis: #B0B0B0;
+
+    --vi-border-subfield-hover: #5A9BD5;
+    --vi-border-subfield-focus: #6FAEFF;
+
+    --vi-border-field: #4A4A4A;
+
+    /* ---------- DROPDOWN ---------- */
+
+    --vi-bg-dropdown-field: #3A3A3A;
+    --vi-dropdown-field-label: #E6E6E6;
+    --vi-dropdown-field-arrow: #B0B0B0;
+
+    /* ---------- TITLES ---------- */
+
+    --vi-title-label: #FFFFFF;
+    --vi-subtitle-label: #B0B0B0;
+
+    /* ---------- TABS ---------- */
+
+    --vi-tab-label: #9AA0B4;
+    --vi-tab-selected: #3A6EA5;
+    --vi-tab-label-selected: #FFFFFF;
+    --vi-border-tab: #4A4A4A;
+
+    /* ---------- SEARCH ---------- */
+
+    --vi-bg-search-bar: #3A3A3A;
+    --vi-border-search-bar: #4A4A4A;
+    --vi-search-bar-label: #B0B0B0;
+
+    /* ---------- ICONS ---------- */
+
+    --vi-icon-default: #CFCFCF;
+
+    /* ---------- TOGGLES ---------- */
+
+    --vi-bg-on: #4CAF50;
+    --vi-bg-off: #8B2C2C;
+
+    /* ---------- OVERLAYS ---------- */
+
+    --vi-border-overlay: rgba(0, 0, 0, 0.4);
+    --vi-label-overlay: #FFFFFF;
+    --vi-bg-success: rgba(76, 175, 80, 1);
+    --vi-bg-error: rgba(196, 70, 70, 1);
+
+    /* ---------- LAUNCHER ---------- */
+
+    --vi-bg-launcher-button: #3A6EA5;
+    --vi-launcher-button-label: #FFFFFF;
+    --vi-launcher-section-label: #FFFFFF;
+    --vi-launcher-changelog-label: #CFCFCF;
+    --vi-launcher-footer-label: #9A9A9A;
+
+    --vi-bg-card-border: rgba(255, 255, 255, 0.08);
+    --vi-bg-card-inner: #323232;
+
+    --vi-bg-pro-upgrade-button: #FF7A2F;
+}

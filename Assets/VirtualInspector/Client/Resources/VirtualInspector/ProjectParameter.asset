@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -831704058, guid: 14f1d8e597460d945ad96266b99e92c5, type: 3}
+  m_Name: ProjectParameter
+  m_EditorClassIdentifier: 
+  clientListenPort: 39400
+  sendHz: 10
+  maxSendPacketByFrame: 200
+  maxSendPacketsBySecond: 2000
+  salt: 98287224d7829c5b167edc6c82722aed
+  storedSecret: e9636e4a1258cbdfdaf9d3871445cb61bba75275c506e0c5ce14845d540bb13d
+  buildManifestOnBuildProject: 1

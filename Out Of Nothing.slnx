@@ -1,4 +1,5 @@
 ﻿<Solution>
+  <Project Path="Assembly-CSharp-Editor.csproj" />
   <Project Path="ShapesRuntime.csproj" />
   <Project Path="ShapesSamples.csproj" />
   <Project Path="ShapesEditor.csproj" />

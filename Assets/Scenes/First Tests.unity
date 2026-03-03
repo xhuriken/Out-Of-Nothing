@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 473478400}
   - component: {fileID: 473478399}
   - component: {fileID: 473478398}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: BlueBall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -212,7 +212,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ShapesRuntime::Shapes.Disc
   blendMode: 1
   scaleMode: 0
-  color: {r: 1, g: 1, b: 1, a: 1}
+  color: {r: 0, g: 0.06287718, b: 1, a: 1}
   detailLevel: 2
   culling: 0
   boundsPadding: 0
@@ -229,13 +229,13 @@ MonoBehaviour:
   type: 2
   colorMode: 0
   colorOuterStart: {r: 1, g: 1, b: 1, a: 1}
-  colorInnerEnd: {r: 1, g: 1, b: 1, a: 1}
+  colorInnerEnd: {r: 0, g: 0.06287718, b: 1, a: 1}
   colorOuterEnd: {r: 1, g: 1, b: 1, a: 1}
   geometry: 0
   angUnitInput: 1
   angRadiansStart: 0
   angRadiansEnd: 2.3561945
-  radius: 0.52
+  radius: 0.3
   radiusSpace: 0
   thickness: 0.12
   thicknessSpace: 0
@@ -262,8 +262,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8048c4b60bf58044d99c2be259e2bd9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BallEntity
-  data: {fileID: 11400000, guid: 8d01071631ac25e4fa82dc5636359ba7, type: 2}
-  renderer: {fileID: 473478400}
+  _data: {fileID: 11400000, guid: 8d01071631ac25e4fa82dc5636359ba7, type: 2}
+  _renderer: {fileID: 473478400}
 --- !u!58 &473478402
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -299,7 +299,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.5
+  m_Radius: 0.3
 --- !u!50 &473478403
 Rigidbody2D:
   serializedVersion: 5
@@ -449,7 +449,7 @@ GameObject:
   - component: {fileID: 887268785}
   - component: {fileID: 887268784}
   - component: {fileID: 887268783}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RedBall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -527,7 +527,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ShapesRuntime::Shapes.Disc
   blendMode: 1
   scaleMode: 0
-  color: {r: 1, g: 1, b: 1, a: 1}
+  color: {r: 1, g: 0, b: 0, a: 1}
   detailLevel: 2
   culling: 0
   boundsPadding: 0
@@ -544,13 +544,13 @@ MonoBehaviour:
   type: 2
   colorMode: 0
   colorOuterStart: {r: 1, g: 1, b: 1, a: 1}
-  colorInnerEnd: {r: 1, g: 1, b: 1, a: 1}
+  colorInnerEnd: {r: 1, g: 0, b: 0, a: 1}
   colorOuterEnd: {r: 1, g: 1, b: 1, a: 1}
   geometry: 0
   angUnitInput: 1
   angRadiansStart: 0
   angRadiansEnd: 2.3561945
-  radius: 0.52
+  radius: 0.3
   radiusSpace: 0
   thickness: 0.12
   thicknessSpace: 0
@@ -577,8 +577,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8048c4b60bf58044d99c2be259e2bd9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BallEntity
-  data: {fileID: 11400000, guid: 80d61bba963ad264f8475d89dc001b50, type: 2}
-  renderer: {fileID: 887268785}
+  _data: {fileID: 11400000, guid: 80d61bba963ad264f8475d89dc001b50, type: 2}
+  _renderer: {fileID: 887268785}
 --- !u!58 &887268787
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -614,7 +614,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.5
+  m_Radius: 0.3
 --- !u!50 &887268788
 Rigidbody2D:
   serializedVersion: 5
@@ -820,6 +820,188 @@ MonoBehaviour:
   width: 17
   height: 10
   rendering: {fileID: 1744566712}
+--- !u!1 &2066636070
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2066636072}
+  - component: {fileID: 2066636071}
+  - component: {fileID: 2066636073}
+  m_Layer: 0
+  m_Name: GameInputManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2066636071
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2066636070}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55d62674da4a293408572bb530d9da97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameInputManager
+  _ballLayerMask:
+    serializedVersion: 2
+    m_Bits: 256
+--- !u!4 &2066636072
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2066636070}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.34436, y: 2.49038, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2066636073
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2066636070}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.PlayerInput
+  m_Actions: {fileID: -944628639613478452, guid: 3590b91b4603b465dbb4216d601bff33, type: 3}
+  m_NotificationBehavior: 2
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents:
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2066636071}
+        m_TargetAssemblyTypeName: GameInputManager, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 641cd816-40e6-41b4-8c3d-04687c349290
+    m_ActionName: 'Player/Interact[/Mouse/leftButton]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2066636071}
+        m_TargetAssemblyTypeName: GameInputManager, Assembly-CSharp
+        m_MethodName: OnDrag
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: e5dfa4f1-6137-4ef8-974e-0ba3426e32ef
+    m_ActionName: 'Player/Drag[/Mouse/rightButton]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2066636071}
+        m_TargetAssemblyTypeName: GameInputManager, Assembly-CSharp
+        m_MethodName: OnCodex
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 8a3ad69e-e6a7-4fa3-8691-1c806f6655b3
+    m_ActionName: 'Player/Codex[/Keyboard/c]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2066636071}
+        m_TargetAssemblyTypeName: GameInputManager, Assembly-CSharp
+        m_MethodName: OnCraft
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 8da8808a-9e16-4592-98d5-569a60a355c6
+    m_ActionName: 'Player/Craft[/Keyboard/space]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: c95b2375-e6d9-4b88-9c4c-c5e76515df4b
+    m_ActionName: 'UI/Navigate[/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 7607c7b6-cd76-4816-beef-bd0341cfe950
+    m_ActionName: 'UI/Submit[/Keyboard/enter]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 15cef263-9014-4fd5-94d9-4e4a6234a6ef
+    m_ActionName: 'UI/Cancel[/Keyboard/escape]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 32b35790-4ed0-4e9a-aa41-69ac6d629449
+    m_ActionName: 'UI/Point[/Mouse/position]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 3c7022bf-7922-4f7c-a998-c437916075ad
+    m_ActionName: 'UI/Click[/Mouse/leftButton]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 44b200b1-1557-4083-816c-b22cbdf77ddf
+    m_ActionName: 'UI/RightClick[/Mouse/rightButton]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: dad70c86-b58c-4b17-88ad-f5e53adf419e
+    m_ActionName: 'UI/MiddleClick[/Mouse/middleButton]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 0489e84a-4833-4c40-bfae-cea84b696689
+    m_ActionName: 'UI/ScrollWheel[/Mouse/scroll]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 24908448-c609-4bc3-a128-ea258674378a
+    m_ActionName: UI/TrackedDevicePosition
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 9caa3d8a-6b2f-4e8e-8bad-6ede561bd9be
+    m_ActionName: UI/TrackedDeviceOrientation
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: 
+  m_DefaultActionMap: 
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -828,3 +1010,4 @@ SceneRoots:
   - {fileID: 1744566713}
   - {fileID: 887268789}
   - {fileID: 473478404}
+  - {fileID: 2066636072}

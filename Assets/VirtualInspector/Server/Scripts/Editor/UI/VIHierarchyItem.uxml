@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement class="tree-item">
+        <ui:VisualElement class="indent" name="indent"/>
+        <ui:VisualElement class="arrow-wrapper" name="arrow-wrapper">
+            <ui:VisualElement class="foldout-arrow" name="arrow"/>
+        </ui:VisualElement>
+        <ui:VisualElement class="tree-icon" name="icon"/>
+        <ui:Label class="tree-label" name="label" text="Item"/>
+    </ui:VisualElement>
+</ui:UXML>
