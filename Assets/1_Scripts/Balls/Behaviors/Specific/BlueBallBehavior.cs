@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 /// <summary>
 /// Specific behavior for the Blue Ball, pausing on collision.
@@ -11,7 +12,10 @@ public class BlueBallBehavior : BallBehavior
     private float _pauseDuration = 2f;
 
     [SerializeField]
-    private float _verticalForce = 10f;
+    private float amplitude = 1f;
+    private float speed = 1f;
+    private Vector3 positionStart;
+    private float _oscillationTime;
 
     // Runtime state variables (Not shared because of Clone)
     private float _currentPauseTimer;
@@ -24,6 +28,11 @@ public class BlueBallBehavior : BallBehavior
     {
         // Shallow copy is sufficient for basic value types
         return (BallBehavior) MemberwiseClone();
+    }
+
+    public override void Initialize(BallEntity ball)
+    {
+        positionStart = ball.transform.position;
     }
 
     /// <summary>
@@ -39,13 +48,23 @@ public class BlueBallBehavior : BallBehavior
             {
                 _isPaused = false;
                 //ball.Rb.bodyType = RigidbodyType2D.Dynamic;
+
+                //restart the position start
+                positionStart = ball.transform.position;
+                _oscillationTime = 0f;
             }
 
             return;
         }
 
         // Apply normal oscillation force
-        ball.Rb.AddForce(Vector2.up * _verticalForce * fixedDeltaTime, ForceMode2D.Force);
+        _oscillationTime += fixedDeltaTime;
+
+        float newY = positionStart.y + Mathf.Sin(_oscillationTime * speed) * amplitude;
+
+        Vector2 newPosition = new Vector2(positionStart.x, newY);
+
+        ball.Rb.MovePosition(newPosition);
     }
 
     /// <summary>
@@ -61,6 +80,13 @@ public class BlueBallBehavior : BallBehavior
             // Freeze physics interactions temporarily
             ball.Rb.linearVelocity = Vector2.zero;
             //ball.Rb.bodyType = RigidbodyType2D.Kinematic;
+
+            //restart the position start
+            positionStart = ball.transform.position;
+            _oscillationTime = 0f;
+
         }
+
+        
     }
 }
