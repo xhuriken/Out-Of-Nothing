@@ -185,6 +185,7 @@ public class BallEntity : MonoBehaviour, IDraggable
         if (_data != null && _data.behaviorTemplate != null)
         {
             _runtimeBehavior = _data.behaviorTemplate.Clone();
+            _runtimeBehavior.Initialize(this);
         }
         else
         {

@@ -52,4 +52,9 @@ public abstract class BallBehavior
     /// </summary>
     public virtual void OnCollisionEnter(BallEntity ball, Collision2D collision) { }
 
+    /// <summary>
+    /// Default state of ball.
+    /// </summary>
+    public virtual void Initialize(BallEntity ball) { }
+
 }
