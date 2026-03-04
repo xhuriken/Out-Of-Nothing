@@ -20,7 +20,7 @@ public class BallDataSO : ScriptableObject
     /// <summary>
     /// Anti-spam delay between clicks (in seconds.)
     /// </summary>
-    public float clickCooldown = 0.3f;
+    public float clickCooldown = 0.1f;
 
     /// <summary>
     /// Display color of the ball.
@@ -30,7 +30,7 @@ public class BallDataSO : ScriptableObject
     /// <summary>
     /// Physical and visual radius of the ball.
     /// </summary>
-    public float radius = 0.5f;
+    public float radius = 0.3f;
 
     /// <summary>
     /// The specific prefab containing the visual components (ParticleSystem, Shaders, etc.) for this ball.

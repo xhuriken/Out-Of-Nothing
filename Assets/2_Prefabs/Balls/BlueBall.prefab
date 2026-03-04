@@ -148,9 +148,9 @@ MonoBehaviour:
   stencilWriteMask: 255
   type: 2
   colorMode: 0
-  colorOuterStart: {r: 1, g: 1, b: 1, a: 1}
+  colorOuterStart: {r: 0, g: 0.06287718, b: 1, a: 1}
   colorInnerEnd: {r: 0, g: 0.06287718, b: 1, a: 1}
-  colorOuterEnd: {r: 1, g: 1, b: 1, a: 1}
+  colorOuterEnd: {r: 0, g: 0.06287718, b: 1, a: 1}
   geometry: 0
   angUnitInput: 1
   angRadiansStart: 0

@@ -25,7 +25,6 @@ public class GameZone : MonoBehaviour
     public float MinY => - _height / 2f + _tickness;
     public float MaxY => _height / 2f - _tickness;
 
-
     private void Awake()
     {
         // Singleton pattern: if an instance already exists, destroy this one
@@ -67,7 +66,6 @@ public class GameZone : MonoBehaviour
             return;
         }
 
-
         // Update the rendering rectangle to match with size
         _rendering.Width = _width;
         _rendering.Height = _height;
@@ -82,7 +80,27 @@ public class GameZone : MonoBehaviour
         boundaryPoints[4] = new Vector2(MinX, MaxY); // Top Left (close loop)
 
         _edgeCollider.points = boundaryPoints;
+    }
 
+
+    public Vector3 GetNearestSide(Vector3 position)
+    {
+        // Compute distances between each side and the position
+        float dLeft   = Mathf.Abs(position.x - MinX);
+        float dRight  = Mathf.Abs(position.x - MaxX);
+        float dBottom = Mathf.Abs(position.y - MinY);
+        float dTop    = Mathf.Abs(position.y - MaxY);
+
+        // search the minimal value between those 4 distances
+        float min = Mathf.Min(Mathf.Min(dLeft, dRight), Mathf.Min(dBottom, dTop));
+
+        return min switch
+        {
+            _ when min == dLeft => new Vector3(-1f, 0f, 1f),
+            _ when min == dRight => new Vector3(1f, 0f, 1f),
+            _ when min == dBottom => new Vector3(0f, -1f, 1f),
+            _ => new Vector3(0f, 1f, 1f) // Top
+        };
     }
 
 }

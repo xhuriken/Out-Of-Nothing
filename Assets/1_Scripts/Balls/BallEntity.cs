@@ -115,7 +115,7 @@ public class BallEntity : MonoBehaviour, IDraggable
             return;
         }
 
-        _renderer.ColorInner = _data.color;
+        _renderer.Color = _data.color;
         _renderer.Radius = _data.radius;
         //var clickParticles = _particlesClick.main; // PUTAIN UNITY SERIEUX POURQUOI ????
         //clickParticles.startColor = _data.color;
@@ -161,7 +161,7 @@ public class BallEntity : MonoBehaviour, IDraggable
         DOTween.Kill(this);
         transform.localScale = Vector3.one;
         // Simple bounce click animation
-        this.transform.DOScale(Vector3.one * 0.90f, 0.1f) // Go to 0.90
+        this.transform.DOScale(Vector3.one * 0.90f, _data.clickCooldown) // Go to 0.90
                       .From().SetEase(Ease.InOutElastic).SetTarget(this); // Go to one
         // Spawn particles
         _particlesClick.Play();

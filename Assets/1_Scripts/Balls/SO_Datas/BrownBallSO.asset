@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e5372ae69b62d84192728c830a05b0c, type: 3}
+  m_Name: BrownBallSO
+  m_EditorClassIdentifier: Assembly-CSharp::BallDataSO
+  id: BrownBall
+  clicksRequiredForDuplication: 5
+  clickCooldown: 0.3
+  color: {r: 0.5169811, g: 0.12143962, b: 0, a: 1}
+  radius: 0.3
+  prefab: {fileID: 1444184337667997241, guid: 02b19a10bbff2384da5c4fdfd0ed96fe, type: 3}
+  behaviorTemplate:
+    rid: 4764877732434935942
+  references:
+    version: 2
+    RefIds:
+    - rid: 4764877732434935942
+      type: {class: BrownBallBehavior, ns: , asm: Assembly-CSharp}
+      data:
+        _pauseDuration: 2
+        _verticalForce: 10
