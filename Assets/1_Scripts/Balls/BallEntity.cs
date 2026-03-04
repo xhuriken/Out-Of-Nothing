@@ -1,3 +1,4 @@
+using DG.Tweening;
 using Shapes;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -13,6 +14,8 @@ public class BallEntity : MonoBehaviour, IDraggable
     private BallDataSO _data;
 
     [SerializeField] private Disc _renderer;
+    [SerializeField] private ParticleSystem _particlesClick;
+    [SerializeField] private ParticleSystem _particlesDuplicate;
 
     private float _lastClickTime;
     private int _currentClickCount;
@@ -114,6 +117,12 @@ public class BallEntity : MonoBehaviour, IDraggable
 
         _renderer.ColorInner = _data.color;
         _renderer.Radius = _data.radius;
+        //var clickParticles = _particlesClick.main; // PUTAIN UNITY SERIEUX POURQUOI ????
+        //clickParticles.startColor = _data.color;
+        //var dupliParticles = _particlesDuplicate.main; // PUTAIN UNITY SERIEUX POURQUOI ???? FRR C'EST DLA MERDE ?
+        //dupliParticles.startColor = _data.color;
+        _particlesClick.startColor = _data.color;
+        _particlesDuplicate.startColor = _data.color;
 
         if (_collider == null) _collider = GetComponent<CircleCollider2D>();
         if (_collider != null) _collider.radius = _data.radius + (_renderer.Thickness/2);
@@ -128,13 +137,34 @@ public class BallEntity : MonoBehaviour, IDraggable
     /// </summary>
     public void PerformDefaultDuplicate()
     {
+        DOTween.Kill(this);
+        _particlesDuplicate.Play();
+        transform.localScale = Vector3.one;
+        this.transform.DOScale(Vector3.zero, 0.2f) // Go to 0
+                      .From().SetEase(Ease.OutBack).SetTarget(this); // Go to one
+
         BallEntity newBall = BallPoolManager.Instance.SpawnBall(_data, transform.position);
+
+        newBall.transform.DOScale(Vector3.one, 0.4f).SetEase(Ease.OutBack); // Go to one
 
         // Ejection force using current mass
         Vector2 ejectionDirection = Random.insideUnitCircle.normalized;
         newBall.Rb.AddForce(ejectionDirection * 5f, ForceMode2D.Impulse);
+    }
 
-        // TODO: Trigger DOTween visual feedback here
+    /// <summary>
+    /// Handles the technical process of  click.
+    /// Called by behaviors to perform the standard click.
+    /// </summary>
+    public void PerformDefaultClick()
+    {
+        DOTween.Kill(this);
+        // Simple bounce click animation
+        this.transform.DOScale(Vector3.one * 0.90f, 0.1f) // Go to 0.90
+                      .From().SetEase(Ease.InOutElastic).SetTarget(this); // Go to one
+        // Spawn particles
+        _particlesClick.Play();
+
     }
 
     /// <summary>
@@ -144,6 +174,7 @@ public class BallEntity : MonoBehaviour, IDraggable
     /// <param name="newData">The ball configuration to apply.</param>
     public void Initialize(BallDataSO newData)
     {
+        transform.localScale = Vector3.one; // Reset scale in case it was modified by animations
         _data = newData;
 
         // Reset runtime tracking variables to prevent state carry-over from previous life

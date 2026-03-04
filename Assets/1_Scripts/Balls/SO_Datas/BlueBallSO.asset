@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BallDataSO
   id: Blue Ball
   clicksRequiredForDuplication: 5
-  clickCooldown: 0.2
+  clickCooldown: 0.1
   color: {r: 0, g: 0.06287718, b: 1, a: 1}
   radius: 0.3
   prefab: {fileID: 6514994737505783898, guid: 429f06ac98b9a9541a0bc01e9ba222b9, type: 3}

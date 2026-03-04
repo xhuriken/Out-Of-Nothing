@@ -18,9 +18,14 @@ public abstract class BallBehavior
     public virtual void ExecuteFixedUpdate(BallEntity ball, float fixedDeltaTime) { }
 
     /// <summary>
-    /// Triggered when the ball receives a valid click.
+    /// Default click logic. Can be overridden for specific behaviors.
     /// </summary>
-    public virtual void OnClick(BallEntity ball) { }
+    /// <param name="ball">The source ball entity.</param>
+    public virtual void OnClick(BallEntity ball) 
+    {
+        // Executes the standard click defined in the entity
+        ball.PerformDefaultClick();
+    }
 
     /// <summary>
     /// Default duplication logic. Can be overridden for specific behaviors.
