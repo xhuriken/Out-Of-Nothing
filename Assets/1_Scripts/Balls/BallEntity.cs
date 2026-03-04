@@ -159,12 +159,12 @@ public class BallEntity : MonoBehaviour, IDraggable
     public void PerformDefaultClick()
     {
         DOTween.Kill(this);
+        transform.localScale = Vector3.one;
         // Simple bounce click animation
         this.transform.DOScale(Vector3.one * 0.90f, 0.1f) // Go to 0.90
                       .From().SetEase(Ease.InOutElastic).SetTarget(this); // Go to one
         // Spawn particles
         _particlesClick.Play();
-
     }
 
     /// <summary>
