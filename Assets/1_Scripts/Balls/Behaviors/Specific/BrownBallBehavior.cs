@@ -24,8 +24,10 @@ public class BrownBallBehavior : BallBehavior
     /// </summary>
     public override void ExecuteFixedUpdate(BallEntity ball, float fixedDeltaTime)
     {
-        // find the nearest side of the zone 
-        //if(_currentDirection != _lastDirection)
+        if (ball.IsBeingDragged) return;
+
+        //if(_currentDirection != _lastDirection) ?
+        var direction = GameZone.Instance.GetNearestSide(ball.transform.position);  // find the nearest side of the zone (Vector 3 direction)
 
         // if is different than the last, we smoothly apply a force to the direction of this side (Top, Down, Left, Right)
         // and stop to apply the force to the previous side
