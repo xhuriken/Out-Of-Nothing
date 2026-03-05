@@ -63,8 +63,8 @@ public class BlueBallBehavior : BallBehavior
             {
                 DOTween.Kill(this);
                 // Set it smaller
-                DOTween.To(() => ball.Renderer.Radius, x => ball.Renderer.Radius = x, _originalRadius * 0.9f, 0.4f).SetEase(Ease.InOutElastic).SetTarget(this);
-                DOTween.To(() => ball.Collider.radius, x => ball.Collider.radius = x, _originalRadius * 0.9f, 0.4f).SetEase(Ease.InOutElastic).SetTarget(this);
+                DOTween.To(() => ball.Renderer.Radius, x => ball.Renderer.Radius = x, _originalRadius * 0.9f, 0.4f).SetEase(Ease.OutElastic).SetTarget(this);
+                DOTween.To(() => ball.Collider.radius, x => ball.Collider.radius = x, ball.ColliderRadius * 0.9f, 0.4f).SetEase(Ease.OutElastic).SetTarget(this);
                 _isSmall = true;
             }
 
@@ -75,8 +75,8 @@ public class BlueBallBehavior : BallBehavior
             {
                 DOTween.Kill(this);
                 // Set it back to normal
-                DOTween.To(() => ball.Renderer.Radius, x => ball.Renderer.Radius = x, _originalRadius, 0.4f).SetEase(Ease.InOutElastic).SetTarget(this);
-                DOTween.To(() => ball.Collider.radius, x => ball.Collider.radius = x, _originalRadius, 0.4f).SetEase(Ease.InOutElastic).SetTarget(this);
+                DOTween.To(() => ball.Renderer.Radius, x => ball.Renderer.Radius = x, _originalRadius, 0.4f).SetEase(Ease.OutElastic).SetTarget(this);
+                DOTween.To(() => ball.Collider.radius, x => ball.Collider.radius = x, ball.ColliderRadius, 0.4f).SetEase(Ease.OutElastic).SetTarget(this);
                 _isSmall = false;
             }
 
@@ -119,7 +119,6 @@ public class BlueBallBehavior : BallBehavior
             _currentPauseTimer = _pauseDuration;
 
             // Freeze physics interactions temporarily
-            ball.Rb.linearVelocity = Vector2.zero;
             //ball.Rb.bodyType = RigidbodyType2D.Kinematic;
 
             //restart the position start

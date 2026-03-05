@@ -5030,6 +5030,7 @@ MonoBehaviour:
   _renderer: {fileID: 1335927095737727768}
   _particlesClick: {fileID: 5615446383186218333}
   _particlesDuplicate: {fileID: 7594083740277568431}
+  _dragForceMultiplier: 15
 --- !u!114 &1335927095737727768
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5044,7 +5045,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ShapesRuntime::Shapes.Disc
   blendMode: 1
   scaleMode: 0
-  color: {r: 0.5169811, g: 0.12143962, b: 0, a: 1}
+  color: {r: 0.36188677, g: 0.085007735, b: 0, a: 0.7}
   detailLevel: 2
   culling: 0
   boundsPadding: 0
@@ -5061,7 +5062,7 @@ MonoBehaviour:
   type: 2
   colorMode: 0
   colorOuterStart: {r: 0.5169811, g: 0.12143962, b: 0, a: 1}
-  colorInnerEnd: {r: 0.5169811, g: 0.12143962, b: 0, a: 1}
+  colorInnerEnd: {r: 0.36188677, g: 0.085007735, b: 0, a: 0.7}
   colorOuterEnd: {r: 0.5169811, g: 0.12143962, b: 0, a: 1}
   geometry: 0
   angUnitInput: 1

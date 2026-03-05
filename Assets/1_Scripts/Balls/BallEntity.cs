@@ -50,6 +50,11 @@ public class BallEntity : MonoBehaviour, IDraggable
     public bool IsBeingDragged => _isBeingDragged;
 
     /// <summary>
+    /// Exposes the collider radius.
+    /// </summary>
+    public float ColliderRadius => _data.radius + (_renderer.Thickness / 2);
+
+    /// <summary>
     /// Exposes the Collider of the ball.
     /// </summary>
     public CircleCollider2D Collider => _collider;
@@ -188,7 +193,7 @@ public class BallEntity : MonoBehaviour, IDraggable
         }
 
         if (_collider == null) _collider = GetComponent<CircleCollider2D>();
-        if (_collider != null) _collider.radius = _data.radius + (_renderer.Thickness/2);
+        if (_collider != null) _collider.radius = ColliderRadius;
 
         if (_rb == null) _rb = GetComponent<Rigidbody2D>();
         if (_rb != null) _rb.gravityScale = 0f;

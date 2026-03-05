@@ -15,7 +15,7 @@ MonoBehaviour:
   id: Blue Ball
   clicksRequiredForDuplication: 5
   clickCooldown: 0.1
-  color: {r: 0, g: 0.06287718, b: 1, a: 1}
+  color: {r: 0, g: 0.46707344, b: 1, a: 1}
   radius: 0.3
   prefab: {fileID: 6514994737505783898, guid: 429f06ac98b9a9541a0bc01e9ba222b9, type: 3}
   behaviorTemplate:
@@ -27,4 +27,5 @@ MonoBehaviour:
       type: {class: BlueBallBehavior, ns: , asm: Assembly-CSharp}
       data:
         _pauseDuration: 2
-        _verticalForce: 10
+        _amplitude: 5
+        _speed: 2

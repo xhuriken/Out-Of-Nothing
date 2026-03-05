@@ -19,7 +19,7 @@ public class DefaultBehavior : BallBehavior
         return (BallBehavior) MemberwiseClone();
     }
 
-    public void ExecuteFixedUpdate(BallEntity ball, float fixedDeltaTime)
+    public override void ExecuteFixedUpdate(BallEntity ball, float fixedDeltaTime)
     {
         // No specific override required
     }

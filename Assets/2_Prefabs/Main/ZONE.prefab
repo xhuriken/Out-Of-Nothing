@@ -109,6 +109,7 @@ MonoBehaviour:
   _height: 10
   _rendering: {fileID: 750939741934925205}
   _tickness: 0.1
+  _minBounceVelocity: 3
 --- !u!114 &750939741934925205
 MonoBehaviour:
   m_ObjectHideFlags: 0

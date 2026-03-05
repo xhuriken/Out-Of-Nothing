@@ -9,10 +9,8 @@ using UnityEngine;
 
 public class BrownBallBehavior : BallBehavior
 {
-    private Vector3 _lastDirection = Vector3.zero;
-    private Vector3 _currentDirection = Vector3.zero;
-
-    [SerializeField] private float attractionForce = 15f;
+    [SerializeField] private float _attractionForce = 15f;
+    
     private bool _isBouncing = false;
 
     /// <summary>
@@ -30,10 +28,6 @@ public class BrownBallBehavior : BallBehavior
     public override void ExecuteFixedUpdate(BallEntity ball, float fixedDeltaTime)
     {
         if (ball.IsBeingDragged) return;
-
-        //if(_currentDirection != _lastDirection) ?
-
-
 
         // if is different than the last, we smoothly apply a force to the direction (calculate before)
         // and stop to apply the force to the previous side
@@ -56,9 +50,7 @@ public class BrownBallBehavior : BallBehavior
 
         direction.Normalize();
 
-        ball.Rb.AddForce(direction * attractionForce, ForceMode2D.Force);
-
-        _lastDirection = direction;
+        ball.Rb.AddForce(direction * _attractionForce, ForceMode2D.Force);
     }
 
     /// <summary>
@@ -79,10 +71,10 @@ public class BrownBallBehavior : BallBehavior
         //Bounce
         _isBouncing = true;
 
-        Vector2 normal = collision.contacts[0].normal;
+        //Vector2 normal = collision.contacts[0].normal;
 
-        float impactSpeed = collision.relativeVelocity.magnitude;
+        //float impactSpeed = collision.relativeVelocity.magnitude;
 
-        ball.Rb.AddForce(normal * impactSpeed, ForceMode2D.Impulse);
+        //ball.Rb.AddForce(normal * impactSpeed, ForceMode2D.Impulse);
     }
 }

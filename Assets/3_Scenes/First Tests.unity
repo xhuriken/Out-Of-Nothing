@@ -426,6 +426,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4929502397607299011, guid: 9d5623332d3f8554193248fda549e85b, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 6200000, guid: dc7b5d499d416c44ebb3ee28f0bb2904, type: 2}
+    - target: {fileID: 7104258520504122497, guid: 9d5623332d3f8554193248fda549e85b, type: 3}
+      propertyPath: m_Interpolate
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7104258520504122497, guid: 9d5623332d3f8554193248fda549e85b, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8758211866433413932, guid: 9d5623332d3f8554193248fda549e85b, type: 3}
       propertyPath: m_Name
       value: RedBall
@@ -513,6 +525,10 @@ PrefabInstance:
       value: 0.3433962
       objectReference: {fileID: 0}
     - target: {fileID: 2883250533870753037, guid: 7c071993335731f4ea9e0f01c67566d1, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 6200000, guid: 962a55f770de51446ba0592f67a5933c, type: 2}
+    - target: {fileID: 2883250533870753037, guid: 7c071993335731f4ea9e0f01c67566d1, type: 3}
       propertyPath: m_Points.Array.data[0].x
       value: -8.799999
       objectReference: {fileID: 0}
@@ -572,6 +588,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7732261570811920596, guid: 7c071993335731f4ea9e0f01c67566d1, type: 3}
+      propertyPath: _bounciness
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 9108075096901662289, guid: 7c071993335731f4ea9e0f01c67566d1, type: 3}
       propertyPath: m_Name
       value: ZONE
@@ -597,6 +617,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3994086967771890052, guid: 429f06ac98b9a9541a0bc01e9ba222b9, type: 3}
+      propertyPath: m_Interpolate
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3994086967771890052, guid: 429f06ac98b9a9541a0bc01e9ba222b9, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6113248793361582860, guid: 429f06ac98b9a9541a0bc01e9ba222b9, type: 3}
       propertyPath: m_LocalPosition.x
       value: -2.24
@@ -637,6 +665,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7224402592017347342, guid: 429f06ac98b9a9541a0bc01e9ba222b9, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 6200000, guid: dc7b5d499d416c44ebb3ee28f0bb2904, type: 2}
     - target: {fileID: 8102840107874242056, guid: 429f06ac98b9a9541a0bc01e9ba222b9, type: 3}
       propertyPath: m_Name
       value: BlueBall
@@ -694,9 +726,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3002747215223135368, guid: 02b19a10bbff2384da5c4fdfd0ed96fe, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 6200000, guid: dc7b5d499d416c44ebb3ee28f0bb2904, type: 2}
     - target: {fileID: 4381004003925531019, guid: 02b19a10bbff2384da5c4fdfd0ed96fe, type: 3}
       propertyPath: m_Name
       value: BrownBall
+      objectReference: {fileID: 0}
+    - target: {fileID: 5224366401762763466, guid: 02b19a10bbff2384da5c4fdfd0ed96fe, type: 3}
+      propertyPath: m_Interpolate
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5224366401762763466, guid: 02b19a10bbff2384da5c4fdfd0ed96fe, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
