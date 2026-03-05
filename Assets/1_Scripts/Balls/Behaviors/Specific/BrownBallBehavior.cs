@@ -5,10 +5,15 @@ using UnityEngine;
 /// Specific behavior for the Blue Ball, pausing on collision.
 /// </summary>
 [Serializable]
+
+
 public class BrownBallBehavior : BallBehavior
 {
     private Vector3 _lastDirection = Vector3.zero;
     private Vector3 _currentDirection = Vector3.zero;
+
+    [SerializeField] private float attractionForce = 15f;
+    private bool _isBouncing = false;
 
     /// <summary>
     /// Clones the behavior to ensure independent runtime state.
@@ -28,11 +33,32 @@ public class BrownBallBehavior : BallBehavior
 
         //if(_currentDirection != _lastDirection) ?
 
-        var direction = GameZone.Instance.GetNearestSide(ball.transform.position);  // find the nearest side of the zone (Vector 3 direction)
+
 
         // if is different than the last, we smoothly apply a force to the direction (calculate before)
         // and stop to apply the force to the previous side
         // WE DONT REPLACE THE ACTUAL VELOCITY, WE JUST ADD A FORCE TO THE BALL
+
+        // find the nearest side of the zone (Vector 3 direction)
+        if (_isBouncing)
+        {
+            if (ball.Rb.linearVelocity.magnitude < 0.05f)
+            {
+                _isBouncing = false;
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        Vector2 direction = GameZone.Instance.GetNearestSide(ball.transform.position);
+
+        direction.Normalize();
+
+        ball.Rb.AddForce(direction * attractionForce, ForceMode2D.Force);
+
+        _lastDirection = direction;
     }
 
     /// <summary>
@@ -50,5 +76,13 @@ public class BrownBallBehavior : BallBehavior
         // backward a little
         // resume movement !
 
+        //Bounce
+        _isBouncing = true;
+
+        Vector2 normal = collision.contacts[0].normal;
+
+        float impactSpeed = collision.relativeVelocity.magnitude;
+
+        ball.Rb.AddForce(normal * impactSpeed, ForceMode2D.Impulse);
     }
 }
