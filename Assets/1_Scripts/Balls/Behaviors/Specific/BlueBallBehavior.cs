@@ -12,14 +12,17 @@ public class BlueBallBehavior : BallBehavior
     private float _pauseDuration = 2f;
 
     [SerializeField]
-    private float _amplitude = 1f;
-    private float _speed = 1f;
-    private Vector3 _positionStart;
-    private float _oscillationTime;
+    private float _amplitude = 5f;
+
+    [SerializeField]
+    private float _speed = 2f;
+
+    //private Vector3 _positionStart;
 
     // Runtime state variables
     private float _currentPauseTimer;
-    private bool _isPaused = true; // true by default when the ball spawn
+    private bool _isPaused = true;
+    private float _oscillationTime;
 
     /// <summary>
     /// Clones the behavior to ensure independent runtime state.
@@ -32,8 +35,9 @@ public class BlueBallBehavior : BallBehavior
 
     public override void Initialize(BallEntity ball)
     {
-        _positionStart = ball.transform.position;
+        //_positionStart = ball.transform.position;
         _currentPauseTimer = _pauseDuration; // when the ball spawn, it on the pause state
+        _oscillationTime = 0f;
     }
 
     /// <summary>
@@ -41,6 +45,12 @@ public class BlueBallBehavior : BallBehavior
     /// </summary>
     public override void ExecuteFixedUpdate(BallEntity ball, float fixedDeltaTime)
     {
+        // If the ball is being dragged, skip all behavior logic !
+        if (ball.IsBeingDragged)
+        {
+            return;
+        }
+
         if (_isPaused)
         {
             _currentPauseTimer -= fixedDeltaTime;
@@ -51,7 +61,7 @@ public class BlueBallBehavior : BallBehavior
                 //ball.Rb.bodyType = RigidbodyType2D.Dynamic;
 
                 //restart the position start
-                _positionStart = ball.transform.position;
+                //_positionStart = ball.transform.position;
                 _oscillationTime = 0f;
             }
 
@@ -61,11 +71,16 @@ public class BlueBallBehavior : BallBehavior
         // Apply normal oscillation force
         _oscillationTime += fixedDeltaTime;
 
-        float newY = _positionStart.y + Mathf.Sin(_oscillationTime * _speed) * _amplitude;
+        //float newY = _positionStart.y + Mathf.Sin(_oscillationTime * _speed) * _amplitude;
 
-        Vector2 newPosition = new Vector2(_positionStart.x, newY);
+        //Vector2 newPosition = new Vector2(_positionStart.x, newY);
 
-        ball.Rb.MovePosition(newPosition);
+        //ball.Rb.MovePosition(newPosition);
+
+        float velocityY = Mathf.Cos(_oscillationTime * _speed) * _amplitude;
+
+        // We only override the Y velocity. The X velocity remains controlled by physics collisions !
+        ball.Rb.linearVelocity = new Vector2(ball.Rb.linearVelocity.x, velocityY);
     }
 
     /// <summary>
@@ -83,8 +98,25 @@ public class BlueBallBehavior : BallBehavior
             //ball.Rb.bodyType = RigidbodyType2D.Kinematic;
 
             //restart the position start
-            _positionStart = ball.transform.position;
-            _oscillationTime = 0f;
+            //_positionStart = ball.transform.position;
+            //_oscillationTime = 0f;
         }
+    }
+
+    /// <summary>
+    /// The drag as started ?
+    /// </summary>
+    public override void OnDragStart(BallEntity ball)
+    {
+        //_isPaused = true;
+    }
+
+    /// <summary>
+    /// The drag as ended ?
+    /// </summary>
+    /// 
+    public override void OnDragEnd(BallEntity ball)
+    {
+        //_isPaused = false;
     }
 }

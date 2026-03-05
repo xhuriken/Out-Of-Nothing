@@ -12,9 +12,14 @@ public class BallEntity : MonoBehaviour, IDraggable
     [Required]
     [SerializeField] private BallDataSO _data;
 
+    [Header("References")]
     [SerializeField] private Disc _renderer;
     [SerializeField] private ParticleSystem _particlesClick;
     [SerializeField] private ParticleSystem _particlesDuplicate;
+
+    [Header("Settings")]
+    [SerializeField]
+    private float _dragForceMultiplier = 15f;
 
     private float _lastClickTime;
     private int _currentClickCount;
@@ -22,6 +27,7 @@ public class BallEntity : MonoBehaviour, IDraggable
     private BallBehavior _runtimeBehavior;
     private CircleCollider2D _collider;
     private bool _isBeingDragged;
+
 
     /// <summary>
     /// Exposes the configuration data.
@@ -227,34 +233,48 @@ public class BallEntity : MonoBehaviour, IDraggable
     #region Drag
 
     /// <summary>
-    /// Sets the ball to Kinematic to allow manual position updates via drag.
+    /// Prepares the ball for dynamic physical dragging.
     /// </summary>
     public void OnDragStart()
     {
         _isBeingDragged = true;
-        _rb.bodyType = RigidbodyType2D.Kinematic;
+        // We keep the bodyType as Dynamic to preserve physical collisions
         _rb.linearVelocity = Vector2.zero;
-        _runtimeBehavior?.OnDragStart(this);
+
+        if (_runtimeBehavior != null)
+        {
+            // Tell tho the behavior that we're started the drag !
+            _runtimeBehavior.OnDragStart(this);
+        }
     }
 
     /// <summary>
-    /// Updates the position during the drag.
-    /// TODO LATER: THE DRAG ADD FORCE TO THE BALL INSTEAD OF TELEPORTING IT, TO PRESERVE PHYSICAL INTERACTIONS WITH OTHER OBJECTS.
-    /// ON RELEASE, WE REPLACE HIS ACTUAL VELOCITY BY HIS LAST BEFORE DRAGGING
+    /// Updates the velocity to move towards the mouse position.
+    /// Preserves physical interactions with other objects.
     /// </summary>
     public void OnDragUpdate(Vector2 position)
     {
-        transform.position = position;
+        // Calculate the direction and distance to the mouse
+        Vector2 direction = position - _rb.position;
+
+        // Apply velocity proportional to the distance. 
+        // The further the mouse, the faster it tries to catch up.
+        _rb.linearVelocity = direction * _dragForceMultiplier;
     }
 
     /// <summary>
-    /// Resets the ball to Dynamic to resume physical interactions.
+    /// Resets the drag state and stops momentum.
     /// </summary>
     public void OnDragEnd()
     {
         _isBeingDragged = false;
-        _rb.bodyType = RigidbodyType2D.Dynamic;
-        _runtimeBehavior?.OnDragEnd(this);
+        _rb.linearVelocity = Vector2.zero; // avoid the ball from flying away on release
+
+        if (_runtimeBehavior != null)
+        {
+            // Tell tho the behavior that we're stopped the drag !
+            _runtimeBehavior.OnDragEnd(this);
+        }
     }
 
     #endregion
