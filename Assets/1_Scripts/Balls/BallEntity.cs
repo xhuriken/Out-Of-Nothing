@@ -49,6 +49,12 @@ public class BallEntity : MonoBehaviour, IDraggable
     /// </summary>
     public bool IsBeingDragged => _isBeingDragged;
 
+    /// <summary>
+    /// Exposes the Collider of the ball.
+    /// </summary>
+    public CircleCollider2D Collider => _collider;
+
+
     private void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();

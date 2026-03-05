@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System;
 using UnityEngine;
 using static UnityEngine.RuleTile.TilingRuleOutput;
@@ -23,6 +24,9 @@ public class BlueBallBehavior : BallBehavior
     private float _currentPauseTimer;
     private bool _isPaused = true;
     private float _oscillationTime;
+    private bool _isSmall = false;
+
+    private float _originalRadius;
 
     /// <summary>
     /// Clones the behavior to ensure independent runtime state.
@@ -38,6 +42,7 @@ public class BlueBallBehavior : BallBehavior
         //_positionStart = ball.transform.position;
         _currentPauseTimer = _pauseDuration; // when the ball spawn, it on the pause state
         _oscillationTime = 0f;
+        _originalRadius = ball.Data.radius;
     }
 
     /// <summary>
@@ -53,7 +58,27 @@ public class BlueBallBehavior : BallBehavior
 
         if (_isPaused)
         {
+            // Visual
+            if (!_isSmall)
+            {
+                DOTween.Kill(this);
+                // Set it smaller
+                DOTween.To(() => ball.Renderer.Radius, x => ball.Renderer.Radius = x, _originalRadius * 0.9f, 0.4f).SetEase(Ease.InOutElastic).SetTarget(this);
+                DOTween.To(() => ball.Collider.radius, x => ball.Collider.radius = x, _originalRadius * 0.9f, 0.4f).SetEase(Ease.InOutElastic).SetTarget(this);
+                _isSmall = true;
+            }
+
+            // Core
             _currentPauseTimer -= fixedDeltaTime;
+
+            if(_currentPauseTimer <= 0.4f && _isSmall)
+            {
+                DOTween.Kill(this);
+                // Set it back to normal
+                DOTween.To(() => ball.Renderer.Radius, x => ball.Renderer.Radius = x, _originalRadius, 0.4f).SetEase(Ease.InOutElastic).SetTarget(this);
+                DOTween.To(() => ball.Collider.radius, x => ball.Collider.radius = x, _originalRadius, 0.4f).SetEase(Ease.InOutElastic).SetTarget(this);
+                _isSmall = false;
+            }
 
             if (_currentPauseTimer <= 0f)
             {
