@@ -10,8 +10,7 @@ using UnityEngine;
 public class BallEntity : MonoBehaviour, IDraggable
 {
     [Required]
-    [SerializeField]
-    private BallDataSO _data;
+    [SerializeField] private BallDataSO _data;
 
     [SerializeField] private Disc _renderer;
     [SerializeField] private ParticleSystem _particlesClick;
@@ -39,17 +38,31 @@ public class BallEntity : MonoBehaviour, IDraggable
     /// </summary>
     public Disc Renderer => _renderer;
 
+    /// <summary>
+    /// Exposes the drag state of the ball.
+    /// </summary>
+    public bool IsBeingDragged => _isBeingDragged;
+
     private void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
 
-        // Critical: Create an independent instance to hold local state
+        // Create an independent instance to hold local state
         if (_data.behaviorTemplate != null)
         {
             _runtimeBehavior = _data.behaviorTemplate.Clone();
         }
 
-        UpdateVisualsAndPhysics();
+        // Apply initial configuration from the ScriptableObject
+        if (_data != null)
+        {
+            Initialize(_data);
+        }
+        else
+        {
+            Debug.LogError("Sus, c'est senser ne jamais arriver.. La terre est plate ?");
+            UpdateVisualsAndPhysics();
+        }
     }
 
     private void FixedUpdate()
@@ -57,10 +70,36 @@ public class BallEntity : MonoBehaviour, IDraggable
         _runtimeBehavior?.ExecuteFixedUpdate(this, Time.fixedDeltaTime);
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    /// <summary>
+    /// Initializes or resets the ball with new configuration data.
+    /// Used primarily by the BallPoolManager when recycling instances from the pool.
+    /// </summary>
+    /// <param name="newData">The ball configuration to apply.</param>
+    public void Initialize(BallDataSO newData)
     {
-        _runtimeBehavior?.OnCollisionEnter(this, collision);
+        transform.localScale = Vector3.one; // Reset scale in case it was modified by animations
+        _data = newData;
+
+        // Reset runtime tracking variables to prevent state carry-over from previous life
+        _currentClickCount = 0;
+        _lastClickTime = 0f;
+
+        // Prototype Pattern: Clone the behavior to ensure independent logic state
+        if (_data != null && _data.behaviorTemplate != null)
+        {
+            _runtimeBehavior = _data.behaviorTemplate.Clone();
+            _runtimeBehavior.Initialize(this);
+        }
+        else
+        {
+            _runtimeBehavior = null;
+        }
+
+        // Apply visual and physical properties defined in the ScriptableObject
+        UpdateVisualsAndPhysics();
     }
+
+    #region Ball Interacion (Click & Collision)
 
     /// <summary>
     /// Called strictly by the centralized GameInputManager.
@@ -84,7 +123,6 @@ public class BallEntity : MonoBehaviour, IDraggable
             Duplicate();
         }
     }
-
     private void Duplicate()
     {
         _runtimeBehavior?.OnDuplicate(this);
@@ -93,8 +131,14 @@ public class BallEntity : MonoBehaviour, IDraggable
         Debug.Log($"Duplicating {_data.id}");
     }
 
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        _runtimeBehavior?.OnCollisionEnter(this, collision);
+    }
 
-    // VISUAL PART
+    #endregion
+
+    #region Visual and Physics Sync
 
     /// <summary>
     /// Unity Editor method called when a script is loaded or a value is changed in the Inspector.
@@ -115,14 +159,21 @@ public class BallEntity : MonoBehaviour, IDraggable
             return;
         }
 
-        _renderer.Color = _data.color;
+        _renderer.ColorInner = _data.color * 0.7f;
+        _renderer.ColorOuter = _data.color;
         _renderer.Radius = _data.radius;
-        //var clickParticles = _particlesClick.main; // PUTAIN UNITY SERIEUX POURQUOI ????
-        //clickParticles.startColor = _data.color;
-        //var dupliParticles = _particlesDuplicate.main; // PUTAIN UNITY SERIEUX POURQUOI ???? FRR C'EST DLA MERDE ?
-        //dupliParticles.startColor = _data.color;
-        _particlesClick.startColor = _data.color;
-        _particlesDuplicate.startColor = _data.color;
+
+        if (_particlesClick != null)
+        {
+            ParticleSystem.MainModule clickMain = _particlesClick.main;
+            clickMain.startColor = _data.color;
+        }
+
+        if (_particlesDuplicate != null)
+        {
+            ParticleSystem.MainModule dupliMain = _particlesDuplicate.main;
+            dupliMain.startColor = _data.color;
+        }
 
         if (_collider == null) _collider = GetComponent<CircleCollider2D>();
         if (_collider != null) _collider.radius = _data.radius + (_renderer.Thickness/2);
@@ -130,6 +181,10 @@ public class BallEntity : MonoBehaviour, IDraggable
         if (_rb == null) _rb = GetComponent<Rigidbody2D>();
         if (_rb != null) _rb.gravityScale = 0f;
     }
+
+    #endregion
+
+    #region Click and Duplication Logic
 
     /// <summary>
     /// Handles the technical process of duplication.
@@ -167,34 +222,7 @@ public class BallEntity : MonoBehaviour, IDraggable
         _particlesClick.Play();
     }
 
-    /// <summary>
-    /// Initializes or resets the ball with new configuration data.
-    /// Used primarily by the BallPoolManager when recycling instances from the pool.
-    /// </summary>
-    /// <param name="newData">The ball configuration to apply.</param>
-    public void Initialize(BallDataSO newData)
-    {
-        transform.localScale = Vector3.one; // Reset scale in case it was modified by animations
-        _data = newData;
-
-        // Reset runtime tracking variables to prevent state carry-over from previous life
-        _currentClickCount = 0;
-        _lastClickTime = 0f;
-
-        // Prototype Pattern: Clone the behavior to ensure independent logic state
-        if (_data != null && _data.behaviorTemplate != null)
-        {
-            _runtimeBehavior = _data.behaviorTemplate.Clone();
-            _runtimeBehavior.Initialize(this);
-        }
-        else
-        {
-            _runtimeBehavior = null;
-        }
-
-        // Apply visual and physical properties defined in the ScriptableObject
-        UpdateVisualsAndPhysics();
-    }
+    #endregion
 
     #region Drag
 

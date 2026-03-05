@@ -12,27 +12,28 @@ public class BlueBallBehavior : BallBehavior
     private float _pauseDuration = 2f;
 
     [SerializeField]
-    private float amplitude = 1f;
-    private float speed = 1f;
-    private Vector3 positionStart;
+    private float _amplitude = 1f;
+    private float _speed = 1f;
+    private Vector3 _positionStart;
     private float _oscillationTime;
 
-    // Runtime state variables (Not shared because of Clone)
+    // Runtime state variables
     private float _currentPauseTimer;
-    private bool _isPaused;
+    private bool _isPaused = true; // true by default when the ball spawn
 
     /// <summary>
     /// Clones the behavior to ensure independent runtime state.
     /// </summary>
     public override BallBehavior Clone()
     {
-        // Shallow copy is sufficient for basic value types
+        // Shallow copy
         return (BallBehavior) MemberwiseClone();
     }
 
     public override void Initialize(BallEntity ball)
     {
-        positionStart = ball.transform.position;
+        _positionStart = ball.transform.position;
+        _currentPauseTimer = _pauseDuration; // when the ball spawn, it on the pause state
     }
 
     /// <summary>
@@ -50,7 +51,7 @@ public class BlueBallBehavior : BallBehavior
                 //ball.Rb.bodyType = RigidbodyType2D.Dynamic;
 
                 //restart the position start
-                positionStart = ball.transform.position;
+                _positionStart = ball.transform.position;
                 _oscillationTime = 0f;
             }
 
@@ -60,9 +61,9 @@ public class BlueBallBehavior : BallBehavior
         // Apply normal oscillation force
         _oscillationTime += fixedDeltaTime;
 
-        float newY = positionStart.y + Mathf.Sin(_oscillationTime * speed) * amplitude;
+        float newY = _positionStart.y + Mathf.Sin(_oscillationTime * _speed) * _amplitude;
 
-        Vector2 newPosition = new Vector2(positionStart.x, newY);
+        Vector2 newPosition = new Vector2(_positionStart.x, newY);
 
         ball.Rb.MovePosition(newPosition);
     }
@@ -82,11 +83,8 @@ public class BlueBallBehavior : BallBehavior
             //ball.Rb.bodyType = RigidbodyType2D.Kinematic;
 
             //restart the position start
-            positionStart = ball.transform.position;
+            _positionStart = ball.transform.position;
             _oscillationTime = 0f;
-
         }
-
-        
     }
 }
