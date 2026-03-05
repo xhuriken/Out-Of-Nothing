@@ -27,9 +27,10 @@ public class BrownBallBehavior : BallBehavior
         if (ball.IsBeingDragged) return;
 
         //if(_currentDirection != _lastDirection) ?
+
         var direction = GameZone.Instance.GetNearestSide(ball.transform.position);  // find the nearest side of the zone (Vector 3 direction)
 
-        // if is different than the last, we smoothly apply a force to the direction of this side (Top, Down, Left, Right)
+        // if is different than the last, we smoothly apply a force to the direction (calculate before)
         // and stop to apply the force to the previous side
         // WE DONT REPLACE THE ACTUAL VELOCITY, WE JUST ADD A FORCE TO THE BALL
     }
