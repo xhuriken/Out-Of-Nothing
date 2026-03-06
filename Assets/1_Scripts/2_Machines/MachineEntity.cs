@@ -43,6 +43,17 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable
         // Switch case inside to handle different parts if necessary imo
     }
 
+    /// <summary>
+    /// Receives trigger events forwarded by child proxy colliders.
+    /// </summary>
+    /// <param name="partId">The identifier of the specific collider that was hit.</param>
+    /// <param name="collider">The collider.</param>
+    public virtual void OnPartTriggerEnter(string partId, Collider2D collider)
+    {
+        // Override in specific machines
+        // Switch case inside to handle different parts if necessary imo
+    }
+
     #region Drag & drop
 
     public virtual void OnDragStart()

@@ -43,7 +43,7 @@ public class PistonMachine : MachineEntity, IEnergyStorage
     // local vars
     private float _currentEnergy;
     private float _maxEnergy;
-    private bool _canEjectBall;
+    [SerializeField] private bool _canEjectBall;
 
     public float CurrentEnergy => _currentEnergy;
 
@@ -57,6 +57,11 @@ public class PistonMachine : MachineEntity, IEnergyStorage
     public float ExtractEnergy(float amount)
     {
         return 0f; 
+    }
+
+    public void Start()
+    {
+        _currentEnergy = MaxEnergy;
     }
 
     // I choose the fixed update because if we have a lag, i dont want the machine to be desync with other...
@@ -94,19 +99,25 @@ public class PistonMachine : MachineEntity, IEnergyStorage
             // Get the velocity of the ball, Get the velocity magnitude of the good axis (x or y depending on the piston orientation)
             // and calculate the energy produced with the multiplier
         }
+    }
 
+    public override void OnPartTriggerEnter(string partId, Collider2D collider)
+    {
         // If the ball touch de box part
-        if (partId == "Box" && collision.gameObject.TryGetComponent(out BallEntity useBall))
+        if (partId == "Box" && collider.gameObject.TryGetComponent(out BallEntity useBall))
         {
-            if(_ballInside == null && _ballInside.Data.id == "RedBall")
+            if (_ballInside == null && useBall.Data.id == "RedBall")
             {
+                Debug.Log("A red ball touch me !");
                 _ballInside = useBall;
                 _ballInside.IsProcessing = true;
+                GameInputManager.Instance.EndDrag();
                 // TODO: Stop collision & physics
                 _ballInside.transform.DOMove(_TargetTransformBall.position, _animationDuration).SetEase(Ease.OutElastic).OnComplete(() =>
                 {
                     // hum, something ? i got a theory
                     _canEjectBall = true;
+                    Debug.Log($"{_ballInside}, {_ballInside.Data.id}, {_canEjectBall}");
                 });
             }
         }

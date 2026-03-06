@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e5372ae69b62d84192728c830a05b0c, type: 3}
   m_Name: RedBallSO
   m_EditorClassIdentifier: Assembly-CSharp::BallDataSO
-  id: Red Ball
+  id: RedBall
   clicksRequiredForDuplication: 3
   clickCooldown: 0.1
   color: {r: 1, g: 0, b: 0, a: 1}

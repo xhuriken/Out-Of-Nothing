@@ -262,6 +262,7 @@ public class BallEntity : MonoBehaviour, IDraggable
     /// </summary>
     public void OnDragStart()
     {
+        if (_isProcessing) return;
         _isBeingDragged = true;
         // We keep the bodyType as Dynamic to preserve physical collisions
         _rb.linearVelocity = Vector2.zero;

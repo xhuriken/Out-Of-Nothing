@@ -6,13 +6,22 @@ using UnityEngine.InputSystem;
 /// </summary>
 public class GameInputManager : MonoBehaviour
 {
+    public static GameInputManager Instance { get; private set; }
+
     [SerializeField]
     private LayerMask _ballLayerMask;
 
     private Camera _mainCamera;
     private IDraggable _currentDraggedObject;
     private void Awake()
-    {
+    { 
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+
         _mainCamera = Camera.main; // TODO: STOP USING CAMERA.MAIN, CACHE THAT IN A SINGLETON OR PASS IT VIA INSPECTOR
     }
 
@@ -51,11 +60,7 @@ public class GameInputManager : MonoBehaviour
         }
         else if (context.canceled)
         {
-            if (_currentDraggedObject != null)
-            {
-                _currentDraggedObject.OnDragEnd();
-                _currentDraggedObject = null;
-            }
+            EndDrag();
         }
     }
 
@@ -117,5 +122,14 @@ public class GameInputManager : MonoBehaviour
         return _mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
     }
     #endregion
+
+    public void EndDrag()
+    {
+        if (_currentDraggedObject != null)
+        {
+            _currentDraggedObject.OnDragEnd();
+            _currentDraggedObject = null;
+        }
+    }
 
 }
