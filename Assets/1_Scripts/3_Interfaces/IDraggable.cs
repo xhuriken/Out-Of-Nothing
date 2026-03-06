@@ -20,4 +20,10 @@ public interface IDraggable
     /// Triggered when the drag interaction ends.
     /// </summary>
     void OnDragEnd();
+
+    /// <summary>
+    /// Triggered when a rotation input is received during a drag.
+    /// </summary>
+    /// <param name="scrollDelta">The raw scroll value from the input system.</param>
+    void OnDragRotate(float scrollDelta);
 }

@@ -5030,6 +5030,7 @@ MonoBehaviour:
   _renderer: {fileID: 1335927095737727768}
   _particlesClick: {fileID: 5615446383186218333}
   _particlesDuplicate: {fileID: 7594083740277568431}
+  _isProcessing: 0
   _dragForceMultiplier: 15
 --- !u!114 &1335927095737727768
 MonoBehaviour:

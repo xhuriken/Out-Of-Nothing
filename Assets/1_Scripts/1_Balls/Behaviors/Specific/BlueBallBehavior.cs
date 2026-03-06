@@ -51,10 +51,7 @@ public class BlueBallBehavior : BallBehavior
     public override void ExecuteFixedUpdate(BallEntity ball, float fixedDeltaTime)
     {
         // If the ball is being dragged, skip all behavior logic !
-        if (ball.IsBeingDragged)
-        {
-            return;
-        }
+        if (ball.IsBeingDragged || ball.IsProcessing) return;
 
         if (_isPaused)
         {

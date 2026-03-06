@@ -16,6 +16,8 @@ public class BallEntity : MonoBehaviour, IDraggable
     [SerializeField] private Disc _renderer;
     [SerializeField] private ParticleSystem _particlesClick;
     [SerializeField] private ParticleSystem _particlesDuplicate;
+    [Header("States")]
+    [SerializeField] private bool _isProcessing;
 
     [Header("Settings")]
     [SerializeField]
@@ -53,6 +55,17 @@ public class BallEntity : MonoBehaviour, IDraggable
     /// Exposes the collider radius.
     /// </summary>
     public float ColliderRadius => _data.radius + (_renderer.Thickness / 2);
+
+    /// <summary>
+    /// Exposes the process state
+    /// </summary>
+    public bool IsProcessing {
+        get => _isProcessing;
+        set 
+        {
+            _isProcessing = value;
+        }
+    }
 
     /// <summary>
     /// Exposes the Collider of the ball.
@@ -111,6 +124,7 @@ public class BallEntity : MonoBehaviour, IDraggable
         {
             _runtimeBehavior = null;
         }
+        _isProcessing = false;
 
         // Apply visual and physical properties defined in the ScriptableObject
         UpdateVisualsAndPhysics();
@@ -286,6 +300,15 @@ public class BallEntity : MonoBehaviour, IDraggable
             // Tell tho the behavior that we're stopped the drag !
             _runtimeBehavior.OnDragEnd(this);
         }
+    }
+
+    /// <summary>
+    /// Handles rotation input during a drag.
+    /// Balls are symmetrical circles, so physical rotation is ignored by default.
+    /// </summary>
+    public void OnDragRotate(float scrollDelta)
+    {
+        // Do nothing, or pass to _runtimeBehavior if a specific ball needs visual rotation.
     }
 
     #endregion

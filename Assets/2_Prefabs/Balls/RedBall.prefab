@@ -118,6 +118,7 @@ MonoBehaviour:
   _renderer: {fileID: 8350127890622362483}
   _particlesClick: {fileID: 5847735563398847359}
   _particlesDuplicate: {fileID: 1922684360571878281}
+  _isProcessing: 0
   _dragForceMultiplier: 15
 --- !u!114 &8350127890622362483
 MonoBehaviour:

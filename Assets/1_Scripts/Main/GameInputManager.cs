@@ -59,6 +59,23 @@ public class GameInputManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Handles the Scroll input action to rotate the currently dragged object.
+    /// </summary>
+    public void OnScroll(InputAction.CallbackContext context)
+    {
+        if (_currentDraggedObject != null && context.performed)
+        {
+            // The scroll wheel is the Y axis
+            float scrollValue = context.ReadValue<Vector2>().y;
+
+            //if (Mathf.Abs(scrollValue) > 0.01f)
+            //{
+            _currentDraggedObject.OnDragRotate(scrollValue);
+            //}
+        }
+    }
+
     public void OnCraft(InputAction.CallbackContext context)
     {
         if (context.performed)

@@ -27,7 +27,7 @@ public class BrownBallBehavior : BallBehavior
     /// </summary>
     public override void ExecuteFixedUpdate(BallEntity ball, float fixedDeltaTime)
     {
-        if (ball.IsBeingDragged) return;
+        if (ball.IsBeingDragged || ball.IsProcessing) return;
 
         // if is different than the last, we smoothly apply a force to the direction (calculate before)
         // and stop to apply the force to the previous side

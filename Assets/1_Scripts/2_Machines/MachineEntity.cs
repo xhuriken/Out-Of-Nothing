@@ -1,13 +1,29 @@
 using UnityEngine;
 
 /// <summary>
+/// Defines the allowed rotation behavior during drag operations.
+/// </summary>
+public enum MachineRotationMode
+{
+    None,
+    Free,
+    Fixed90Degrees
+}
+/// <summary>
 /// Base class for all machines. 
 /// Handles common state management, drag-and-drop mechanics, and the delegates specific logic.
 /// </summary>
 public abstract class MachineEntity : MonoBehaviour, IDraggable
 {
-    protected bool _isRunning = true;
+    [Header("Rotation Settings")]
+    [SerializeField]
+    protected MachineRotationMode _rotationMode = MachineRotationMode.Fixed90Degrees;
 
+    [SerializeField]
+    [Tooltip("Multiplier for free rotation mode. Ignored in Fixed mode.")]
+    protected float _freeRotationSpeed = 0.5f;
+
+    protected bool _isRunning = true;
     /// <summary>
     /// Evaluates if the machine is currently active and processing its logic.
     /// </summary>
@@ -45,6 +61,29 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable
     {
         _isRunning = true;
 
+    }
+
+    public virtual void OnDragRotate(float scrollDelta)
+    {
+        if (_rotationMode == MachineRotationMode.None)
+        {
+            return;
+        }
+
+        // Determine direction
+        // +1 forward or -1 backward
+        float direction = Mathf.Sign(scrollDelta);
+
+        if (_rotationMode == MachineRotationMode.Fixed90Degrees)
+        {
+            // Snap rotation by exactly 90 degrees
+            transform.Rotate(0f, 0f, direction * 90f);
+        }
+        else if (_rotationMode == MachineRotationMode.Free)
+        {
+            // Smooth, continuous rotation based on scroll magnitude
+            transform.Rotate(0f, 0f, scrollDelta * _freeRotationSpeed);
+        }
     }
 
     #endregion
