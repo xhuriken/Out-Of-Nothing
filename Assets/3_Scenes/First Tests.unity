@@ -386,6 +386,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1922684360571878281, guid: 9d5623332d3f8554193248fda549e85b, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1922684360571878281, guid: 9d5623332d3f8554193248fda549e85b, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1922684360571878281, guid: 9d5623332d3f8554193248fda549e85b, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3508011679372052241, guid: 9d5623332d3f8554193248fda549e85b, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2.56564
@@ -430,14 +442,22 @@ PrefabInstance:
       propertyPath: m_Material
       value: 
       objectReference: {fileID: 6200000, guid: dc7b5d499d416c44ebb3ee28f0bb2904, type: 2}
-    - target: {fileID: 7104258520504122497, guid: 9d5623332d3f8554193248fda549e85b, type: 3}
-      propertyPath: m_Interpolate
+    - target: {fileID: 5847735563398847359, guid: 9d5623332d3f8554193248fda549e85b, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5847735563398847359, guid: 9d5623332d3f8554193248fda549e85b, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5847735563398847359, guid: 9d5623332d3f8554193248fda549e85b, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.r
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 7104258520504122497, guid: 9d5623332d3f8554193248fda549e85b, type: 3}
-      propertyPath: m_CollisionDetection
-      value: 1
-      objectReference: {fileID: 0}
+    - target: {fileID: 8733880597009044787, guid: 9d5623332d3f8554193248fda549e85b, type: 3}
+      propertyPath: _data
+      value: 
+      objectReference: {fileID: 11400000, guid: 80d61bba963ad264f8475d89dc001b50, type: 2}
     - target: {fileID: 8758211866433413932, guid: 9d5623332d3f8554193248fda549e85b, type: 3}
       propertyPath: m_Name
       value: RedBall
@@ -617,14 +637,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 3994086967771890052, guid: 429f06ac98b9a9541a0bc01e9ba222b9, type: 3}
-      propertyPath: m_Interpolate
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3994086967771890052, guid: 429f06ac98b9a9541a0bc01e9ba222b9, type: 3}
-      propertyPath: m_CollisionDetection
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6113248793361582860, guid: 429f06ac98b9a9541a0bc01e9ba222b9, type: 3}
       propertyPath: m_LocalPosition.x
       value: -2.24
@@ -733,14 +745,6 @@ PrefabInstance:
     - target: {fileID: 4381004003925531019, guid: 02b19a10bbff2384da5c4fdfd0ed96fe, type: 3}
       propertyPath: m_Name
       value: BrownBall
-      objectReference: {fileID: 0}
-    - target: {fileID: 5224366401762763466, guid: 02b19a10bbff2384da5c4fdfd0ed96fe, type: 3}
-      propertyPath: m_Interpolate
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5224366401762763466, guid: 02b19a10bbff2384da5c4fdfd0ed96fe, type: 3}
-      propertyPath: m_CollisionDetection
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
