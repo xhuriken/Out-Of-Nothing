@@ -52,15 +52,20 @@ public class GameInputManager : MonoBehaviour
             LayerMask allMask = ~0;
             RaycastHit2D hit = Physics2D.Raycast(mousePosition, Vector2.zero, 0f, allMask);
 
-            if (hit.collider != null && hit.collider.TryGetComponent(out IDraggable draggable))
+            //Get the interface from the hit object OR its parents (This is not optimised i think, but my machine have colliders in children...)
+            IDraggable draggable = hit.collider?.GetComponentInParent<IDraggable>();
+
+            if (draggable != null)
             {
-                _currentDraggedObject = draggable;
-                _currentDraggedObject.OnDragStart();
+                if (draggable.OnDragStart())
+                {
+                    _currentDraggedObject = draggable;
+                }
             }
         }
         else if (context.canceled)
         {
-            EndDrag();
+            ForceDrop();
         }
     }
 
@@ -72,7 +77,7 @@ public class GameInputManager : MonoBehaviour
         if (_currentDraggedObject != null && context.performed)
         {
             // The scroll wheel is the Y axis
-            float scrollValue = context.ReadValue<Vector2>().y;
+            float scrollValue = context.ReadValue<float>();
 
             //if (Mathf.Abs(scrollValue) > 0.01f)
             //{
@@ -123,7 +128,11 @@ public class GameInputManager : MonoBehaviour
     }
     #endregion
 
-    public void EndDrag()
+    /// <summary>
+    /// Forces the currently dragged object to be dropped. 
+    /// Can be called externally by machines claiming a ball.
+    /// </summary>
+    public void ForceDrop()
     {
         if (_currentDraggedObject != null)
         {

@@ -23,10 +23,6 @@ public class PistonMachine : MachineEntity, IEnergyStorage
     /// Represent the transform where the ballInside must be.
     /// </summary>
     [SerializeField] private Transform _TargetTransformBall;
-    /// <summary>
-    /// Is the machine currently processing a ball and producing energy ?
-    /// </summary>
-    [SerializeField] private bool _isProcessing = false;
 
     [Header("Settings")]
     /// <summary>
@@ -40,10 +36,11 @@ public class PistonMachine : MachineEntity, IEnergyStorage
     /// </summary>
     [SerializeField] private float _animationDuration = 0.4f;
 
-    // local vars
+    //local vars
     private float _currentEnergy;
-    private float _maxEnergy;
-    [SerializeField] private bool _canEjectBall;
+    private float _maxEnergy = 100f;
+    private bool _canEjectBall;
+    private bool _isProcessing;
 
     public float CurrentEnergy => _currentEnergy;
 
@@ -51,7 +48,10 @@ public class PistonMachine : MachineEntity, IEnergyStorage
 
     public float AddEnergy(float amount)
     {
-        return 0f;
+        // We clamp between 0 and Max ! 
+        _currentEnergy = Mathf.Clamp(_currentEnergy + amount, 0f, _maxEnergy);
+        Debug.Log($"[PistonMachine] Added {amount} energy. Actually {_currentEnergy}/{_maxEnergy}");
+        return amount;
     }
 
     public float ExtractEnergy(float amount)
@@ -67,18 +67,23 @@ public class PistonMachine : MachineEntity, IEnergyStorage
     // I choose the fixed update because if we have a lag, i dont want the machine to be desync with other...
     private void FixedUpdate()
     {
+        //Todo  Return when dragged.
+
         if (_currentEnergy >= _maxEnergy)
         {
             // play SFX, animation, etc...
             if (_ballInside != null && _ballInside.Data.id == "RedBall" && _canEjectBall)
             {
+                Debug.Log("[PistonMachine] Max energy and ball => Ejecting ball !");
                 // Animation
                 // remove the actual energy (with dotween animation too)
-                _currentEnergy = 0f;
+                //_currentEnergy = 0f;
                 // destroy the ball inside with the BallPoolManager
                 // Instanciate the ballOut with the BallPoolManager
                 // Eject Her !
                 _canEjectBall = false;
+                _ballInside.IsProcessing = false; // Dans tout les cas elle va être destroy c'est temp pour les test du drag
+                _ballInside = null;
             }
         }
     }
@@ -98,6 +103,14 @@ public class PistonMachine : MachineEntity, IEnergyStorage
         {
             // Get the velocity of the ball, Get the velocity magnitude of the good axis (x or y depending on the piston orientation)
             // and calculate the energy produced with the multiplier
+
+            Debug.Log($"[PistonMachine] Piston hit by {pusherBall.Data.id}. Calculating energy...");
+
+            // its temp TODO MAKE AN BETTER THING
+            float force = collision.relativeVelocity.magnitude;
+            float energyGenerated = force * _energyProducedIntensity;
+
+            AddEnergy(energyGenerated);
         }
     }
 
@@ -108,16 +121,16 @@ public class PistonMachine : MachineEntity, IEnergyStorage
         {
             if (_ballInside == null && useBall.Data.id == "RedBall")
             {
-                Debug.Log("A red ball touch me !");
+                Debug.Log($"[PistonMachine] Box triggered. Capturing {useBall.Data.id}.");
                 _ballInside = useBall;
                 _ballInside.IsProcessing = true;
-                GameInputManager.Instance.EndDrag();
+                GameInputManager.Instance.ForceDrop();
                 // TODO: Stop collision & physics
                 _ballInside.transform.DOMove(_TargetTransformBall.position, _animationDuration).SetEase(Ease.OutElastic).OnComplete(() =>
                 {
                     // hum, something ? i got a theory
                     _canEjectBall = true;
-                    Debug.Log($"{_ballInside}, {_ballInside.Data.id}, {_canEjectBall}");
+                    Debug.Log("[PistonMachine] Capture animation completed ! Ready for ejection");
                 });
             }
         }

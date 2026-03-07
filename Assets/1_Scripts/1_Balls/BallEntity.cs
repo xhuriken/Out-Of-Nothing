@@ -260,9 +260,13 @@ public class BallEntity : MonoBehaviour, IDraggable
     /// <summary>
     /// Prepares the ball for dynamic physical dragging.
     /// </summary>
-    public void OnDragStart()
+    public bool OnDragStart()
     {
-        if (_isProcessing) return;
+        Debug.Log($"Trying to drag ball {_data.id} (IsProcessing: {_isProcessing})");
+        if (_isProcessing)
+        {
+            return false;
+        }
         _isBeingDragged = true;
         // We keep the bodyType as Dynamic to preserve physical collisions
         _rb.linearVelocity = Vector2.zero;
@@ -272,6 +276,7 @@ public class BallEntity : MonoBehaviour, IDraggable
             // Tell tho the behavior that we're started the drag !
             _runtimeBehavior.OnDragStart(this);
         }
+        return true;
     }
 
     /// <summary>

@@ -8,7 +8,8 @@ public interface IDraggable
     /// <summary>
     /// Triggered when the drag interaction starts.
     /// </summary>
-    void OnDragStart();
+    /// <returns>True if the object accepts being dragged, false to reject the interaction. (If the ball IsProcessing !)</returns>
+    bool OnDragStart();
 
     /// <summary>
     /// Triggered every frame while the object is being dragged.

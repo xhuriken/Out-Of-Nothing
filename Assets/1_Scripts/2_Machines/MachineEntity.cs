@@ -56,10 +56,11 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable
 
     #region Drag & drop
 
-    public virtual void OnDragStart()
+    public virtual bool OnDragStart()
     {
         _isRunning = false; // Stop function while moving
         // TODO: Handle visual feedback ((Animations)
+        return true;
     }
 
     public virtual void OnDragUpdate(Vector2 position)

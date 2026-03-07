@@ -477,6 +477,7 @@ MonoBehaviour:
   _isProcessing: 0
   _energyProducedIntensity: 0
   _animationDuration: 0.4
+  _canEjectBall: 0
 --- !u!50 &6725991636064141426
 Rigidbody2D:
   serializedVersion: 5
