@@ -21,6 +21,16 @@ public class RedMaterialisatorMachine :  MachineEntity
     private float _timer;
     private float _timerconsumption;
 
+    public override void AddEnergy(float amount)
+    {
+        _currentEnergy += amount;
+        _currentEnergy = Mathf.Clamp(_currentEnergy, 0f, _maxEnergy);
+    }
+
+    void Awake()
+    {
+        _consumptiondemand = true;
+    }
     void Update()
     {
         if (!_isRunning || IsBeingDragged)
@@ -48,7 +58,6 @@ public class RedMaterialisatorMachine :  MachineEntity
             if (_timer >= _spawnDelay)
             {
                 _timer = 0f;
-                _currentEnergy -= 10f;
                 SpawnBall();
             }
         }

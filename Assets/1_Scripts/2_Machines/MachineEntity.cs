@@ -25,6 +25,20 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable
     protected bool _isRunning = true;
     private bool _isBeingDragged;
 
+
+
+    /// <summary>
+    /// If machine consump demand.
+    /// </summary>
+    public bool _consumptiondemand;
+    public virtual bool CanReceiveEnergy => _consumptiondemand;
+
+    public virtual void AddEnergy(float amount)
+    {
+        // override energic machine
+    }
+
+
     /// <summary>
     /// Evaluates if the machine is currently active and processing its logic.
     /// </summary>
