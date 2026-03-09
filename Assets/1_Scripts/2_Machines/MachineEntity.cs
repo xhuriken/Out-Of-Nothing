@@ -22,8 +22,9 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable
     [SerializeField]
     [Tooltip("Multiplier for free rotation mode. Ignored in Fixed mode.")]
     protected float _freeRotationSpeed = 0.5f;
-
     protected bool _isRunning = true;
+    private bool _isBeingDragged;
+
     /// <summary>
     /// Evaluates if the machine is currently active and processing its logic.
     /// </summary>
@@ -31,6 +32,8 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable
     {
         get { return _isRunning; }
     }
+
+    public bool IsBeingDragged => _isBeingDragged;
 
     /// <summary>
     /// Receives collision events forwarded by child proxy colliders.
@@ -59,6 +62,7 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable
     public virtual bool OnDragStart()
     {
         _isRunning = false; // Stop function while moving
+        _isBeingDragged = true;
         // TODO: Handle visual feedback ((Animations)
         return true;
     }
@@ -72,7 +76,7 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable
     public virtual void OnDragEnd()
     {
         _isRunning = true;
-
+        _isBeingDragged = false;
     }
 
     public virtual void OnDragRotate(float scrollDelta)

@@ -25,17 +25,15 @@ public class BallEntity : MonoBehaviour, IDraggable
 
     private float _lastClickTime;
     private int _currentClickCount;
-    private Rigidbody2D _rb;
     private BallBehavior _runtimeBehavior;
     private CircleCollider2D _collider;
-    private bool _isBeingDragged;
-
 
     /// <summary>
     /// Exposes the configuration data.
     /// </summary>
     public BallDataSO Data => _data;
 
+    private Rigidbody2D _rb;
     /// <summary>
     /// Exposes the Rigidbody2D component.
     /// </summary>
@@ -46,6 +44,7 @@ public class BallEntity : MonoBehaviour, IDraggable
     /// </summary>
     public Disc Renderer => _renderer;
 
+    private bool _isBeingDragged;
     /// <summary>
     /// Exposes the drag state of the ball.
     /// </summary>

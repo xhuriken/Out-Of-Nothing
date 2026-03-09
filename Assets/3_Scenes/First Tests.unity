@@ -283,6 +283,86 @@ MonoBehaviour:
   m_BeforeTransparentBundles: []
   m_BeforeStackBundles: []
   m_AfterStackBundles: []
+--- !u!1 &671280427 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6116504673094913109, guid: 70ae4f13ae8e6d548a4597378e4a4c4c, type: 3}
+  m_PrefabInstance: {fileID: 1041779468}
+  m_PrefabAsset: {fileID: 0}
+--- !u!234 &671280429
+SliderJoint2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 671280427}
+  m_Enabled: 1
+  serializedVersion: 4
+  m_EnableCollision: 0
+  m_ConnectedRigidBody: {fileID: 2028585429}
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
+  m_BreakAction: 3
+  m_AutoConfigureConnectedAnchor: 0
+  m_Anchor: {x: 0, y: 0}
+  m_ConnectedAnchor: {x: 0, y: 0}
+  m_AutoConfigureAngle: 1
+  m_Angle: -90
+  m_UseMotor: 0
+  m_Motor:
+    m_MotorSpeed: 5
+    m_MaximumMotorForce: 10000
+  m_UseLimits: 1
+  m_TranslationLimits:
+    m_LowerTranslation: 0
+    m_UpperTranslation: 2
+--- !u!50 &671280430
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 671280427}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 0.0001
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 4
+--- !u!231 &671280431
+SpringJoint2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 671280427}
+  m_Enabled: 1
+  serializedVersion: 4
+  m_EnableCollision: 0
+  m_ConnectedRigidBody: {fileID: 2028585429}
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
+  m_BreakAction: 3
+  m_AutoConfigureConnectedAnchor: 0
+  m_Anchor: {x: 0, y: 0}
+  m_ConnectedAnchor: {x: 0, y: 0}
+  m_AutoConfigureDistance: 0
+  m_Distance: 2
+  m_DampingRatio: 0.5
+  m_Frequency: 5
 --- !u!1 &760877674 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7037265633686125999, guid: 70ae4f13ae8e6d548a4597378e4a4c4c, type: 3}
@@ -359,6 +439,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 11962982645902617, guid: 70ae4f13ae8e6d548a4597378e4a4c4c, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 6200000, guid: 962a55f770de51446ba0592f67a5933c, type: 2}
     - target: {fileID: 146427576839010988, guid: 70ae4f13ae8e6d548a4597378e4a4c4c, type: 3}
       propertyPath: m_IsTrigger
       value: 1
@@ -427,6 +511,15 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6116504673094913109, guid: 70ae4f13ae8e6d548a4597378e4a4c4c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 671280430}
+    - targetCorrespondingSourceObject: {fileID: 6116504673094913109, guid: 70ae4f13ae8e6d548a4597378e4a4c4c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 671280429}
+    - targetCorrespondingSourceObject: {fileID: 6116504673094913109, guid: 70ae4f13ae8e6d548a4597378e4a4c4c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 671280431}
     - targetCorrespondingSourceObject: {fileID: 4543806729569046517, guid: 70ae4f13ae8e6d548a4597378e4a4c4c, type: 3}
       insertIndex: 1
       addedObject: {fileID: 1910395919}
@@ -464,6 +557,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MachineColliderProxy
   _parentMachine: {fileID: 196094827}
   _partId: Piston
+--- !u!50 &2028585429 stripped
+Rigidbody2D:
+  m_CorrespondingSourceObject: {fileID: 6725991636064141426, guid: 70ae4f13ae8e6d548a4597378e4a4c4c, type: 3}
+  m_PrefabInstance: {fileID: 1041779468}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &150006007864159645
 PrefabInstance:
   m_ObjectHideFlags: 0

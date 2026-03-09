@@ -77,12 +77,13 @@ public class PistonMachine : MachineEntity, IEnergyStorage
                 Debug.Log("[PistonMachine] Max energy and ball => Ejecting ball !");
                 // Animation
                 // remove the actual energy (with dotween animation too)
-                //_currentEnergy = 0f;
+                _currentEnergy = 0f;
                 // destroy the ball inside with the BallPoolManager
                 // Instanciate the ballOut with the BallPoolManager
                 // Eject Her !
                 _canEjectBall = false;
-                _ballInside.IsProcessing = false; // Dans tout les cas elle va être destroy c'est temp pour les test du drag
+                BallPoolManager.Instance.ReleaseBall(_ballInside);
+                //var ball = BallPoolManager.Instance.SpawnBall(, _TargetTransformBall);
                 _ballInside = null;
             }
         }
@@ -93,7 +94,7 @@ public class PistonMachine : MachineEntity, IEnergyStorage
     /// </summary>
     public override void OnPartCollisionEnter(string partId, Collision2D collision)
     {
-        if (!_isRunning)
+        if (!_isRunning || IsBeingDragged)
         {
             return;
         }
@@ -116,6 +117,8 @@ public class PistonMachine : MachineEntity, IEnergyStorage
 
     public override void OnPartTriggerEnter(string partId, Collider2D collider)
     {
+        if (IsBeingDragged) return;
+
         // If the ball touch de box part
         if (partId == "Box" && collider.gameObject.TryGetComponent(out BallEntity useBall))
         {
