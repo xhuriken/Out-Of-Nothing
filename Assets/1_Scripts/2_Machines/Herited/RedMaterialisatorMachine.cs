@@ -63,6 +63,9 @@ public class RedMaterialisatorMachine :  MachineEntity
         }
     }
 
+    /// <summary>
+    /// Spawn red ball every x time 
+    /// </summary>
     private void SpawnBall()
     {
 

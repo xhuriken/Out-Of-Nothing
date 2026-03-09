@@ -6,45 +6,64 @@ public class GeneratorMachine : MachineEntity
     [SerializeField] private float _currentEnergy;
     [SerializeField] private float _maxEnergy = 300f;
 
-    [Header("Energy Settings")]
-    [SerializeField] private float _transferAmount = 5f;
+    [Header("Energy Transfer")]
+    //transfer range
     [SerializeField] private float _transferRadius = 5f;
+    //energie transfer speed
+    [SerializeField] private float _transferInterval = 0.1f;
+    //quantity sent
+    [SerializeField] private float _energyPerTransfer = 1f;
 
-    private float _timer;
+    private float _transferTimer;
+    private float _generationTimer;
 
     private Collider2D[] _results = new Collider2D[20];
     private List<MachineEntity> _targets = new List<MachineEntity>();
 
     void Update()
     {
+        //if drag NO ENERGIEEEE
         if (!_isRunning || IsBeingDragged)
             return;
 
         GenerateEnergy();
-
         TransferEnergy();
     }
 
+    /// <summary>
+    /// Generate 10 energie every second ( for the moment).
+    /// </summary>
     void GenerateEnergy()
     {
-        _timer += Time.deltaTime;
+        _generationTimer += Time.deltaTime;
 
-        if (_timer >= 1f)
+        if (_generationTimer >= 1f)
         {
-            _timer = 0f;
+            _generationTimer = 0f;
 
             if (_currentEnergy < _maxEnergy)
                 _currentEnergy += 10f;
         }
     }
 
+    /// <summary>
+    /// Transfer energy at the nearby machine.
+    /// </summary>
     void TransferEnergy()
     {
         if (_currentEnergy <= 0f)
             return;
 
+        _transferTimer += Time.deltaTime;
+
+        if (_transferTimer < _transferInterval)
+            return;
+
+        _transferTimer = 0f;
+
         _targets.Clear();
 
+        //circle collider for nearby machine 
         int count = Physics2D.OverlapCircleNonAlloc(
             transform.position,
             _transferRadius,
@@ -60,8 +79,8 @@ public class GeneratorMachine : MachineEntity
 
             if (machine.CanReceiveEnergy)
             {
-                machine.AddEnergy(_transferAmount);
-                _currentEnergy -= _transferAmount;
+                machine.AddEnergy(_energyPerTransfer);
+                _currentEnergy -= _energyPerTransfer;
 
                 _targets.Add(machine);
 
@@ -71,13 +90,13 @@ public class GeneratorMachine : MachineEntity
         }
     }
 
+    /// <summary>
+    /// Draw line generator to nearby machine.
+    /// </summary>
     void OnDrawGizmos()
     {
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(transform.position, _transferRadius);
-
-        if (_targets == null)
-            return;
 
         Gizmos.color = Color.yellow;
 
