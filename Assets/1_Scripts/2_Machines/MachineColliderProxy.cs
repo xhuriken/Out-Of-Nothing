@@ -22,4 +22,12 @@ public class MachineColliderProxy : MonoBehaviour
             _parentMachine.OnPartCollisionEnter(_partId, collision);
         }
     }
+
+    private void OnTriggerEnter2D(Collider2D collider)
+    {
+        if (_parentMachine != null)
+        {
+            _parentMachine.OnPartTriggerEnter(_partId, collider);
+        }
+    }
 }

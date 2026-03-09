@@ -8,7 +8,8 @@ public interface IDraggable
     /// <summary>
     /// Triggered when the drag interaction starts.
     /// </summary>
-    void OnDragStart();
+    /// <returns>True if the object accepts being dragged, false to reject the interaction. (If the ball IsProcessing !)</returns>
+    bool OnDragStart();
 
     /// <summary>
     /// Triggered every frame while the object is being dragged.
@@ -20,4 +21,10 @@ public interface IDraggable
     /// Triggered when the drag interaction ends.
     /// </summary>
     void OnDragEnd();
+
+    /// <summary>
+    /// Triggered when a rotation input is received during a drag.
+    /// </summary>
+    /// <param name="scrollDelta">The raw scroll value from the input system.</param>
+    void OnDragRotate(float scrollDelta);
 }

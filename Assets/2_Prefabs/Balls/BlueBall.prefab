@@ -62,9 +62,9 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!58 &7224402592017347342
 CircleCollider2D:
@@ -118,6 +118,7 @@ MonoBehaviour:
   _renderer: {fileID: 6339655241896321448}
   _particlesClick: {fileID: 7368551313527734449}
   _particlesDuplicate: {fileID: 8159630582120723512}
+  _isProcessing: 0
   _dragForceMultiplier: 15
 --- !u!114 &6339655241896321448
 MonoBehaviour:

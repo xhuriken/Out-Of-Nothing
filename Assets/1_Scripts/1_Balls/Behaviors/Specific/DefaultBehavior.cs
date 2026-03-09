@@ -21,6 +21,7 @@ public class DefaultBehavior : BallBehavior
 
     public override void ExecuteFixedUpdate(BallEntity ball, float fixedDeltaTime)
     {
+        if (ball.IsProcessing) return;
         // No specific override required
     }
 }

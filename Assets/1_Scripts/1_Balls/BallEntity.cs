@@ -17,6 +17,8 @@ public class BallEntity : MonoBehaviour, IDraggable
     [SerializeField] private Disc _renderer;
     [SerializeField] private ParticleSystem _particlesClick;
     [SerializeField] private ParticleSystem _particlesDuplicate;
+    [Header("States")]
+    [SerializeField] private bool _isProcessing;
 
     [Header("Settings")]
     [SerializeField]
@@ -24,17 +26,15 @@ public class BallEntity : MonoBehaviour, IDraggable
 
     private float _lastClickTime;
     private int _currentClickCount;
-    private Rigidbody2D _rb;
     private BallBehavior _runtimeBehavior;
     private CircleCollider2D _collider;
-    private bool _isBeingDragged;
-
 
     /// <summary>
     /// Exposes the configuration data.
     /// </summary>
     public BallDataSO Data => _data;
 
+    private Rigidbody2D _rb;
     /// <summary>
     /// Exposes the Rigidbody2D component.
     /// </summary>
@@ -45,6 +45,7 @@ public class BallEntity : MonoBehaviour, IDraggable
     /// </summary>
     public Disc Renderer => _renderer;
 
+    private bool _isBeingDragged;
     /// <summary>
     /// Exposes the drag state of the ball.
     /// </summary>
@@ -54,6 +55,17 @@ public class BallEntity : MonoBehaviour, IDraggable
     /// Exposes the collider radius.
     /// </summary>
     public float ColliderRadius => _data.radius + (_renderer.Thickness / 2);
+
+    /// <summary>
+    /// Exposes the process state
+    /// </summary>
+    public bool IsProcessing {
+        get => _isProcessing;
+        set 
+        {
+            _isProcessing = value;
+        }
+    }
 
     /// <summary>
     /// Exposes the Collider of the ball.
@@ -112,6 +124,7 @@ public class BallEntity : MonoBehaviour, IDraggable
         {
             _runtimeBehavior = null;
         }
+        _isProcessing = false;
 
         // Apply visual and physical properties defined in the ScriptableObject
         UpdateVisualsAndPhysics();
@@ -271,8 +284,13 @@ public class BallEntity : MonoBehaviour, IDraggable
     /// <summary>
     /// Prepares the ball for dynamic physical dragging.
     /// </summary>
-    public void OnDragStart()
+    public bool OnDragStart()
     {
+        Debug.Log($"Trying to drag ball {_data.id} (IsProcessing: {_isProcessing})");
+        if (_isProcessing)
+        {
+            return false;
+        }
         _isBeingDragged = true;
         // We keep the bodyType as Dynamic to preserve physical collisions
         _rb.linearVelocity = Vector2.zero;
@@ -282,6 +300,7 @@ public class BallEntity : MonoBehaviour, IDraggable
             // Tell tho the behavior that we're started the drag !
             _runtimeBehavior.OnDragStart(this);
         }
+        return true;
     }
 
     /// <summary>
@@ -311,6 +330,15 @@ public class BallEntity : MonoBehaviour, IDraggable
             // Tell tho the behavior that we're stopped the drag !
             _runtimeBehavior.OnDragEnd(this);
         }
+    }
+
+    /// <summary>
+    /// Handles rotation input during a drag.
+    /// Balls are symmetrical circles, so physical rotation is ignored by default.
+    /// </summary>
+    public void OnDragRotate(float scrollDelta)
+    {
+        // Do nothing, or pass to _runtimeBehavior if a specific ball needs visual rotation.
     }
 
     #endregion

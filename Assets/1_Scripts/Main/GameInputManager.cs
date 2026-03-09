@@ -6,13 +6,22 @@ using UnityEngine.InputSystem;
 /// </summary>
 public class GameInputManager : MonoBehaviour
 {
+    public static GameInputManager Instance { get; private set; }
+
     [SerializeField]
     private LayerMask _ballLayerMask;
 
     private Camera _mainCamera;
     private IDraggable _currentDraggedObject;
     private void Awake()
-    {
+    { 
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+
         _mainCamera = Camera.main; // TODO: STOP USING CAMERA.MAIN, CACHE THAT IN A SINGLETON OR PASS IT VIA INSPECTOR
     }
 
@@ -43,19 +52,37 @@ public class GameInputManager : MonoBehaviour
             LayerMask allMask = ~0;
             RaycastHit2D hit = Physics2D.Raycast(mousePosition, Vector2.zero, 0f, allMask);
 
-            if (hit.collider != null && hit.collider.TryGetComponent(out IDraggable draggable))
+            //Get the interface from the hit object OR its parents (This is not optimised i think, but my machine have colliders in children...)
+            IDraggable draggable = hit.collider?.GetComponentInParent<IDraggable>();
+
+            if (draggable != null)
             {
-                _currentDraggedObject = draggable;
-                _currentDraggedObject.OnDragStart();
+                if (draggable.OnDragStart())
+                {
+                    _currentDraggedObject = draggable;
+                }
             }
         }
         else if (context.canceled)
         {
-            if (_currentDraggedObject != null)
-            {
-                _currentDraggedObject.OnDragEnd();
-                _currentDraggedObject = null;
-            }
+            ForceDrop();
+        }
+    }
+
+    /// <summary>
+    /// Handles the Scroll input action to rotate the currently dragged object.
+    /// </summary>
+    public void OnScroll(InputAction.CallbackContext context)
+    {
+        if (_currentDraggedObject != null && context.performed)
+        {
+            // The scroll wheel is the Y axis
+            float scrollValue = context.ReadValue<float>();
+
+            //if (Mathf.Abs(scrollValue) > 0.01f)
+            //{
+            _currentDraggedObject.OnDragRotate(scrollValue);
+            //}
         }
     }
 
@@ -100,5 +127,18 @@ public class GameInputManager : MonoBehaviour
         return _mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
     }
     #endregion
+
+    /// <summary>
+    /// Forces the currently dragged object to be dropped. 
+    /// Can be called externally by machines claiming a ball.
+    /// </summary>
+    public void ForceDrop()
+    {
+        if (_currentDraggedObject != null)
+        {
+            _currentDraggedObject.OnDragEnd();
+            _currentDraggedObject = null;
+        }
+    }
 
 }
