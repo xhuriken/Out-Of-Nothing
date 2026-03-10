@@ -13,10 +13,4 @@ public interface IEnergyStorage
     /// </summary>
     /// <returns>The actual amount of energy extracted.</returns>
     float ExtractEnergy(float amount);
-
-    /// <summary>
-    /// Attempts to add energy to the machine.
-    /// </summary>
-    /// <returns>The actual amount of energy added.</returns>
-    float AddEnergy(float amount);
 }
