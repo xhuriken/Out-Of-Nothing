@@ -5,5 +5,7 @@ using UnityEngine;
 /// </summary>
 public interface IEnergyConsumer
 {
-    void ProvideEnergy(float amount);
+    float EnergyNeeded { get; }
+
+    void ReceiveEnergy(float amount);
 }

@@ -29,6 +29,10 @@ public class BallEntity : MonoBehaviour, IDraggable
     private BallBehavior _runtimeBehavior;
     private CircleCollider2D _collider;
 
+    [SerializeField] private float _energyOutputRadius = 2.5f;
+    private Collider2D[] _energyResults = new Collider2D[10];
+    private MachineEntity _energyTarget;
+
     /// <summary>
     /// Exposes the configuration data.
     /// </summary>
@@ -129,30 +133,6 @@ public class BallEntity : MonoBehaviour, IDraggable
 
         // Apply visual and physical properties defined in the ScriptableObject
         UpdateVisualsAndPhysics();
-    }
-
-
-    //YELLOW BALL CONNEXION
-    private List<BallEntity> _connections = new List<BallEntity>();
-
-    public void SetConnections(List<BallEntity> connections)
-    {
-        _connections.Clear();
-        _connections.AddRange(connections);
-    }
-
-    private void OnDrawGizmos()
-    {
-        if (_connections == null) return;
-
-        Gizmos.color = Color.yellow;
-
-        foreach (var other in _connections)
-        {
-            if (other == null) continue;
-
-            Gizmos.DrawLine(transform.position, other.transform.position);
-        }
     }
 
     #region Ball Interacion (Click & Collision)
@@ -287,7 +267,8 @@ public class BallEntity : MonoBehaviour, IDraggable
     /// </summary>
     public bool OnDragStart()
     {
-        Debug.Log($"Trying to drag ball {_data.id} (IsProcessing: {_isProcessing})");
+        ElectricManager.Instance.MarkDirty();
+        //Debug.Log($"Trying to drag ball {_data.id} (IsProcessing: {_isProcessing})");
         if (_isProcessing)
         {
             return false;

@@ -471,6 +471,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PistonMachine
   _rotationMode: 2
   _freeRotationSpeed: 0.5
+  _consumptiondemand: 0
   _ballInside: {fileID: 0}
   _ballOut: {fileID: 0}
   _TargetTransformBall: {fileID: 6494625256538357422}

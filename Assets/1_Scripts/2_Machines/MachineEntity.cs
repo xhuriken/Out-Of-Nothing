@@ -57,12 +57,19 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable
         // Switch case inside to handle different parts if necessary imo
     }
 
+    public virtual void ReceiveEnergy(float amount)
+    {
+        // Par défaut rien, les machines spécifiques vont override
+    }
+
+
     #region Drag & drop
 
     public virtual bool OnDragStart()
     {
         _isRunning = false; // Stop function while moving
         _isBeingDragged = true;
+        //ElectricManager.Instance.MarkDirty();
         // TODO: Handle visual feedback ((Animations)
         return true;
     }
