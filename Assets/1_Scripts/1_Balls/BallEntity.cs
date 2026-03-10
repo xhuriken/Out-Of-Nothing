@@ -29,6 +29,10 @@ public class BallEntity : MonoBehaviour, IDraggable
     private BallBehavior _runtimeBehavior;
     private CircleCollider2D _collider;
 
+    [SerializeField] private float _energyOutputRadius = 2.5f;
+    private Collider2D[] _energyResults = new Collider2D[10];
+    private MachineEntity _energyTarget;
+
     /// <summary>
     /// Exposes the configuration data.
     /// </summary>
@@ -130,7 +134,7 @@ public class BallEntity : MonoBehaviour, IDraggable
         UpdateVisualsAndPhysics();
     }
 
-
+    #region Yellow ball connexion
     //YELLOW BALL CONNEXION
     private List<BallEntity> _connections = new List<BallEntity>();
 
@@ -142,17 +146,56 @@ public class BallEntity : MonoBehaviour, IDraggable
 
     private void OnDrawGizmos()
     {
-        if (_connections == null) return;
-
-        Gizmos.color = Color.yellow;
-
-        foreach (var other in _connections)
+        if (_connections != null)
         {
-            if (other == null) continue;
+            Gizmos.color = Color.yellow;
+            foreach (var other in _connections)
+            {
+                if (other == null) continue;
+                Gizmos.DrawLine(transform.position, other.transform.position);
+            }
+        }
 
-            Gizmos.DrawLine(transform.position, other.transform.position);
+        if (_energyTarget != null)
+        {
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawLine(transform.position, _energyTarget.transform.position);
         }
     }
+
+    public virtual void ReceiveEnergy(float amount)
+    {
+
+        _energyTarget = null;
+
+        int count = Physics2D.OverlapCircleNonAlloc(
+            transform.position,
+            _energyOutputRadius,
+            _energyResults
+        );
+
+        bool foundMachine = false;
+
+        for (int i = 0; i < count; i++)
+        {
+            MachineEntity machine = _energyResults[i].GetComponent<MachineEntity>();
+            if (machine != null && machine.CanReceiveEnergy)
+            {
+
+                machine.AddEnergy(amount);
+                _energyTarget = machine;
+                foundMachine = true;
+            }
+
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, _energyOutputRadius);
+    }
+    #endregion
 
     #region Ball Interacion (Click & Collision)
 

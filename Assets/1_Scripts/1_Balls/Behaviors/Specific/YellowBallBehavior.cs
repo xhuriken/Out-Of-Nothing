@@ -27,7 +27,7 @@ public class YellowBallBehavior : BallBehavior
 
     public override void ExecuteFixedUpdate(BallEntity ball, float fixedDeltaTime)
     {
-        if (ball.IsBeingDragged) return;
+       
 
         _connections.Clear();
 
@@ -49,7 +49,40 @@ public class YellowBallBehavior : BallBehavior
         }
 
         ball.SetConnections(_connections);
+
+        //PropagateEnergy(ball,80);
+        
     }
+
+    public void PropagateEnergy(BallEntity ball, float amount)
+    {
+       
+        foreach (var other in _connections)
+        {
+            Debug.Log(other);
+            if (other == null)
+                continue;
+
+            // si c'est une machine
+            MachineEntity machine = other.GetComponent<MachineEntity>();
+
+            Debug.Log(machine);
+            //if (machine != null && machine.CanReceiveEnergy)
+            //{
+            //    machine.AddEnergy(amount);
+            //    return;
+            //}
+
+            //Debug.Log(other);
+            //// si c'est une autre yellow ball
+            //if (other.Data.id == "YellowBall")
+            //{
+            //    other.ReceiveEnergy(amount);
+            //}
+        }
+    }
+
+
 
 
 }

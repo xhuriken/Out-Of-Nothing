@@ -64,7 +64,7 @@ public class RedMaterialisatorMachine :  MachineEntity
     }
 
     /// <summary>
-    /// Spawn red ball every x time 
+    /// Transfer energy at the nearby machine.
     /// </summary>
     private void SpawnBall()
     {

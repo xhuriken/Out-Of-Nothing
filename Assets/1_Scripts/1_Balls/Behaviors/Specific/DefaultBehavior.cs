@@ -24,4 +24,8 @@ public class DefaultBehavior : BallBehavior
         if (ball.IsProcessing) return;
         // No specific override required
     }
+
+    public virtual void ReceiveEnergy(float amount)
+    {
+    }
 }
