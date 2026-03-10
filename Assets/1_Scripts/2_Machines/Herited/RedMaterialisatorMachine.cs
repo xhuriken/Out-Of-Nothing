@@ -1,76 +1,33 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class RedMaterialisatorMachine :  MachineEntity
+public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
 {
+    private int _maxEnergy;
+    private int _currentEnergy;
+    private Vector2 _spawnForce;
 
-    //local vars
-    [SerializeField]
-    private float _currentEnergy;
-    [SerializeField]
-    private float _maxEnergy = 100f;
+    public float EnergyNeeded => _maxEnergy - _currentEnergy;
 
-    [Header("Ball to generate")]
-    [SerializeField] private BallDataSO _redBallData;
-
-    [Header("Spawn Settings")]
-    [SerializeField] private float _spawnForce = 5f;
-    [SerializeField] private float _spawnDelay = 5f;
-    [SerializeField] private float _consumption = 1f;
-
-    private float _timer;
-    private float _timerconsumption;
-
-    public override void AddEnergy(float amount)
+    void Start()
     {
-        _currentEnergy += amount;
-        _currentEnergy = Mathf.Clamp(_currentEnergy, 0f, _maxEnergy);
+        ElectricManager.Instance.Register(this);
     }
 
-    void Awake()
+    public void ReceiveEnergy(float amount)
     {
-        _consumptiondemand = true;
-    }
-    void Update()
-    {
-        if (!_isRunning || IsBeingDragged)
-        {
-            return;
-        }
-
-        if (_currentEnergy <= 0f)
-        {
-            return;
-        }
-
-        if (_currentEnergy > 0f)
-            {
-            _timer += Time.deltaTime;
-            _timerconsumption += Time.deltaTime;
-
-            if (_timerconsumption >= _consumption)
-            {
-                _timerconsumption = 0f;
-                _currentEnergy -= 10f;
-             
-            }
-
-            if (_timer >= _spawnDelay)
-            {
-                _timer = 0f;
-                SpawnBall();
-            }
-        }
+        _currentEnergy += (int)amount;
+        _currentEnergy = Mathf.Clamp(_currentEnergy, 0, _maxEnergy);
     }
 
     /// <summary>
     /// Transfer energy at the nearby machine.
     /// </summary>
-    private void SpawnBall()
-    {
+    //private void SpawnBall()
+    //    {
 
-        BallEntity newBall = BallPoolManager.Instance.SpawnBall(_redBallData, transform.position);
+    //        BallEntity newBall = BallPoolManager.Instance.SpawnBall(_redBallData, transform.position);
 
-        newBall.Rb.AddForce(Vector2.right * _spawnForce, ForceMode2D.Impulse);
-    }
+    //        newBall.Rb.AddForce(Vector2.right * _spawnForce, ForceMode2D.Impulse);
+    //    }
 }

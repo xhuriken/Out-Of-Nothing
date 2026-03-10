@@ -25,7 +25,5 @@ public class DefaultBehavior : BallBehavior
         // No specific override required
     }
 
-    public virtual void ReceiveEnergy(float amount)
-    {
-    }
+
 }

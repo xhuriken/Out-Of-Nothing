@@ -134,69 +134,6 @@ public class BallEntity : MonoBehaviour, IDraggable
         UpdateVisualsAndPhysics();
     }
 
-    #region Yellow ball connexion
-    //YELLOW BALL CONNEXION
-    private List<BallEntity> _connections = new List<BallEntity>();
-
-    public void SetConnections(List<BallEntity> connections)
-    {
-        _connections.Clear();
-        _connections.AddRange(connections);
-    }
-
-    private void OnDrawGizmos()
-    {
-        if (_connections != null)
-        {
-            Gizmos.color = Color.yellow;
-            foreach (var other in _connections)
-            {
-                if (other == null) continue;
-                Gizmos.DrawLine(transform.position, other.transform.position);
-            }
-        }
-
-        if (_energyTarget != null)
-        {
-            Gizmos.color = Color.cyan;
-            Gizmos.DrawLine(transform.position, _energyTarget.transform.position);
-        }
-    }
-
-    public virtual void ReceiveEnergy(float amount)
-    {
-
-        _energyTarget = null;
-
-        int count = Physics2D.OverlapCircleNonAlloc(
-            transform.position,
-            _energyOutputRadius,
-            _energyResults
-        );
-
-        bool foundMachine = false;
-
-        for (int i = 0; i < count; i++)
-        {
-            MachineEntity machine = _energyResults[i].GetComponent<MachineEntity>();
-            if (machine != null && machine.CanReceiveEnergy)
-            {
-
-                machine.AddEnergy(amount);
-                _energyTarget = machine;
-                foundMachine = true;
-            }
-
-        }
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, _energyOutputRadius);
-    }
-    #endregion
-
     #region Ball Interacion (Click & Collision)
 
     /// <summary>
@@ -329,7 +266,8 @@ public class BallEntity : MonoBehaviour, IDraggable
     /// </summary>
     public bool OnDragStart()
     {
-        Debug.Log($"Trying to drag ball {_data.id} (IsProcessing: {_isProcessing})");
+        ElectricManager.Instance.MarkDirty();
+        //Debug.Log($"Trying to drag ball {_data.id} (IsProcessing: {_isProcessing})");
         if (_isProcessing)
         {
             return false;

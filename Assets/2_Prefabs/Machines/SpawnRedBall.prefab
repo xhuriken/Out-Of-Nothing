@@ -716,8 +716,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RedMaterialisatorMachine
   _rotationMode: 2
   _freeRotationSpeed: 0.5
-  _currentEnergy: 0
-  _maxEnergy: 300
+  _consumptiondemand: 0
 --- !u!1 &6208145353555095486
 GameObject:
   m_ObjectHideFlags: 0

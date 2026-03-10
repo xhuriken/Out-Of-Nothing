@@ -228,8 +228,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GeneratorMachine
   _rotationMode: 2
   _freeRotationSpeed: 0.5
-  _currentEnergy: 0
-  _maxEnergy: 300
+  _consumptiondemand: 0
 --- !u!1 &752403498098112197
 GameObject:
   m_ObjectHideFlags: 0
