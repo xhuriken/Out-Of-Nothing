@@ -97,6 +97,7 @@ public class BallEntity : MonoBehaviour, IDraggable
 
     private void FixedUpdate()
     {
+        if (IsBeingDragged || IsProcessing) return;
         _runtimeBehavior?.ExecuteFixedUpdate(this, Time.fixedDeltaTime);
     }
 

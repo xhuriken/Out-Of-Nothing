@@ -557,6 +557,97 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MachineColliderProxy
   _parentMachine: {fileID: 196094827}
   _partId: Piston
+--- !u!1001 &1960906074
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 247429699215612749, guid: 00cdc9da06a954145a5d01809e0a69c5, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: d72c5e047d4188246887ffb9389e25a7, type: 2}
+    - target: {fileID: 359254975943432488, guid: 00cdc9da06a954145a5d01809e0a69c5, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5816716308862006155, guid: 00cdc9da06a954145a5d01809e0a69c5, type: 3}
+      propertyPath: type
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6816056764612179154, guid: 00cdc9da06a954145a5d01809e0a69c5, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -2.8081853
+      objectReference: {fileID: 0}
+    - target: {fileID: 6816056764612179154, guid: 00cdc9da06a954145a5d01809e0a69c5, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.48147666
+      objectReference: {fileID: 0}
+    - target: {fileID: 6816056764612179154, guid: 00cdc9da06a954145a5d01809e0a69c5, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.0810362
+      objectReference: {fileID: 0}
+    - target: {fileID: 6816056764612179154, guid: 00cdc9da06a954145a5d01809e0a69c5, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6816056764612179154, guid: 00cdc9da06a954145a5d01809e0a69c5, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6816056764612179154, guid: 00cdc9da06a954145a5d01809e0a69c5, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6816056764612179154, guid: 00cdc9da06a954145a5d01809e0a69c5, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6816056764612179154, guid: 00cdc9da06a954145a5d01809e0a69c5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6816056764612179154, guid: 00cdc9da06a954145a5d01809e0a69c5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6816056764612179154, guid: 00cdc9da06a954145a5d01809e0a69c5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9221366279253860388, guid: 00cdc9da06a954145a5d01809e0a69c5, type: 3}
+      propertyPath: m_Name
+      value: BlackHole
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 9221366279253860388, guid: 00cdc9da06a954145a5d01809e0a69c5, type: 3}
+      insertIndex: 1
+      addedObject: {fileID: 1960906076}
+  m_SourcePrefab: {fileID: 100100000, guid: 00cdc9da06a954145a5d01809e0a69c5, type: 3}
+--- !u!1 &1960906075 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9221366279253860388, guid: 00cdc9da06a954145a5d01809e0a69c5, type: 3}
+  m_PrefabInstance: {fileID: 1960906074}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1960906076
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1960906075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3a2bbccb53a3de438684cec3a28bd4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BlackHole
+  _radius: 1
+  _attractRadius: 2
 --- !u!50 &2028585429 stripped
 Rigidbody2D:
   m_CorrespondingSourceObject: {fileID: 6725991636064141426, guid: 70ae4f13ae8e6d548a4597378e4a4c4c, type: 3}
@@ -1009,3 +1100,4 @@ SceneRoots:
   - {fileID: 2376557813066159538}
   - {fileID: 854008817}
   - {fileID: 1041779468}
+  - {fileID: 1960906074}
