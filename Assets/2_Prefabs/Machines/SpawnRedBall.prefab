@@ -716,7 +716,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RedMaterialisatorMachine
   _rotationMode: 2
   _freeRotationSpeed: 0.5
-  _consumptiondemand: 0
+  _redBallData: {fileID: 0}
+  _energyRequiredPerSpawn: 50
+  _ejectionForce: 5
 --- !u!1 &6208145353555095486
 GameObject:
   m_ObjectHideFlags: 0

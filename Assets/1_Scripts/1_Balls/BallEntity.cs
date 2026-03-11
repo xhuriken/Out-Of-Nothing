@@ -228,6 +228,7 @@ public class BallEntity : MonoBehaviour, IDraggable
     /// </summary>
     public void PerformDefaultDuplicate()
     {
+        if (IsProcessing) return;
         DOTween.Kill(this);
         _particlesDuplicate.Play();
         transform.localScale = Vector3.one;
