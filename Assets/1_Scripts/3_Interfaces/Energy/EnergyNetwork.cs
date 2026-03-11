@@ -7,10 +7,18 @@ using UnityEngine;
 /// </summary>
 public class EnergyNetwork
 {
-    private readonly HashSet<IEnergyNode> _nodes = new HashSet<IEnergyNode>();
+    private readonly HashSet<IEnergyNode>  _nodes     = new HashSet<IEnergyNode>();
     private readonly List<IEnergyConsumer> _consumers = new List<IEnergyConsumer>();
     private readonly List<IEnergyProducer> _producers = new List<IEnergyProducer>();
-    private readonly List<IEnergyStorage> _storages = new List<IEnergyStorage>();
+    private readonly List<IEnergyStorage>  _storages  = new List<IEnergyStorage>();
+
+    /// <summary>
+    /// Exposes the nodes for Gizmo drawing in the EnergyManager.
+    /// </summary>
+    public IEnumerable<IEnergyNode> Nodes
+    {
+        get { return _nodes; }
+    }
 
     /// <summary>
     /// Registers a node into this specific network and categorizes it based on its interfaces.
@@ -22,21 +30,9 @@ public class EnergyNetwork
         {
             node.CurrentNetwork = this;
 
-            // Pattern Matching to categorize the node capabilities
-            if (node is IEnergyConsumer consumer)
-            {
-                _consumers.Add(consumer);
-            }
-
-            if (node is IEnergyProducer producer)
-            {
-                _producers.Add(producer);
-            }
-
-            if (node is IEnergyStorage storage)
-            {
-                _storages.Add(storage);
-            }
+            if (node is IEnergyConsumer consumer) _consumers.Add(consumer);
+            if (node is IEnergyProducer producer) _producers.Add(producer);
+            if (node is IEnergyStorage storage)   _storages.Add(storage);
         }
     }
     /// <summary>
@@ -45,15 +41,23 @@ public class EnergyNetwork
     /// <param name="deltaTime">Time elapsed since the last tick.</param>
     public void Tick(float deltaTime)
     {
+        if (_nodes.Count == 0)
+        {
+            return;
+        }
+
         float totalInstantProduction = 0f;
 
-        // Step 1: Harvest all instantaneous production
         foreach (IEnergyProducer producer in _producers)
         {
             totalInstantProduction += producer.ProduceEnergy(deltaTime);
         }
 
-        // Step 2: Distribute to consumers
+        if (totalInstantProduction > 0f)
+        {
+            Debug.Log($"[EnergyNetwork] Generated {totalInstantProduction:F1} energy this tick from {_producers.Count} producer(s).");
+        }
+
         foreach (IEnergyConsumer consumer in _consumers)
         {
             if (!consumer.NeedsEnergy)
@@ -63,30 +67,30 @@ public class EnergyNetwork
 
             float request = consumer.EnergyRequest;
 
-            // Try to fulfill request with free instant production first
             float fromProduction = Mathf.Min(request, totalInstantProduction);
-            consumer.ProvideEnergy(fromProduction);
-            totalInstantProduction -= fromProduction;
-            request -= fromProduction;
+            if (fromProduction > 0f)
+            {
+                consumer.ProvideEnergy(fromProduction);
+                totalInstantProduction -= fromProduction;
+                request -= fromProduction;
+                Debug.Log($"[EnergyNetwork] Provided {fromProduction:F1} energy directly from producers.");
+            }
 
-            // If the consumer still needs power, drain the storages (Yellow Balls)
             if (request > 0f)
             {
                 foreach (IEnergyStorage storage in _storages)
                 {
-                    if (request <= 0f)
-                    {
-                        break;
-                    }
+                    if (request <= 0f) break;
 
                     float fromStorage = storage.ExtractEnergy(request);
-                    consumer.ProvideEnergy(fromStorage);
-                    request -= fromStorage;
+                    if (fromStorage > 0f)
+                    {
+                        consumer.ProvideEnergy(fromStorage);
+                        request -= fromStorage;
+                        Debug.Log($"[EnergyNetwork] Extracted {fromStorage:F1} energy from storage.");
+                    }
                 }
             }
         }
-
-        // Note: Any totalInstantProduction left over here is currently wasted.
-        // To charge YellowBalls, loop through _storages here and AddEnergy.
     }
 }

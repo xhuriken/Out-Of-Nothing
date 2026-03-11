@@ -34,6 +34,7 @@ public class EnergyManager : MonoBehaviour
         if (!_allNodes.Contains(node))
         {
             _allNodes.Add(node);
+            Debug.Log($"[EnergyManager] Registered new node. Total nodes: {_allNodes.Count}");
             RequestRebuild();
         }
     }
@@ -45,10 +46,10 @@ public class EnergyManager : MonoBehaviour
     {
         if (_allNodes.Remove(node))
         {
+            Debug.Log($"[EnergyManager] Unregistered node. Total nodes: {_allNodes.Count}");
             RequestRebuild();
         }
     }
-
     /// <summary>
     /// Marks the current topology as outdated. Rebuild will happen on the next FixedUpdate.
     /// </summary>
