@@ -228,6 +228,7 @@ public class BallEntity : MonoBehaviour, IDraggable
     /// </summary>
     public void PerformDefaultDuplicate()
     {
+        if (IsProcessing) return;
         DOTween.Kill(this);
         _particlesDuplicate.Play();
         transform.localScale = Vector3.one;
@@ -249,6 +250,7 @@ public class BallEntity : MonoBehaviour, IDraggable
     /// </summary>
     public void PerformDefaultClick()
     {
+        if (IsProcessing) return;
         DOTween.Kill(this);
         transform.localScale = Vector3.one;
         // Simple bounce click animation
@@ -324,4 +326,22 @@ public class BallEntity : MonoBehaviour, IDraggable
     }
 
     #endregion
+
+    private void OnEnable()
+    {
+        // Simple relay to the behavior
+        _runtimeBehavior?.OnEnableBehavior(this);
+    }
+
+    private void OnDisable()
+    {
+        // Simple relay to the behavior
+        _runtimeBehavior?.OnDisableBehavior(this);
+    }
+
+    private void OnDrawGizmos()
+    {
+        // The entity doesn't care WHAT is drawn, it just allows the behavior to draw.
+        _runtimeBehavior?.OnDrawGizmosBehavior(this);
+    }
 }

@@ -127,4 +127,36 @@ public class EnergyManager : MonoBehaviour
 
         Debug.Log($"[EnergyManager] Rebuild complete. Found {_networks.Count} independent networks.");
     }
+
+    /// <summary>
+    /// Draws visual lines between connected nodes in the Unity Editor.
+    /// </summary>
+    private void OnDrawGizmos()
+    {
+        if (_networks == null || _networks.Count == 0)
+        {
+            return;
+        }
+
+        Gizmos.color = Color.yellow;
+
+        foreach (EnergyNetwork network in _networks)
+        {
+            List<IEnergyNode> nodesList = new List<IEnergyNode>(network.Nodes);
+
+            for (int i = 0; i < nodesList.Count; i++)
+            {
+                for (int j = i + 1; j < nodesList.Count; j++)
+                {
+                    float distance = Vector2.Distance(nodesList[i].Position, nodesList[j].Position);
+                    float maxAllowedDistance = Mathf.Max(nodesList[i].ConnectionRadius, nodesList[j].ConnectionRadius);
+
+                    if (distance <= maxAllowedDistance)
+                    {
+                        Gizmos.DrawLine(nodesList[i].Position, nodesList[j].Position);
+                    }
+                }
+            }
+        }
+    }
 }

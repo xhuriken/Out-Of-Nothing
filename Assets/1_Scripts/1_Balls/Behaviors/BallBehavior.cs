@@ -53,6 +53,20 @@ public abstract class BallBehavior
     public virtual void OnCollisionEnter(BallEntity ball, Collision2D collision) { }
 
     /// <summary>
+    /// Hook called when the ball is enabled in the scene.
+    /// </summary>
+    public virtual void OnEnableBehavior(BallEntity ball) { }
+
+    /// <summary>
+    /// Hook called when the ball is disabled or returned to pool.
+    /// </summary>
+    public virtual void OnDisableBehavior(BallEntity ball) { }
+
+    /// <summary>
+    /// Hook called by the entity to draw specific gizmos for this behavior.
+    /// </summary>
+    public virtual void OnDrawGizmosBehavior(BallEntity ball) { }
+    /// <summary>
     /// Default state of ball.
     /// </summary>
     public virtual void Initialize(BallEntity ball) { }

@@ -1,3 +1,5 @@
+using Shapes;
+using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -6,14 +8,16 @@ using UnityEngine;
 /// </summary>
 public class GeneratorMachine : MachineEntity, IEnergyStorage, IEnergyProducer
 {
+    [Header("References")]
+    [SerializeField] private Rectangle _energyRenderer;
+
     [Header("Generator Settings")]
-    [SerializeField]
-    private float _productionRate = 2f; // Energy per second
+    [SerializeField] private float _productionRate = 10f; // Energy per second
+    [SerializeField] private float _maxCapacity = 100f;
+    [SerializeField] private float _animSpeed = 0.5f;
 
-    [SerializeField]
-    private float _maxCapacity = 10f;
-
-    private float _currentEnergy;
+    [SerializeField] private float _currentEnergy;
+    private float _currentDashOffset;
 
     public float CurrentEnergy => _currentEnergy;
     public float MaxEnergy => _maxCapacity;
@@ -39,5 +43,22 @@ public class GeneratorMachine : MachineEntity, IEnergyStorage, IEnergyProducer
         float given = Mathf.Min(amount, _currentEnergy);
         _currentEnergy -= given;
         return given;
+    }
+
+    private void Update()
+    {
+        UpdateVisuals();
+    }
+
+    private void UpdateVisuals()
+    {
+        _energyRenderer.DashSpacing = 1f - (_currentEnergy / _maxCapacity);
+        float dashPeriod = _energyRenderer.DashSize + _energyRenderer.DashSpacing;
+
+        if (dashPeriod > 0)
+        {
+            _currentDashOffset += Time.deltaTime * _animSpeed;
+            _energyRenderer.DashOffset = _currentDashOffset % dashPeriod;
+        }
     }
 }

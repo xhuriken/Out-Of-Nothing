@@ -24,6 +24,8 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable, IEnergyNode
     protected float _freeRotationSpeed = 0.5f;
     protected bool _isRunning = true;
     private bool _isBeingDragged;
+    [Header("Energy Settings")]
+    [SerializeField] protected float _connectionRadius = 3.5f;
 
     /// <summary>
     /// Evaluates if the machine is currently active and processing its logic.
@@ -35,9 +37,15 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable, IEnergyNode
 
     public bool IsBeingDragged => _isBeingDragged;
 
+    #region IEnergyNode Implementation
+
     public Vector2 Position => transform.position;
-    public virtual float ConnectionRadius => 2.5f;
+
+    public float ConnectionRadius => _connectionRadius;
+
     public EnergyNetwork CurrentNetwork { get; set; }
+
+    #endregion
 
     protected virtual void OnEnable() => EnergyManager.Instance?.RegisterNode(this);
     protected virtual void OnDisable() => EnergyManager.Instance?.UnregisterNode(this);
@@ -64,12 +72,6 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable, IEnergyNode
         // Switch case inside to handle different parts if necessary imo
     }
 
-    public virtual void ReceiveEnergy(float amount)
-    {
-        // Par défaut rien, les machines spécifiques vont override
-    }
-
-
     #region Drag & drop
 
     public virtual bool OnDragStart()
@@ -89,6 +91,7 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable, IEnergyNode
 
     public virtual void OnDragEnd()
     {
+        EnergyManager.Instance?.RequestRebuild();
         _isRunning = true;
         _isBeingDragged = false;
     }
@@ -117,4 +120,13 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable, IEnergyNode
     }
 
     #endregion
+
+    /// <summary>
+    /// Draws the connection radius when the machine is selected in the editor.
+    /// </summary>
+    protected virtual void OnDrawGizmos()
+    {
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(transform.position, _connectionRadius);
+    }
 }

@@ -55,7 +55,7 @@ public class EnergyNetwork
 
         if (totalInstantProduction > 0f)
         {
-            Debug.Log($"[EnergyNetwork] Generated {totalInstantProduction:F1} energy this tick from {_producers.Count} producer(s).");
+            Debug.Log($"[EnergyNetwork] Generated {totalInstantProduction:F3} energy this tick from {_producers.Count} producer(s).");
         }
 
         foreach (IEnergyConsumer consumer in _consumers)
@@ -73,7 +73,7 @@ public class EnergyNetwork
                 consumer.ProvideEnergy(fromProduction);
                 totalInstantProduction -= fromProduction;
                 request -= fromProduction;
-                Debug.Log($"[EnergyNetwork] Provided {fromProduction:F1} energy directly from producers.");
+                Debug.Log($"[EnergyNetwork] Provided {fromProduction:F3} energy directly from producers.");
             }
 
             if (request > 0f)
@@ -87,7 +87,7 @@ public class EnergyNetwork
                     {
                         consumer.ProvideEnergy(fromStorage);
                         request -= fromStorage;
-                        Debug.Log($"[EnergyNetwork] Extracted {fromStorage:F1} energy from storage.");
+                        Debug.Log($"[EnergyNetwork] Extracted {fromStorage:F3} energy from storage.");
                     }
                 }
             }

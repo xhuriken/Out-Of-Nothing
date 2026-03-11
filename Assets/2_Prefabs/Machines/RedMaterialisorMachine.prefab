@@ -597,11 +597,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4153026862624021288}
+  - component: {fileID: 1088451177946880862}
   - component: {fileID: 9089209472064100971}
   - component: {fileID: 211486126333204396}
-  - component: {fileID: 1088451177946880862}
   m_Layer: 9
-  m_Name: SpawnRedBall
+  m_Name: RedMaterialisorMachine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -629,6 +629,24 @@ Transform:
   - {fileID: 3823496636508246315}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1088451177946880862
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6162139808707930919}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ccf4ecd29bd489c45a759a3f2f27a62f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RedMaterialisatorMachine
+  _rotationMode: 2
+  _freeRotationSpeed: 0.5
+  _connectionRadius: 3.5
+  _redBallData: {fileID: 0}
+  _energyRequiredPerSpawn: 50
+  _ejectionForce: 5
 --- !u!50 &9089209472064100971
 Rigidbody2D:
   serializedVersion: 5
@@ -702,21 +720,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 3.0073776, y: 2.097498}
   m_EdgeRadius: 0
---- !u!114 &1088451177946880862
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6162139808707930919}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ccf4ecd29bd489c45a759a3f2f27a62f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RedMaterialisatorMachine
-  _rotationMode: 2
-  _freeRotationSpeed: 0.5
-  _consumptiondemand: 0
 --- !u!1 &6208145353555095486
 GameObject:
   m_ObjectHideFlags: 0

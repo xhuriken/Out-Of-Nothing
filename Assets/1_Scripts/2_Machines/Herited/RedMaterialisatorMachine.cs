@@ -29,10 +29,11 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
     public void ProvideEnergy(float amount)
     {
         _accumulatedEnergy += amount;
+        Debug.Log($"[Materialisator] Received {amount:F1} energy. Progress: {_accumulatedEnergy:F1}/{_energyRequiredPerSpawn}");
 
         if (_accumulatedEnergy >= _energyRequiredPerSpawn)
         {
-            _accumulatedEnergy = 0f; // Reset for next cycle
+            _accumulatedEnergy = 0f;
             SpawnBall();
         }
     }
@@ -43,12 +44,12 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
     private void SpawnBall()
     {
         if (_redBallData == null) return;
+        Debug.Log("[Materialisator] Spawn threshold reached. Creating RedBall.");
 
         BallEntity newBall = BallPoolManager.Instance.SpawnBall(_redBallData, transform.position);
-
         if (newBall != null)
         {
-            // Eject relative to machine rotation (transform.right)
+            // Eject relative to machine's right direction (transform.right) 
             newBall.Rb.AddForce(transform.right * _ejectionForce, ForceMode2D.Impulse);
         }
     }

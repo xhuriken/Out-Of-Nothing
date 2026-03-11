@@ -25,10 +25,11 @@ public class YellowBallBehavior : BallBehavior, IEnergyStorage, IEnergyNode
     {
         _me = ball;
         _currentStorage = _maxStorage;
+
+        // RE initialize it, if the pool attribute an another ball to this one
+        EnergyManager.Instance?.RegisterNode(this);
     }
 
-    protected virtual void OnEnable() => EnergyManager.Instance?.RegisterNode(this);
-    protected virtual void OnDisable() => EnergyManager.Instance?.UnregisterNode(this);
 
     public float ExtractEnergy(float amount)
     {
@@ -50,5 +51,27 @@ public class YellowBallBehavior : BallBehavior, IEnergyStorage, IEnergyNode
         // TOdo Dotween
         _me.Renderer.Radius = energyRatio;
         _me.Collider.radius = energyRatio;
+    }
+
+    public override void OnDragEnd(BallEntity ball)
+    {
+        base.OnDragEnd(ball);
+        EnergyManager.Instance?.RequestRebuild();
+    }
+    public override void OnEnableBehavior(BallEntity ball)
+    {
+        EnergyManager.Instance?.RegisterNode(this);
+    }
+
+    public override void OnDisableBehavior(BallEntity ball)
+    {
+        EnergyManager.Instance?.UnregisterNode(this);
+    }
+
+    public override void OnDrawGizmosBehavior(BallEntity ball)
+    {
+        // The behavior knows its own color and radius
+        Gizmos.color = new Color(1f, 0.92f, 0.016f, 0.3f);
+        Gizmos.DrawWireSphere(ball.transform.position, ConnectionRadius);
     }
 }
