@@ -13,7 +13,7 @@ public enum MachineRotationMode
 /// Base class for all machines. 
 /// Handles common state management, drag-and-drop mechanics, and the delegates specific logic.
 /// </summary>
-public abstract class MachineEntity : MonoBehaviour, IDraggable
+public abstract class MachineEntity : MonoBehaviour, IDraggable, IEnergyNode
 {
     [Header("Rotation Settings")]
     [SerializeField]
@@ -34,6 +34,13 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable
     }
 
     public bool IsBeingDragged => _isBeingDragged;
+
+    public Vector2 Position => transform.position;
+    public virtual float ConnectionRadius => 2.5f;
+    public EnergyNetwork CurrentNetwork { get; set; }
+
+    protected virtual void OnEnable() => EnergyManager.Instance?.RegisterNode(this);
+    protected virtual void OnDisable() => EnergyManager.Instance?.UnregisterNode(this);
 
     /// <summary>
     /// Receives collision events forwarded by child proxy colliders.

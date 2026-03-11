@@ -1,33 +1,55 @@
 using UnityEngine;
-using UnityEngine.UIElements;
 
+/// <summary>
+/// Consumes energy to instantiate RedBalls at a fixed interval when fully charged.
+/// </summary>
 public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
 {
-    private int _maxEnergy;
-    private int _currentEnergy;
-    private Vector2 _spawnForce;
+    [Header("Materialisator Settings")]
+    [SerializeField]
+    private BallDataSO _redBallData;
 
-    public float EnergyNeeded => _maxEnergy - _currentEnergy;
+    [SerializeField]
+    private float _energyRequiredPerSpawn = 50f;
 
-    void Start()
+    [SerializeField]
+    private float _ejectionForce = 5f;
+
+    private float _accumulatedEnergy;
+
+    // The machine needs energy if it hasn't reached the spawn threshold
+    public bool NeedsEnergy => _accumulatedEnergy < _energyRequiredPerSpawn;
+
+    // Requests only what's missing to reach the next spawn
+    public float EnergyRequest => _energyRequiredPerSpawn - _accumulatedEnergy;
+
+    /// <summary>
+    /// Receives energy from the network and triggers spawn if threshold is reached.
+    /// </summary>
+    public void ProvideEnergy(float amount)
     {
-        ElectricManager.Instance.Register(this);
-    }
+        _accumulatedEnergy += amount;
 
-    public void ReceiveEnergy(float amount)
-    {
-        _currentEnergy += (int)amount;
-        _currentEnergy = Mathf.Clamp(_currentEnergy, 0, _maxEnergy);
+        if (_accumulatedEnergy >= _energyRequiredPerSpawn)
+        {
+            _accumulatedEnergy = 0f; // Reset for next cycle
+            SpawnBall();
+        }
     }
 
     /// <summary>
-    /// Transfer energy at the nearby machine.
+    /// Spawns a ball from the pool and applies an ejection force.
     /// </summary>
-    //private void SpawnBall()
-    //    {
+    private void SpawnBall()
+    {
+        if (_redBallData == null) return;
 
-    //        BallEntity newBall = BallPoolManager.Instance.SpawnBall(_redBallData, transform.position);
+        BallEntity newBall = BallPoolManager.Instance.SpawnBall(_redBallData, transform.position);
 
-    //        newBall.Rb.AddForce(Vector2.right * _spawnForce, ForceMode2D.Impulse);
-    //    }
+        if (newBall != null)
+        {
+            // Eject relative to machine rotation (transform.right)
+            newBall.Rb.AddForce(transform.right * _ejectionForce, ForceMode2D.Impulse);
+        }
+    }
 }

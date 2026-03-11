@@ -46,6 +46,7 @@ public class PistonMachine : MachineEntity, IEnergyStorage
 
     public float MaxEnergy => _maxEnergy;
 
+    // This is local, did i need to make it in the IEnergyStorage ?
     public float AddEnergy(float amount)
     {
         // We clamp between 0 and Max ! 
@@ -56,7 +57,9 @@ public class PistonMachine : MachineEntity, IEnergyStorage
 
     public float ExtractEnergy(float amount)
     {
-        return 0f; 
+        float available = Mathf.Min(amount, _currentEnergy);
+        _currentEnergy -= available;
+        return available;
     }
 
     public void Start()

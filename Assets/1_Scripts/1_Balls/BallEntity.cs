@@ -267,7 +267,7 @@ public class BallEntity : MonoBehaviour, IDraggable
     /// </summary>
     public bool OnDragStart()
     {
-        ElectricManager.Instance.MarkDirty();
+        //ElectricManager.Instance.MarkDirty();
         //Debug.Log($"Trying to drag ball {_data.id} (IsProcessing: {_isProcessing})");
         if (_isProcessing)
         {

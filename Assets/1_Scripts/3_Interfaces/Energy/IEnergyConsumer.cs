@@ -1,11 +1,11 @@
 using UnityEngine;
 
 /// <summary>
-/// Contract for any machine that requires external energy to function.
+/// Contract for objects that require energy to perform an action.
 /// </summary>
-public interface IEnergyConsumer
+public interface IEnergyConsumer : IEnergyNode
 {
-    float EnergyNeeded { get; }
-
-    void ReceiveEnergy(float amount);
+    bool NeedsEnergy { get; }
+    float EnergyRequest { get; }
+    void ProvideEnergy(float amount);
 }
