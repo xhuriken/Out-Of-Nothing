@@ -47,7 +47,9 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable, IEnergyNode
 
     #endregion
 
-    protected virtual void OnEnable() => EnergyManager.Instance?.RegisterNode(this);
+    protected virtual void OnEnable() {
+        EnergyManager.Instance?.RegisterNode(this);
+    } 
     protected virtual void OnDisable() => EnergyManager.Instance?.UnregisterNode(this);
 
     /// <summary>

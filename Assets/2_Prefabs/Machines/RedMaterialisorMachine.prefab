@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5821639764540655096}
   - component: {fileID: 4772811704896801894}
   - component: {fileID: 5659279889623515903}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: Piston 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -159,7 +159,7 @@ GameObject:
   - component: {fileID: 3234642229928662590}
   - component: {fileID: 4858028946153736753}
   - component: {fileID: 6796470915101279835}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: Border
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -306,7 +306,7 @@ GameObject:
   - component: {fileID: 1545005092116520557}
   - component: {fileID: 5862357218301686799}
   - component: {fileID: 7321727585376800666}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: Border 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -453,7 +453,7 @@ GameObject:
   - component: {fileID: 428645572505770329}
   - component: {fileID: 4483424488792379799}
   - component: {fileID: 7815752329024956243}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: Piston
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -600,7 +600,7 @@ GameObject:
   - component: {fileID: 1088451177946880862}
   - component: {fileID: 9089209472064100971}
   - component: {fileID: 211486126333204396}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: RedMaterialisorMachine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -621,6 +621,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1086994769680139948}
+  - {fileID: 1130122107645417168}
   - {fileID: 7203268044822279204}
   - {fileID: 2911474193500963859}
   - {fileID: 3592110415051631980}
@@ -644,9 +645,14 @@ MonoBehaviour:
   _rotationMode: 2
   _freeRotationSpeed: 0.5
   _connectionRadius: 3.5
-  _redBallData: {fileID: 0}
-  _energyRequiredPerSpawn: 50
+  _energyRenderer: {fileID: 4782254245562662314}
   _ejectionForce: 5
+  _energyRequiredPerSpawn: 1
+  _redBallData: {fileID: 11400000, guid: 80d61bba963ad264f8475d89dc001b50, type: 2}
+  _animSpeed: 1
+  _maxCapacity: 1
+  _currentEnergy: 0
+  _maxFlowRate: 1
 --- !u!50 &9089209472064100971
 Rigidbody2D:
   serializedVersion: 5
@@ -732,7 +738,7 @@ GameObject:
   - component: {fileID: 7779867155555367018}
   - component: {fileID: 2474055371955538987}
   - component: {fileID: 7399548140844438784}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: Background 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -879,7 +885,7 @@ GameObject:
   - component: {fileID: 1674172465985025308}
   - component: {fileID: 4766753220814539655}
   - component: {fileID: 4880859739093876588}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1014,6 +1020,153 @@ MeshRenderer:
   m_SortingOrder: 1
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &7094148308823089430
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1130122107645417168}
+  - component: {fileID: 4782254245562662314}
+  - component: {fileID: 7747767753719149006}
+  - component: {fileID: 6305231577823705345}
+  m_Layer: 0
+  m_Name: ENERGY STORAGE
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1130122107645417168
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7094148308823089430}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4153026862624021288}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4782254245562662314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7094148308823089430}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08f210828086c1a4398856e1ba65627c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blendMode: 1
+  scaleMode: 0
+  color: {r: 1, g: 0.9183841, b: 0, a: 1}
+  detailLevel: 2
+  culling: 0
+  boundsPadding: 0
+  renderQueue: -1
+  zTest: 4
+  zOffsetFactor: 0
+  zOffsetUnits: 0
+  colorMask: 15
+  stencilComp: 8
+  stencilOpPass: 0
+  stencilRefID: 0
+  stencilReadMask: 255
+  stencilWriteMask: 255
+  pivot: 1
+  width: 1.7
+  height: 1.7
+  type: 3
+  cornerRadiusMode: 0
+  cornerRadii: {x: 0.25, y: 0.25, z: 0.25, w: 0.25}
+  thickness: 0.1
+  thicknessSpace: 0
+  matchDashSpacingToSize: 0
+  dashed: 1
+  dashStyle:
+    type: 2
+    space: -2
+    snap: 1
+    size: 18.82
+    spacing: 0
+    offset: 0
+    shapeModifier: 1
+  fill:
+    type: 0
+    space: 0
+    colorStart: {r: 0, g: 0, b: 0, a: 1}
+    colorEnd: {r: 1, g: 1, b: 1, a: 1}
+    linearStart: {x: 0, y: 0, z: 0}
+    linearEnd: {x: 0, y: 1, z: 0}
+    radialOrigin: {x: 0, y: 0, z: 0}
+    radialRadius: 1
+  useFill: 0
+--- !u!33 &7747767753719149006
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7094148308823089430}
+  m_Mesh: {fileID: 43100795730674332, guid: a3d1f56cebf202c448b6fb479f61a9dc, type: 2}
+--- !u!23 &6305231577823705345
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7094148308823089430}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 0
+  m_ReflectionProbeUsage: 0
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 525db45b2ebe18842a5def43de83a261, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 2
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &8058754965515912436
 GameObject:
   m_ObjectHideFlags: 0
@@ -1024,7 +1177,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5649333172785839375}
   - component: {fileID: 659597795580732167}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: Pistons
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1082,7 +1235,7 @@ GameObject:
   - component: {fileID: 6136512458700939312}
   - component: {fileID: 6397298483483225588}
   - component: {fileID: 1239462334395164443}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: ball
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1222,7 +1375,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3823496636508246315}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: SpawnPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -6,13 +6,13 @@ using UnityEngine;
 public class YellowBallBehavior : BallBehavior, IEnergyStorage, IEnergyNode
 {
     [SerializeField] private float _maxStorage = 1f;
-    private float _currentStorage;
+    [SerializeField] private float _currentStorage = 1f;
 
     public float CurrentEnergy => _currentStorage;
     public float MaxEnergy => _maxStorage;
     public EnergyNetwork CurrentNetwork { get; set; }
     public float ConnectionRadius => 3f;
-    public Vector2 Position { get; set; }
+    public Vector2 Position => _me != null ? (Vector2) _me.transform.position : Vector2.zero;
 
     private BallEntity _me;
 
@@ -27,7 +27,7 @@ public class YellowBallBehavior : BallBehavior, IEnergyStorage, IEnergyNode
         _currentStorage = _maxStorage;
 
         // RE initialize it, if the pool attribute an another ball to this one
-        EnergyManager.Instance?.RegisterNode(this);
+        //EnergyManager.Instance?.RegisterNode(this);
     }
 
 
@@ -49,8 +49,9 @@ public class YellowBallBehavior : BallBehavior, IEnergyStorage, IEnergyNode
     {
         float energyRatio = _currentStorage / _maxStorage;
         // TOdo Dotween
-        _me.Renderer.Radius = energyRatio;
-        _me.Collider.radius = energyRatio;
+        _me.Renderer.Radius *= energyRatio;
+        _me.Renderer.Thickness *= energyRatio;
+        _me.Collider.radius *= energyRatio;
     }
 
     public override void OnDragEnd(BallEntity ball)

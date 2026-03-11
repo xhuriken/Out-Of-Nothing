@@ -61,9 +61,9 @@ MonoBehaviour:
   _freeRotationSpeed: 0.5
   _connectionRadius: 3.5
   _energyRenderer: {fileID: 2328976781059393891}
-  _productionRate: 2
-  _maxCapacity: 10
-  _animSpeed: 0.5
+  _productionRate: 1
+  _maxCapacity: 5
+  _animSpeed: 1
   _currentEnergy: 0
 --- !u!50 &9150112361051098576
 Rigidbody2D:
@@ -1257,8 +1257,8 @@ MonoBehaviour:
   height: 1.8
   type: 3
   cornerRadiusMode: 0
-  cornerRadii: {x: 0.25, y: 0.25, z: 0.25, w: 0.25}
-  thickness: 0.1
+  cornerRadii: {x: 0.16, y: 0.16, z: 0.16, w: 0.16}
+  thickness: 0.12
   thicknessSpace: 0
   matchDashSpacingToSize: 0
   dashed: 1
@@ -1266,9 +1266,9 @@ MonoBehaviour:
     type: 2
     space: -2
     snap: 1
-    size: 19.8
+    size: 20
     spacing: 0
-    offset: 12.08
+    offset: 0
     shapeModifier: 1
   fill:
     type: 0

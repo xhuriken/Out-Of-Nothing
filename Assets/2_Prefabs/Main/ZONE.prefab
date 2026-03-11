@@ -14,9 +14,9 @@ GameObject:
   - component: {fileID: 7732261570811920596}
   - component: {fileID: 750939741934925205}
   - component: {fileID: 2883250533870753037}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: ZONE
-  m_TagString: Untagged
+  m_TagString: Zone
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -124,7 +124,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ShapesRuntime::Shapes.Rectangle
   blendMode: 1
   scaleMode: 0
-  color: {r: 0.7264151, g: 0.7264151, b: 0.7264151, a: 1}
+  color: {r: 0.3433962, g: 0.3433962, b: 0.3433962, a: 1}
   detailLevel: 2
   culling: 0
   boundsPadding: 0
@@ -176,7 +176,7 @@ EdgeCollider2D:
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 962a55f770de51446ba0592f67a5933c, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0

@@ -1,56 +1,154 @@
 using UnityEngine;
 
+using Shapes;
+using UnityEngine;
+
 /// <summary>
-/// Consumes energy to instantiate RedBalls at a fixed interval when fully charged.
+/// Consumes energy to fill an internal buffer, then uses that buffer to instantiate RedBalls.
+/// Implements IEnergyStorage to allow other machines to potentially draw from its reserve.
 /// </summary>
-public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
+public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer, IEnergyStorage
 {
+    [Header("References")]
+    [SerializeField]
+    private Rectangle _energyRenderer;
+
     [Header("Materialisator Settings")]
     [SerializeField]
-    private BallDataSO _redBallData;
+    private float _ejectionForce = 5f;
 
     [SerializeField]
     private float _energyRequiredPerSpawn = 50f;
 
     [SerializeField]
-    private float _ejectionForce = 5f;
+    private BallDataSO _redBallData;
 
-    private float _accumulatedEnergy;
+    [Header("Storage Settings")]
+    [SerializeField]
+    private float _animSpeed = 0.5f;
 
-    // The machine needs energy if it hasn't reached the spawn threshold
-    public bool NeedsEnergy => _accumulatedEnergy < _energyRequiredPerSpawn;
+    [SerializeField]
+    private float _maxCapacity = 100f;
 
-    // Requests only what's missing to reach the next spawn
-    public float EnergyRequest => _energyRequiredPerSpawn - _accumulatedEnergy;
+    private float _currentDashOffset;
+    [SerializeField] private float _currentEnergy;
 
     /// <summary>
-    /// Receives energy from the network and triggers spawn if threshold is reached.
+    /// Gets the current energy stored in the machine's buffer.
+    /// </summary>
+    public float CurrentEnergy
+    {
+        get { return _currentEnergy; }
+    }
+
+    /// <summary>
+    /// Gets the maximum capacity of the internal buffer.
+    /// </summary>
+    public float MaxEnergy
+    {
+        get { return _maxCapacity; }
+    }
+
+    /// <summary>
+    /// The machine requests energy from the network as long as its buffer isn't full.
+    /// </summary>
+    public bool NeedsEnergy
+    {
+        get { return _currentEnergy < _maxCapacity; }
+    }
+
+    /// <summary>
+    /// Returns the amount of energy needed to top up the buffer.
+    /// </summary>
+    public float EnergyRequest
+    {
+        get { return _maxCapacity - _currentEnergy; }
+    }
+
+    [SerializeField] private float _maxFlowRate = 1f;
+    public float MaxFlowRate => _maxFlowRate;
+
+    /// <summary>
+    /// Allows the network to fill the internal storage.
     /// </summary>
     public void ProvideEnergy(float amount)
     {
-        _accumulatedEnergy += amount;
-        Debug.Log($"[Materialisator] Received {amount:F1} energy. Progress: {_accumulatedEnergy:F1}/{_energyRequiredPerSpawn}");
+        _currentEnergy = Mathf.Min(_currentEnergy + amount, _maxCapacity);
+    }
 
-        if (_accumulatedEnergy >= _energyRequiredPerSpawn)
+    /// <summary>
+    /// Allows other machines to draw from this machine's buffer if connected.
+    /// </summary>
+    public float ExtractEnergy(float amount)
+    {
+        float given = Mathf.Min(amount, _currentEnergy);
+        _currentEnergy -= given;
+        return given;
+    }
+
+    private void Update()
+    {
+        if (!_isRunning)
         {
-            _accumulatedEnergy = 0f;
+            return;
+        }
+
+        UpdateLogic();
+        UpdateVisuals();
+    }
+
+    /// <summary>
+    /// Checks if enough energy is stored to perform a spawn.
+    /// </summary>
+    private void UpdateLogic()
+    {
+        if (_currentEnergy >= _energyRequiredPerSpawn)
+        {
+            _currentEnergy -= _energyRequiredPerSpawn;
             SpawnBall();
         }
     }
 
     /// <summary>
-    /// Spawns a ball from the pool and applies an ejection force.
+    /// Synchronizes the Shapes Rectangle dashes with the energy level and animates them.
+    /// </summary>
+    private void UpdateVisuals()
+    {
+        if (_energyRenderer == null)
+        {
+            return;
+        }
+
+        // Adjust spacing based on energy (0 energy = wide spacing, Full = no spacing)
+        _energyRenderer.DashSpacing = 1f - (_currentEnergy / _maxCapacity);
+
+        float dashPeriod = _energyRenderer.DashSize + _energyRenderer.DashSpacing;
+
+        if (dashPeriod > 0)
+        {
+            _currentDashOffset += Time.deltaTime * _animSpeed;
+            _energyRenderer.DashOffset = _currentDashOffset % dashPeriod;
+        }
+    }
+
+    /// <summary>
+    /// Spawns a ball from the pool and applies ejection force.
     /// </summary>
     private void SpawnBall()
     {
-        if (_redBallData == null) return;
-        Debug.Log("[Materialisator] Spawn threshold reached. Creating RedBall.");
-
-        BallEntity newBall = BallPoolManager.Instance.SpawnBall(_redBallData, transform.position);
-        if (newBall != null)
+        if (_redBallData == null)
         {
-            // Eject relative to machine's right direction (transform.right) 
-            newBall.Rb.AddForce(transform.right * _ejectionForce, ForceMode2D.Impulse);
+            Debug.LogError("[Materialisator] RedBallDataSO is not assigned, what da fuck are you doing biatch ?");
+            return;
         }
+
+        Debug.Log("[Materialisator] Buffer reached threshold. Spawning RedBall !");
+
+        //BallEntity newBall = BallPoolManager.Instance.SpawnBall(_redBallData, transform.position);
+
+        //if (newBall != null)
+        //{
+        //    newBall.Rb.AddForce(transform.right * _ejectionForce, ForceMode2D.Impulse);
+        //}
     }
 }

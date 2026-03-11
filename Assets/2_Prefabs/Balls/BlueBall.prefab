@@ -120,7 +120,6 @@ MonoBehaviour:
   _particlesDuplicate: {fileID: 8159630582120723512}
   _isProcessing: 0
   _dragForceMultiplier: 15
-  _energyOutputRadius: 2.5
 --- !u!114 &6339655241896321448
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -5,6 +5,7 @@ using UnityEngine;
 /// Orchestrates the creation and destruction of energy networks based on physical proximity.
 /// Uses a Flood Fill (BFS) algorithm to detect isolated graphs.
 /// </summary>
+[DefaultExecutionOrder(-100)]
 public class EnergyManager : MonoBehaviour
 {
     public static EnergyManager Instance { get; private set; }
@@ -113,8 +114,18 @@ public class EnergyManager : MonoBehaviour
 
                 for (int i = 0; i < neighborCount; i++)
                 {
-                    // Look for the interface in parent (for machine proxies) or the object itself
-                    IEnergyNode neighbor = _neighborBuffer[i].GetComponentInParent<IEnergyNode>();
+                    // Check for MachineEntity (MonoBehaviour) OR BallEntity (via Behavior)
+                    IEnergyNode neighbor = null;
+                    GameObject hitObj = _neighborBuffer[i].gameObject;
+
+                    if (hitObj.TryGetComponent(out MachineEntity machine))
+                    {
+                        neighbor = machine;
+                    }
+                    else if (hitObj.TryGetComponent(out BallEntity ball))
+                    {
+                        neighbor = ball.Data.behaviorTemplate as IEnergyNode;
+                    }
 
                     if (neighbor != null && unvisited.Contains(neighbor))
                     {

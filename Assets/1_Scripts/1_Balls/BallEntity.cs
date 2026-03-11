@@ -29,10 +29,6 @@ public class BallEntity : MonoBehaviour, IDraggable
     private BallBehavior _runtimeBehavior;
     private CircleCollider2D _collider;
 
-    [SerializeField] private float _energyOutputRadius = 2.5f;
-    private Collider2D[] _energyResults = new Collider2D[10];
-    private MachineEntity _energyTarget;
-
     /// <summary>
     /// Exposes the configuration data.
     /// </summary>

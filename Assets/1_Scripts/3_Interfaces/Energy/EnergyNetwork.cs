@@ -41,10 +41,7 @@ public class EnergyNetwork
     /// <param name="deltaTime">Time elapsed since the last tick.</param>
     public void Tick(float deltaTime)
     {
-        if (_nodes.Count == 0)
-        {
-            return;
-        }
+        if (_nodes.Count < 2) return; // if there are on item, let it alone !
 
         float totalInstantProduction = 0f;
 
@@ -65,7 +62,13 @@ public class EnergyNetwork
                 continue;
             }
 
-            float request = consumer.EnergyRequest;
+            // Energy request = what the consumer wants
+            // MaxFlowRate = the maximum amount of energy per second that he can consume
+
+            float flowCap = consumer.MaxFlowRate * deltaTime;
+            float request = Mathf.Min(consumer.EnergyRequest, flowCap);
+
+            if (request <= 0) continue; // No need to provide energy if the request is null btw
 
             float fromProduction = Mathf.Min(request, totalInstantProduction);
             if (fromProduction > 0f)
