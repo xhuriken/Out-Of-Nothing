@@ -80,6 +80,8 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable, IEnergyNode
     {
         _isRunning = false; // Stop function while moving
         _isBeingDragged = true;
+
+
         //ElectricManager.Instance.MarkDirty();
         // TODO: Handle visual feedback ((Animations)
         return true;
