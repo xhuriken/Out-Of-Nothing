@@ -23,7 +23,7 @@ public class BallDataSO : ScriptableObject
     public float clickCooldown = 0.1f;
 
     /// <summary>
-    /// Display color of the ball.
+    /// Displayed color of the ball.
     /// </summary>
     public Color color = Color.white;
 

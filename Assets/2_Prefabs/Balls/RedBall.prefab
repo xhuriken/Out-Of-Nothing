@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3508011679372052241}
+  - component: {fileID: 8733880597009044787}
   - component: {fileID: 7104258520504122497}
   - component: {fileID: 4929502397607299011}
-  - component: {fileID: 8733880597009044787}
   - component: {fileID: 8350127890622362483}
   - component: {fileID: 259985147718235472}
   - component: {fileID: 3992846059025626848}
@@ -39,6 +39,24 @@ Transform:
   - {fileID: 1412146451835445607}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8733880597009044787
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8758211866433413932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8048c4b60bf58044d99c2be259e2bd9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BallEntity
+  _data: {fileID: 11400000, guid: 80d61bba963ad264f8475d89dc001b50, type: 2}
+  _renderer: {fileID: 8350127890622362483}
+  _particlesClick: {fileID: 5847735563398847359}
+  _particlesDuplicate: {fileID: 1922684360571878281}
+  _isProcessing: 0
+  _dragForceMultiplier: 15
 --- !u!50 &7104258520504122497
 Rigidbody2D:
   serializedVersion: 5
@@ -102,24 +120,6 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.36
---- !u!114 &8733880597009044787
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8758211866433413932}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8048c4b60bf58044d99c2be259e2bd9d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BallEntity
-  _data: {fileID: 11400000, guid: 80d61bba963ad264f8475d89dc001b50, type: 2}
-  _renderer: {fileID: 8350127890622362483}
-  _particlesClick: {fileID: 5847735563398847359}
-  _particlesDuplicate: {fileID: 1922684360571878281}
-  _isProcessing: 0
-  _dragForceMultiplier: 15
 --- !u!114 &8350127890622362483
 MonoBehaviour:
   m_ObjectHideFlags: 0
