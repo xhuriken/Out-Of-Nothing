@@ -10,15 +10,6 @@ using UnityEngine;
 [Serializable]
 public class DefaultBehavior : BallBehavior
 {
-    /// <summary>
-    /// Clones the behavior to ensure independent runtime state.
-    /// </summary>
-    public override BallBehavior Clone()
-    {
-        // Shallow copy is sufficient for basic value types
-        return (BallBehavior) MemberwiseClone();
-    }
-
     public override void ExecuteFixedUpdate(BallEntity ball, float fixedDeltaTime)
     {
         if (ball.IsProcessing) return;

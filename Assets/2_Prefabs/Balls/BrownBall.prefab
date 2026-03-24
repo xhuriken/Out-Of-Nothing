@@ -4921,9 +4921,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 415924478720933772}
+  - component: {fileID: 1444184337667997241}
+  - component: {fileID: 44337265035483569}
   - component: {fileID: 5224366401762763466}
   - component: {fileID: 3002747215223135368}
-  - component: {fileID: 1444184337667997241}
   - component: {fileID: 1335927095737727768}
   - component: {fileID: 5889817393111906894}
   - component: {fileID: 7478001344719702401}
@@ -4951,6 +4952,38 @@ Transform:
   - {fileID: 7035730627241614369}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1444184337667997241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4381004003925531019}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8048c4b60bf58044d99c2be259e2bd9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BallEntity
+  _data: {fileID: 11400000, guid: d7cdc62acaecd73468aaebc623cf8888, type: 2}
+  _renderer: {fileID: 1335927095737727768}
+  _particlesClick: {fileID: 5615446383186218333}
+  _particlesDuplicate: {fileID: 7594083740277568431}
+  _isProcessing: 0
+  _dragForceMultiplier: 15
+  _maxDragSpeed: 30
+--- !u!114 &44337265035483569
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4381004003925531019}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04fe89ba0cbef0f4fb7708d7bfaeac05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BrownBallBehavior
+  _attractionForce: 15
 --- !u!50 &5224366401762763466
 Rigidbody2D:
   serializedVersion: 5
@@ -5014,24 +5047,6 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.36
---- !u!114 &1444184337667997241
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4381004003925531019}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8048c4b60bf58044d99c2be259e2bd9d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BallEntity
-  _data: {fileID: 11400000, guid: d7cdc62acaecd73468aaebc623cf8888, type: 2}
-  _renderer: {fileID: 1335927095737727768}
-  _particlesClick: {fileID: 5615446383186218333}
-  _particlesDuplicate: {fileID: 7594083740277568431}
-  _isProcessing: 0
-  _dragForceMultiplier: 15
 --- !u!114 &1335927095737727768
 MonoBehaviour:
   m_ObjectHideFlags: 0

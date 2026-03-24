@@ -3,15 +3,10 @@ using UnityEngine;
 
 /// <summary>
 /// Base contract for ball behaviors using Unity physics.
+/// Now a MonoBehaviour to follow standard Unity component logic.
 /// </summary>
-[Serializable]
-public abstract class BallBehavior
+public abstract class BallBehavior : MonoBehaviour
 {
-    /// <summary>
-    /// Required to prevent shared state issues between balls.
-    /// </summary>
-    public abstract BallBehavior Clone();
-
     /// <summary>
     /// Core physics loop executed inside FixedUpdate.
     /// </summary>
@@ -20,55 +15,36 @@ public abstract class BallBehavior
     /// <summary>
     /// Default click logic. Can be overridden for specific behaviors.
     /// </summary>
-    /// <param name="ball">The source ball entity.</param>
-    public virtual void OnClick(BallEntity ball) 
+    public virtual void OnClick(BallEntity ball)
     {
-        // Executes the standard click defined in the entity
         ball.PerformDefaultClick();
     }
 
     /// <summary>
     /// Default duplication logic. Can be overridden for specific behaviors.
     /// </summary>
-    /// <param name="ball">The source ball entity.</param>
     public virtual void OnDuplicate(BallEntity ball)
     {
-        // Executes the standard duplication defined in the entity
         ball.PerformDefaultDuplicate();
     }
 
-    /// <summary>
-    /// Triggered when the ball starts being dragged.
-    /// </summary>
     public virtual void OnDragStart(BallEntity ball) { }
 
-    /// <summary>
-    /// Triggered when the ball is released after a drag.
-    /// </summary>
     public virtual void OnDragEnd(BallEntity ball) { }
 
     /// <summary>
     /// Triggered when the ball collides with another physics object.
     /// </summary>
-    public virtual void OnCollisionEnter(BallEntity ball, Collision2D collision) { }
+    public virtual void OnBallCollisionEnter(BallEntity ball, Collision2D collision) { }
 
-    /// <summary>
-    /// Hook called when the ball is enabled in the scene.
-    /// </summary>
     public virtual void OnEnableBehavior(BallEntity ball) { }
 
-    /// <summary>
-    /// Hook called when the ball is disabled or returned to pool.
-    /// </summary>
     public virtual void OnDisableBehavior(BallEntity ball) { }
 
-    /// <summary>
-    /// Hook called by the entity to draw specific gizmos for this behavior.
-    /// </summary>
     public virtual void OnDrawGizmosBehavior(BallEntity ball) { }
+
     /// <summary>
-    /// Default state of ball.
+    /// Initial setup for the behavior.
     /// </summary>
     public virtual void Initialize(BallEntity ball) { }
-
 }

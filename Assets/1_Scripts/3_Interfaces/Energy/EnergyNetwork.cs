@@ -86,6 +86,7 @@ public class EnergyNetwork
                     if (request <= 0f) break;
 
                     float fromStorage = storage.ExtractEnergy(request);
+                    Debug.Log(storage.ToString());
                     if (fromStorage > 0f)
                     {
                         consumer.ProvideEnergy(fromStorage);

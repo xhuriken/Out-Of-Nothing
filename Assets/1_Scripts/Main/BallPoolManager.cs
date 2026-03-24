@@ -40,15 +40,10 @@ public class BallPoolManager : MonoBehaviour
     /// <returns>The spawned BallEntity instance.</returns>
     public BallEntity SpawnBall(BallDataSO data, Vector2 position)
     {
-        if (data == null || data.prefab == null)
-        {
-            Debug.LogError($"[BallPoolManager] Cannot spawn ball: Data or Prefab is null.");
-            return null;
-        }
+        if (data == null || data.prefab == null) return null;
 
         if (!_pools.TryGetValue(data.id, out ObjectPool<BallEntity> pool))
         {
-            // Create a new pool for this specific ball type if it doesn't exist
             pool = new ObjectPool<BallEntity>(
                 createFunc: () => Instantiate(data.prefab),
                 actionOnGet: OnTakeFromPool,

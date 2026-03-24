@@ -124,7 +124,7 @@ public class EnergyManager : MonoBehaviour
                     }
                     else if (hitObj.TryGetComponent(out BallEntity ball))
                     {
-                        neighbor = ball.Data.behaviorTemplate as IEnergyNode;
+                        neighbor = ball.Behavior as IEnergyNode;
                     }
 
                     if (neighbor != null && unvisited.Contains(neighbor))

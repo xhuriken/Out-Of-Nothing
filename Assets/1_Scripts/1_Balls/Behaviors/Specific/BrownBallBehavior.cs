@@ -14,15 +14,6 @@ public class BrownBallBehavior : BallBehavior
     private bool _isBouncing = false;
 
     /// <summary>
-    /// Clones the behavior to ensure independent runtime state.
-    /// </summary>
-    public override BallBehavior Clone()
-    {
-        // Shallow copy is sufficient for basic value types
-        return (BallBehavior) MemberwiseClone();
-    }
-
-    /// <summary>
     /// Applies vertical force or processes pause state.
     /// </summary>
     public override void ExecuteFixedUpdate(BallEntity ball, float fixedDeltaTime)
@@ -56,7 +47,7 @@ public class BrownBallBehavior : BallBehavior
     /// <summary>
     /// Triggers the pause state upon collision.
     /// </summary>
-    public override void OnCollisionEnter(BallEntity ball, Collision2D collision)
+    public override void OnBallCollisionEnter(BallEntity ball, Collision2D collision)
     {
         // VISUAL (LATER) :
         // PLAY SHADER EFFECT SHOCKWAVE

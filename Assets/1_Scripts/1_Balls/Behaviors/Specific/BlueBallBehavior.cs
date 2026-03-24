@@ -28,15 +28,6 @@ public class BlueBallBehavior : BallBehavior
 
     private float _originalRadius;
 
-    /// <summary>
-    /// Clones the behavior to ensure independent runtime state.
-    /// </summary>
-    public override BallBehavior Clone()
-    {
-        // Shallow copy
-        return (BallBehavior) MemberwiseClone();
-    }
-
     public override void Initialize(BallEntity ball)
     {
         //_positionStart = ball.transform.position;
@@ -108,7 +99,7 @@ public class BlueBallBehavior : BallBehavior
     /// <summary>
     /// Triggers the pause state upon collision.
     /// </summary>
-    public override void OnCollisionEnter(BallEntity ball, Collision2D collision)
+    public override void OnBallCollisionEnter(BallEntity ball, Collision2D collision)
     {
         if (!_isPaused)
         {

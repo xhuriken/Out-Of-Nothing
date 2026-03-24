@@ -27,6 +27,8 @@ public class PressMachine : MachineEntity, IEnergyConsumer
 
     public float EnergyRequest => throw new System.NotImplementedException();
 
+    public float MaxFlowRate => throw new System.NotImplementedException();
+
     public void ProvideEnergy(float amount)
     {
         throw new System.NotImplementedException();

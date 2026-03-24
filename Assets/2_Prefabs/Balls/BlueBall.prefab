@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6113248793361582860}
   - component: {fileID: 6514994737505783898}
+  - component: {fileID: 7494575677880220153}
   - component: {fileID: 3994086967771890052}
   - component: {fileID: 7224402592017347342}
   - component: {fileID: 6339655241896321448}
@@ -57,6 +58,22 @@ MonoBehaviour:
   _particlesDuplicate: {fileID: 8159630582120723512}
   _isProcessing: 0
   _dragForceMultiplier: 15
+  _maxDragSpeed: 30
+--- !u!114 &7494575677880220153
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8102840107874242056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9517bfea72f5c5549a16a535cb16bdca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BlueBallBehavior
+  _pauseDuration: 2
+  _amplitude: 5
+  _speed: 2
 --- !u!50 &3994086967771890052
 Rigidbody2D:
   serializedVersion: 5
