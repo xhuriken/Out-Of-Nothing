@@ -19,7 +19,11 @@ public class GeneratorMachine : MachineEntity, IEnergyStorage, IEnergyProducer
     [SerializeField] private float _currentEnergy;
     private float _currentDashOffset;
 
-    public float CurrentEnergy => _currentEnergy;
+    public float CurrentEnergy
+    {
+        get { return _currentEnergy; }
+        set { _currentEnergy = value; UpdateVisuals(); }
+    }
     public float MaxEnergy => _maxCapacity;
 
     /// <summary>
@@ -32,6 +36,7 @@ public class GeneratorMachine : MachineEntity, IEnergyStorage, IEnergyProducer
     {
         float produced = _productionRate * deltaTime;
         _currentEnergy = Mathf.Min(_currentEnergy + produced, _maxCapacity);
+        Debug.Log($"Hi i'm {gameObject.name} and we ask me to produce energy ! now i produced : {produced} & i have {CurrentEnergy}");
         return produced;
     }
 
@@ -42,10 +47,16 @@ public class GeneratorMachine : MachineEntity, IEnergyStorage, IEnergyProducer
     {
         float given = Mathf.Min(amount, _currentEnergy);
         _currentEnergy -= given;
+        Debug.Log($"Hi i'm {gameObject.name} and we ask me to extract my energy ! I extracted : {given}, and i have {CurrentEnergy}");
         return given;
     }
 
     private void Update()
+    {
+        UpdateVisuals();
+    }
+
+    void OnValidate()
     {
         UpdateVisuals();
     }

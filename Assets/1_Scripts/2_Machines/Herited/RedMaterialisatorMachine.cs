@@ -7,7 +7,7 @@ using UnityEngine;
 /// Consumes energy to fill an internal buffer, then uses that buffer to instantiate RedBalls.
 /// Implements IEnergyStorage to allow other machines to potentially draw from its reserve.
 /// </summary>
-public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer, IEnergyStorage
+public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
 {
     [Header("References")]
     [SerializeField]
@@ -39,6 +39,7 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer, IEnergyS
     public float CurrentEnergy
     {
         get { return _currentEnergy; }
+        set { _currentEnergy = value; UpdateVisuals(); }
     }
 
     /// <summary>
@@ -74,16 +75,11 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer, IEnergyS
     public void ProvideEnergy(float amount)
     {
         _currentEnergy = Mathf.Min(_currentEnergy + amount, _maxCapacity);
+        Debug.Log($"Hi i'm {gameObject.name} and i provide {amount} energy, i have {CurrentEnergy} now");
     }
-
-    /// <summary>
-    /// Allows other machines to draw from this machine's buffer if connected.
-    /// </summary>
-    public float ExtractEnergy(float amount)
+    void OnValidate()
     {
-        float given = Mathf.Min(amount, _currentEnergy);
-        _currentEnergy -= given;
-        return given;
+        UpdateVisuals();
     }
 
     private void Update()

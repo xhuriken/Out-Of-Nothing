@@ -9896,7 +9896,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::YellowBallBehavior
   _maxStorage: 1
-  _currentStorage: 1
+  _maxFlowRate: 5
+  _currentEnergy: 0
 --- !u!50 &1344634683005742415
 Rigidbody2D:
   serializedVersion: 5

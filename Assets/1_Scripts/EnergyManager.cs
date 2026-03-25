@@ -127,7 +127,7 @@ public class EnergyManager : MonoBehaviour
                         neighbor = ball.Behavior as IEnergyNode;
                     }
 
-                    if (neighbor != null && unvisited.Contains(neighbor))
+                    if (neighbor != null && unvisited.Contains(neighbor) && CanConnect(currentNode, neighbor))
                     {
                         queue.Enqueue(neighbor);
                         unvisited.Remove(neighbor);
@@ -144,30 +144,61 @@ public class EnergyManager : MonoBehaviour
     /// </summary>
     private void OnDrawGizmos()
     {
-        if (_networks == null || _networks.Count == 0)
-        {
-            return;
-        }
-
-        Gizmos.color = Color.yellow;
+        if (_networks == null || _networks.Count == 0) return;
 
         foreach (EnergyNetwork network in _networks)
         {
+            // SSOT: Assign a unique color based on the network's identity
+            Random.InitState(network.GetHashCode());
+            Gizmos.color = new Color(Random.value, Random.value, Random.value, 1f);
+
             List<IEnergyNode> nodesList = new List<IEnergyNode>(network.Nodes);
 
             for (int i = 0; i < nodesList.Count; i++)
             {
+                // Draw a small circle for the node itself
+                Gizmos.DrawWireSphere(nodesList[i].Position, 0.2f);
+
                 for (int j = i + 1; j < nodesList.Count; j++)
                 {
-                    float distance = Vector2.Distance(nodesList[i].Position, nodesList[j].Position);
-                    float maxAllowedDistance = Mathf.Max(nodesList[i].ConnectionRadius, nodesList[j].ConnectionRadius);
-
-                    if (distance <= maxAllowedDistance)
+                    // To match the Manager's logic, we check if one's center is in other's radius
+                    // OR if they are simply close enough. 
+                    float dist = Vector2.Distance(nodesList[i].Position, nodesList[j].Position);
+                    float maxRadius = Mathf.Max(nodesList[i].ConnectionRadius, nodesList[j].ConnectionRadius);
+                    // We use a small buffer to ensure the line shows up as soon as they are connected
+                    if (dist <= maxRadius && CanConnect(nodesList[i], nodesList[j]))
                     {
                         Gizmos.DrawLine(nodesList[i].Position, nodesList[j].Position);
                     }
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Determine if 2 EnergyNode can connect each other
+    /// </summary>
+    private bool CanConnect(IEnergyNode a, IEnergyNode b)
+    {
+        // 1: if its 2 Ylb
+        if (a is YellowBallBehavior || b is YellowBallBehavior)
+        {
+            return true;
+        }
+
+        // 2 : 2 machines of the same type cant connected directly
+        // (Generator + Generator = No / Consumer + Consumer = No)
+        bool aIsProducer = a is IEnergyProducer;
+        bool bIsProducer = b is IEnergyProducer;
+        bool aIsConsumer = a is IEnergyConsumer;
+        bool bIsConsumer = b is IEnergyConsumer;
+
+        // Valid connection if its different type
+        if ((aIsProducer && bIsConsumer) || (aIsConsumer && bIsProducer))
+        {
+            return true;
+        }
+        // otherwise, nop !
+        return false;
     }
 }

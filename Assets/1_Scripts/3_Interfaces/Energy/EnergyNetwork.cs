@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 /// <summary>
@@ -7,94 +8,101 @@ using UnityEngine;
 /// </summary>
 public class EnergyNetwork
 {
-    private readonly HashSet<IEnergyNode>  _nodes     = new HashSet<IEnergyNode>();
+    private readonly HashSet<IEnergyNode> _nodes = new HashSet<IEnergyNode>();
     private readonly List<IEnergyConsumer> _consumers = new List<IEnergyConsumer>();
     private readonly List<IEnergyProducer> _producers = new List<IEnergyProducer>();
-    private readonly List<IEnergyStorage>  _storages  = new List<IEnergyStorage>();
+    private readonly List<IEnergyStorage> _storages = new List<IEnergyStorage>();
 
-    /// <summary>
-    /// Exposes the nodes for Gizmo drawing in the EnergyManager.
-    /// </summary>
-    public IEnumerable<IEnergyNode> Nodes
-    {
-        get { return _nodes; }
-    }
+    public IEnumerable<IEnergyNode> Nodes => _nodes;
 
-    /// <summary>
-    /// Registers a node into this specific network and categorizes it based on its interfaces.
-    /// </summary>
-    /// <param name="node">The node to add.</param>
     public void AddNode(IEnergyNode node)
     {
         if (_nodes.Add(node))
         {
             node.CurrentNetwork = this;
-
             if (node is IEnergyConsumer consumer) _consumers.Add(consumer);
             if (node is IEnergyProducer producer) _producers.Add(producer);
-            if (node is IEnergyStorage storage)   _storages.Add(storage);
+            if (node is IEnergyStorage storage) _storages.Add(storage);
         }
     }
-    /// <summary>
-    /// Distributes energy prioritizing live production over stored energy.
-    /// </summary>
-    /// <param name="deltaTime">Time elapsed since the last tick.</param>
+
     public void Tick(float deltaTime)
     {
-        if (_nodes.Count < 2) return; // if there are on item, let it alone !
+        // Tracking for debugging
+        float totalProduced = 0f;
+        float totalProvided = 0f;
+        float totalRequested = 0f;
 
-        float totalInstantProduction = 0f;
-
+        // 1. Production phase
         foreach (IEnergyProducer producer in _producers)
         {
-            totalInstantProduction += producer.ProduceEnergy(deltaTime);
+            totalProduced += producer.ProduceEnergy(deltaTime);
         }
 
-        if (totalInstantProduction > 0f)
-        {
-            Debug.Log($"[EnergyNetwork] Generated {totalInstantProduction:F3} energy this tick from {_producers.Count} producer(s).");
-        }
+        if (_nodes.Count < 2 || _consumers.Count == 0) return;
 
+        // 3. Distribution phase
         foreach (IEnergyConsumer consumer in _consumers)
         {
-            if (!consumer.NeedsEnergy)
-            {
-                continue;
-            }
-
-            // Energy request = what the consumer wants
-            // MaxFlowRate = the maximum amount of energy per second that he can consume
+            if (!consumer.NeedsEnergy) continue;
 
             float flowCap = consumer.MaxFlowRate * deltaTime;
             float request = Mathf.Min(consumer.EnergyRequest, flowCap);
+            totalRequested += request;
 
-            if (request <= 0) continue; // No need to provide energy if the request is null btw
+            if (request <= 0) continue;
 
-            float fromProduction = Mathf.Min(request, totalInstantProduction);
-            if (fromProduction > 0f)
+            // A. Take from Generators first
+            foreach (IEnergyProducer producer in _producers)
             {
-                consumer.ProvideEnergy(fromProduction);
-                totalInstantProduction -= fromProduction;
-                request -= fromProduction;
-                Debug.Log($"[EnergyNetwork] Provided {fromProduction:F3} energy directly from producers.");
+                if (request <= 0) break;
+                if (producer is IEnergyStorage storage)
+                {
+                    float extracted = storage.ExtractEnergy(request);
+                    if (extracted > 0)
+                    {
+                        // FIX: On donne l'énergie extraite au consommateur !
+                        consumer.ProvideEnergy(extracted);
+                        totalProvided += extracted;
+                        request -= extracted;
+                    }
+                }
             }
 
-            if (request > 0f)
+            // B. Take from Storages (Yellow Balls / Other buffers)
+            if (request > 0)
             {
                 foreach (IEnergyStorage storage in _storages)
                 {
-                    if (request <= 0f) break;
+                    if (request <= 0) break;
+                    if (ReferenceEquals(consumer, storage)) continue;
 
-                    float fromStorage = storage.ExtractEnergy(request);
-                    Debug.Log(storage.ToString());
-                    if (fromStorage > 0f)
+                    float extracted = storage.ExtractEnergy(request);
+                    if (extracted > 0)
                     {
-                        consumer.ProvideEnergy(fromStorage);
-                        request -= fromStorage;
-                        Debug.Log($"[EnergyNetwork] Extracted {fromStorage:F3} energy from storage.");
+                        consumer.ProvideEnergy(extracted);
+                        totalProvided += extracted;
+                        request -= extracted;
                     }
                 }
             }
         }
+
+        // Log summary only if something happened
+        if (totalProduced > 0 || totalProvided > 0)
+        {
+            LogNetworkSummary(totalProduced, totalProvided, totalRequested);
+        }
+    }
+
+    private void LogNetworkSummary(float produced, float provided, float requested)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append($"[Net {GetHashCode().ToString("X")}] "); // ID court en Hexa
+        sb.Append($"Nodes: {_nodes.Count} | ");
+        sb.Append($"Prod: {produced:F3} | ");
+        sb.Append($"Flow: {provided:F3} / {requested:F3} (Supply/Demand)");
+
+        Debug.Log(sb.ToString());
     }
 }

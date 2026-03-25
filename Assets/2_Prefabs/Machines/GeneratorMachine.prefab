@@ -1267,8 +1267,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 20
-    spacing: 0
-    offset: 0
+    spacing: 1
+    offset: 0.0152
     shapeModifier: 1
   fill:
     type: 0
@@ -1282,7 +1282,7 @@ MonoBehaviour:
   useFill: 0
 --- !u!33 &7178608893271241154
 MeshFilter:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1290,7 +1290,7 @@ MeshFilter:
   m_Mesh: {fileID: 43100795730674332, guid: a3d1f56cebf202c448b6fb479f61a9dc, type: 2}
 --- !u!23 &1803628654479028838
 MeshRenderer:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
