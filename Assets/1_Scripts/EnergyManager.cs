@@ -10,9 +10,13 @@ public class EnergyManager : MonoBehaviour
 {
     public static EnergyManager Instance { get; private set; }
 
+    [Header("Arc Settings")]
+    [SerializeField] private ElectricArc _arcPrefab;
+
     private readonly List<IEnergyNode> _allNodes = new List<IEnergyNode>();
     private readonly List<EnergyNetwork> _networks = new List<EnergyNetwork>();
     private readonly Collider2D[] _neighborBuffer = new Collider2D[16];
+    private readonly List<ElectricArc> _arcPool = new List<ElectricArc>();
 
     private bool _isDirty;
 
@@ -81,6 +85,13 @@ public class EnergyManager : MonoBehaviour
         _isDirty = false;
         _networks.Clear();
 
+        // reset all arcs before rebuilding
+        foreach (ElectricArc arc in _arcPool)
+        {
+            arc.gameObject.SetActive(false);
+        }
+        int currentArcIndex = 0;
+
         //HashSet for O(1) lookup during traversal
         HashSet < IEnergyNode > unvisited = new HashSet<IEnergyNode>(_allNodes);
 
@@ -114,29 +125,61 @@ public class EnergyManager : MonoBehaviour
 
                 for (int i = 0; i < neighborCount; i++)
                 {
-                    // Check for MachineEntity (MonoBehaviour) OR BallEntity (via Behavior)
-                    IEnergyNode neighbor = null;
-                    GameObject hitObj = _neighborBuffer[i].gameObject;
+                    IEnergyNode neighbor = GetNodeFromCollider(_neighborBuffer[i]);
 
-                    if (hitObj.TryGetComponent(out MachineEntity machine))
-                    {
-                        neighbor = machine;
-                    }
-                    else if (hitObj.TryGetComponent(out BallEntity ball))
-                    {
-                        neighbor = ball.Behavior as IEnergyNode;
-                    }
+                    // FIX 1: Ignore if no node found, or if it's the same object
+                    if (neighbor == null || neighbor == currentNode) continue;
 
-                    if (neighbor != null && unvisited.Contains(neighbor) && CanConnect(currentNode, neighbor))
+                    // FIX 2: Check connection logic BEFORE showing the arc
+                    if (CanConnect(currentNode, neighbor))
                     {
-                        queue.Enqueue(neighbor);
-                        unvisited.Remove(neighbor);
+                        // We only "Show" the arc once per pair to avoid duplicates
+                        // But for BFS we need to know if the neighbor was visited
+                        if (unvisited.Contains(neighbor))
+                        {
+                            queue.Enqueue(neighbor);
+                            unvisited.Remove(neighbor);
+                        }
+
+                        // Display the arc (Logic inside ShowArc handles pooling)
+                        ShowArc(currentNode, neighbor, ref currentArcIndex);
                     }
                 }
             }
         }
 
         Debug.Log($"[EnergyManager] Rebuild complete. Found {_networks.Count} independent networks.");
+    }
+
+    /// <summary>
+    /// Helper to extract IEnergyNode from a collider.
+    /// </summary>
+    private IEnergyNode GetNodeFromCollider(Collider2D col)
+    {
+        if (col.TryGetComponent(out MachineEntity machine)) return machine;
+        if (col.TryGetComponent(out BallEntity ball)) return ball.Behavior as IEnergyNode;
+        return null;
+    }
+
+    /// <summary>
+    /// Activates an arc from the pool and initializes it.
+    /// </summary>
+    private void ShowArc(IEnergyNode a, IEnergyNode b, ref int index)
+    {
+        ElectricArc arc;
+        if (index < _arcPool.Count)
+        {
+            arc = _arcPool[index];
+        }
+        else
+        {
+            arc = Instantiate(_arcPrefab, transform);
+            _arcPool.Add(arc);
+        }
+
+        arc.gameObject.SetActive(true);
+        arc.Initialize(a, b);
+        index++;
     }
 
     /// <summary>
