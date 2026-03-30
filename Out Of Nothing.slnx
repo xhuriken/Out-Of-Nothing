@@ -2,8 +2,8 @@
   <Project Path="Assembly-CSharp-Editor.csproj" />
   <Project Path="ShapesRuntime.csproj" />
   <Project Path="Assembly-CSharp.csproj" />
-  <Project Path="ShapesSamples.csproj" />
   <Project Path="ShapesEditor.csproj" />
   <Project Path="Assembly-CSharp-firstpass.csproj" />
+  <Project Path="ShapesSamples.csproj" />
   <Project Path="Sirenix.OdinInspector.Modules.UnityMathematics.csproj" />
 </Solution>
