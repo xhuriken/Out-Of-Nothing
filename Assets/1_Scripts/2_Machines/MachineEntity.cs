@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 
 /// <summary>
@@ -18,14 +19,18 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable, IEnergyNode
     [Header("Rotation Settings")]
     [SerializeField]
     protected MachineRotationMode _rotationMode = MachineRotationMode.Fixed90Degrees;
+    [SerializeField] private float _speed = 1f;
 
     [SerializeField]
     [Tooltip("Multiplier for free rotation mode. Ignored in Fixed mode.")]
-    protected float _freeRotationSpeed = 0.5f;
+    protected float _freeRotationSpeed = 2f;
     protected bool _isRunning = true;
     private bool _isBeingDragged;
     [Header("Energy Settings")]
     [SerializeField] protected float _connectionRadius = 3.5f;
+
+
+    private Rigidbody2D _rb;
 
     /// <summary>
     /// Evaluates if the machine is currently active and processing its logic.
@@ -46,6 +51,12 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable, IEnergyNode
     public EnergyNetwork CurrentNetwork { get; set; }
 
     #endregion
+
+
+    private void Awake()
+    {
+        _rb = GetComponent<Rigidbody2D>();
+    }
 
     protected virtual void OnEnable() {
         EnergyManager.Instance?.RegisterNode(this);
@@ -100,27 +111,59 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable, IEnergyNode
         _isBeingDragged = false;
     }
 
+    /// <summary>
+    /// Handles the rotation logic. Fixed90 for 90-degree steps, 
+    /// and Free (Snap) for smaller divisors of 90.
+    /// </summary>
     public virtual void OnDragRotate(float scrollDelta)
     {
-        if (_rotationMode == MachineRotationMode.None)
+        if (_rotationMode == MachineRotationMode.None || Mathf.Approximately(scrollDelta, 0f))
         {
             return;
         }
 
-        // Determine direction
-        // +1 forward or -1 backward
         float direction = Mathf.Sign(scrollDelta);
+        float snapAngle;
+        float duration;
 
         if (_rotationMode == MachineRotationMode.Fixed90Degrees)
         {
-            // Snap rotation by exactly 90 degrees
-            transform.Rotate(0f, 0f, direction * 90f);
+            snapAngle = 90f;
+            duration = 0.15f;
         }
         else if (_rotationMode == MachineRotationMode.Free)
         {
-            // Smooth, continuous rotation based on scroll magnitude
-            transform.Rotate(0f, 0f, scrollDelta * _freeRotationSpeed);
+            snapAngle = 15f;
+            duration = 0.05f; 
         }
+        else
+        {
+            return;
+        }
+
+        ApplySnapRotation(direction, snapAngle, duration);
+    }
+
+    /// <summary>
+    /// Calculates and executes the snapped rotation tween.
+    /// </summary>
+    private void ApplySnapRotation(float direction, float snapAngle, float duration)
+    {
+        DOTween.Kill(transform);
+
+        // get current Z
+        float currentZ = transform.eulerAngles.z;
+
+        // Round the current angle to the nearest snapAngle to find the base angle
+        float baseZ = Mathf.Round(currentZ / snapAngle) * snapAngle;
+
+        // Calc target
+        float targetZ = baseZ + (direction * snapAngle);
+
+        // Tween !
+        transform.DORotate(new Vector3(0f, 0f, targetZ), duration, RotateMode.FastBeyond360)
+            .SetEase(Ease.OutBack)
+            .SetTarget(transform);
     }
 
     #endregion

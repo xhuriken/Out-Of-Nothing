@@ -70,9 +70,6 @@ public class BlueBallBehavior : BallBehavior
             _isSmall = true;
         }
 
-        //// Core: Stop the ball while paused
-        //ball.Passport.RequestVelocity(Vector2.zero, _priority, VelocityMode.Override);
-
         _currentPauseTimer -= fixedDeltaTime;
 
         // Visual: Prepare to grow back

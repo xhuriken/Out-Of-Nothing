@@ -643,6 +643,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RedMaterialisatorMachine
   _rotationMode: 2
+  _speed: 1
   _freeRotationSpeed: 0.5
   _connectionRadius: 3.5
   _energyRenderer: {fileID: 4782254245562662314}
@@ -1098,7 +1099,7 @@ MonoBehaviour:
     snap: 1
     size: 18.82
     spacing: 1
-    offset: 0.001968502
+    offset: 0.012788804
     shapeModifier: 1
   fill:
     type: 0

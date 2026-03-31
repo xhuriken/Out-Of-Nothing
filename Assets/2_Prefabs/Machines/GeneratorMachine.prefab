@@ -58,6 +58,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GeneratorMachine
   _rotationMode: 2
+  _speed: 1
   _freeRotationSpeed: 0.5
   _connectionRadius: 3.5
   _energyRenderer: {fileID: 2328976781059393891}
@@ -1268,7 +1269,7 @@ MonoBehaviour:
     snap: 1
     size: 20
     spacing: 1
-    offset: 0.001968502
+    offset: 0.0057923044
     shapeModifier: 1
   fill:
     type: 0

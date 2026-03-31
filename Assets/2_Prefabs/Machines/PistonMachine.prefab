@@ -470,6 +470,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PistonMachine
   _rotationMode: 2
+  _speed: 1
   _freeRotationSpeed: 0.5
   _connectionRadius: 3.5
   _ballInside: {fileID: 0}
