@@ -111,7 +111,7 @@ public class BallEntity : MonoBehaviour, IDraggable
     {
         if (_isProcessing) return false;
         _isBeingDragged = true;
-        _rb.linearVelocity = Vector2.zero;
+        //_rb.linearVelocity = Vector2.zero;
         _behavior?.OnDragStart(this);
         return true;
     }
@@ -129,7 +129,7 @@ public class BallEntity : MonoBehaviour, IDraggable
     public void OnDragEnd()
     {
         _isBeingDragged = false;
-        _rb.linearVelocity = Vector2.zero;
+        //_rb.linearVelocity = Vector2.zero;
         _behavior?.OnDragEnd(this);
     }
 

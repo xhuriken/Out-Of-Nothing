@@ -1,5 +1,6 @@
 using DG.Tweening;
 using UnityEngine;
+using static UnityEngine.InputSystem.OnScreen.OnScreenStick;
 
 /// <summary>
 /// Defines the allowed rotation behavior during drag operations.
@@ -28,6 +29,10 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable, IEnergyNode
     private bool _isBeingDragged;
     [Header("Energy Settings")]
     [SerializeField] protected float _connectionRadius = 3.5f;
+
+    [Header("Settings")]
+    [SerializeField] private float _dragForceMultiplier = 15f;
+    [SerializeField] private float _maxDragSpeed = 30f;
 
 
     private Rigidbody2D _rb;
@@ -91,17 +96,18 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable, IEnergyNode
     {
         _isRunning = false; // Stop function while moving
         _isBeingDragged = true;
-
-
-        //ElectricManager.Instance.MarkDirty();
-        // TODO: Handle visual feedback ((Animations)
+        _rb.bodyType = RigidbodyType2D.Dynamic;
+        _rb.linearVelocity = Vector2.zero;
         return true;
     }
 
     public virtual void OnDragUpdate(Vector2 position)
     {
-        // I think we will made the same thing than the ball, but for now, position will be sufficient
-        transform.position = position;
+        Vector2 direction = position - _rb.position;
+        Vector2 desiredVelocity = direction * _dragForceMultiplier;
+        Vector2 clampedVelocity = Vector2.ClampMagnitude(desiredVelocity, _maxDragSpeed);
+
+        _rb.linearVelocity = clampedVelocity; 
     }
 
     public virtual void OnDragEnd()
@@ -109,6 +115,9 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable, IEnergyNode
         EnergyManager.Instance?.RequestRebuild();
         _isRunning = true;
         _isBeingDragged = false;
+        _rb.linearVelocity = Vector2.zero;
+        _rb.bodyType = RigidbodyType2D.Kinematic;
+
     }
 
     /// <summary>
