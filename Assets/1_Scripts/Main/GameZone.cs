@@ -18,8 +18,8 @@ public class GameZone : MonoBehaviour
 
     [Header("Bounce Rules")]
     
-    [Tooltip("The minimum velocity magnitude applied to balls hitting the wall.")]
-    [SerializeField] private float _minBounceVelocity = 3f;
+    //[Tooltip("The minimum velocity magnitude applied to balls hitting the wall.")]
+    //[SerializeField] private float _minBounceVelocity = 3f;
 
     private EdgeCollider2D _edgeCollider;
 
@@ -110,28 +110,28 @@ public class GameZone : MonoBehaviour
     }
 
 
-    public void OnCollisionEnter2D(Collision2D collision)
-    {
-        // We only care about collisions with balls
-        if (!collision.gameObject.TryGetComponent(out BallEntity ball))
-        {
-            return;
-        }
+    //public void OnCollisionEnter2D(Collision2D collision)
+    //{
+    //    // We only care about collisions with balls
+    //    if (!collision.gameObject.TryGetComponent(out BallEntity ball))
+    //    {
+    //        return;
+    //    }
 
-        // Read the post-collision velocity magnitude
-        float currentSpeed = ball.Rb.linearVelocity.magnitude;
+    //    // Read the post-collision velocity magnitude
+    //    float currentSpeed = ball.Rb.linearVelocity.magnitude;
 
-        // If the ball is moving too slowly (or is stopped by a behavior), we enforce the minimum speed.
-        if (currentSpeed < _minBounceVelocity)
-        {
-            // The bounce direction is already calculated by the PhysicsMaterial2D.
-            // If the velocity is extremely low (near 0), we use the contact normal to push it away.
-            Vector2 direction = currentSpeed > 0.1f
-                ? ball.Rb.linearVelocity.normalized
-                : collision.contacts[0].normal;
+    //    // If the ball is moving too slowly (or is stopped by a behavior), we enforce the minimum speed.
+    //    if (currentSpeed < _minBounceVelocity)
+    //    {
+    //        // The bounce direction is already calculated by the PhysicsMaterial2D.
+    //        // If the velocity is extremely low (near 0), we use the contact normal to push it away.
+    //        Vector2 direction = currentSpeed > 0.1f
+    //            ? ball.Rb.linearVelocity.normalized
+    //            : collision.contacts[0].normal;
 
-            ball.Rb.linearVelocity = direction * _minBounceVelocity;
-        }
-    }
+    //        ball.Rb.linearVelocity = direction * _minBounceVelocity;
+    //    }
+    //}
 
 }

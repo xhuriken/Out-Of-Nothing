@@ -9,6 +9,8 @@ public class BumperMachine : MachineEntity
     [SerializeField]
     private float _repulsionForce = 10f;
 
+    private PhysicsPriority _physicsPriority = PhysicsPriority.Machine;
+
     private void Start()
     {
     }
@@ -34,7 +36,8 @@ public class BumperMachine : MachineEntity
             // TODO: use this system for the direction of the repulsion !
 
             // Apply impulse force
-            ball.Rb.AddForce(normal * _repulsionForce, ForceMode2D.Impulse);
+            ball.Passport.ApplyExternalForce(normal * _repulsionForce, _physicsPriority, ForceMode2D.Impulse);
+            //ball.Rb.AddForce(normal * _repulsionForce, ForceMode2D.Impulse);
 
             // TODO: Play Bumper animation and sound
         }

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 103612032686291617}
   - component: {fileID: 1619610479522214369}
   - component: {fileID: 7732261570811920596}
+  - component: {fileID: 8671214652506943910}
   - component: {fileID: 750939741934925205}
   - component: {fileID: 2883250533870753037}
   m_Layer: 6
@@ -109,7 +110,20 @@ MonoBehaviour:
   _height: 10
   _rendering: {fileID: 750939741934925205}
   _tickness: 0.1
-  _minBounceVelocity: 3
+--- !u!114 &8671214652506943910
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9108075096901662289}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 073382ba083efda409dce95970433eae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ConstantBounceSurface
+  _constantBounceSpeed: 10
+  _priority: 20
 --- !u!114 &750939741934925205
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3508011679372052241}
   - component: {fileID: 8733880597009044787}
   - component: {fileID: 8764687544595933431}
+  - component: {fileID: 43954975253987132}
   - component: {fileID: 7104258520504122497}
   - component: {fileID: 4929502397607299011}
   - component: {fileID: 8350127890622362483}
@@ -71,6 +72,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4541cc6b6324d7c4fbce63fb77e3726b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DefaultBehavior
+--- !u!114 &43954975253987132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8758211866433413932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 179eb4d45355a77409073a30e76da408, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BallPhysicsPassport
 --- !u!50 &7104258520504122497
 Rigidbody2D:
   serializedVersion: 5

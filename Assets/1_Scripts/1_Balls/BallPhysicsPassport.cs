@@ -36,6 +36,8 @@ public class BallPhysicsPassport : MonoBehaviour
     private Vector2 _nextVelocity;
     private bool _hasOverrideThisFrame;
 
+    public Rigidbody2D Rb => _rb;
+
     private void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
@@ -98,5 +100,29 @@ public class BallPhysicsPassport : MonoBehaviour
         {
             _rb.AddForce(force, ForceMode2D.Impulse);
         }
+    }
+
+    /// <summary>
+    /// Applies a force to the ball only if the priority is high enough.
+    /// Use this for explosions, wind, or external impulses.
+    /// </summary>
+    /// <param name="force">The force vector to apply.</param>
+    /// <param name="priority">The priority of this force.</param>
+    /// <param name="mode">The ForceMode2D to use.</param>
+    public void ApplyExternalForce(Vector2 force, PhysicsPriority priority, ForceMode2D mode = ForceMode2D.Force)
+    {
+        // If the ball is locked by a machine (Kinematic), we ignore external forces
+        if (_rb.isKinematic)
+        {
+            return;
+        }
+
+        // If the priority is lower than a current override (like a Drag or Machine), we ignore it
+        if (priority < _currentMaxPriority)
+        {
+            return;
+        }
+
+        _rb.AddForce(force, mode);
     }
 }

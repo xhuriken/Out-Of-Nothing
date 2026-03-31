@@ -9840,6 +9840,7 @@ GameObject:
   - component: {fileID: 5330374845719149733}
   - component: {fileID: 1096363715618542664}
   - component: {fileID: 1528296007120055880}
+  - component: {fileID: 3576495508379407187}
   m_Layer: 8
   m_Name: YellowBall
   m_TagString: Untagged
@@ -10071,6 +10072,18 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &3576495508379407187
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5276091440895640841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 179eb4d45355a77409073a30e76da408, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BallPhysicsPassport
 --- !u!1 &5315152641140204183
 GameObject:
   m_ObjectHideFlags: 0

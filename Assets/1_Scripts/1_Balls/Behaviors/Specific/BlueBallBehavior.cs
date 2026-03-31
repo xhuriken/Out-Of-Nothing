@@ -9,31 +9,33 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 [Serializable]
 public class BlueBallBehavior : BallBehavior
 {
-    [SerializeField]
-    private float _pauseDuration = 2f;
+    [Header("Movement Settings")]
+    [SerializeField] private float _pauseDuration = 2f;
+    [SerializeField] private float _amplitude = 5f;
+    [SerializeField] private float _speed = 2f;
 
-    [SerializeField]
-    private float _amplitude = 5f;
-
-    [SerializeField]
-    private float _speed = 2f;
-
-    //private Vector3 _positionStart;
+    [Header("Visual Settings")]
+    [SerializeField] private float _shrinkScale = 0.9f;
+    [SerializeField] private float _tweenDuration = 0.4f;
 
     // Runtime state variables
     private float _currentPauseTimer;
     private bool _isPaused = true;
     private float _oscillationTime;
-    private bool _isSmall = false;
-
+    private bool _isSmall;
     private float _originalRadius;
+    private float _originalColliderRadius;
+
+    private readonly PhysicsPriority _priority = PhysicsPriority.Behavior;
 
     public override void Initialize(BallEntity ball)
     {
-        //_positionStart = ball.transform.position;
-        _currentPauseTimer = _pauseDuration; // when the ball spawn, it on the pause state
+        _currentPauseTimer = _pauseDuration;
         _oscillationTime = 0f;
         _originalRadius = ball.Data.radius;
+        _originalColliderRadius = ball.ColliderRadius;
+        _isPaused = true;
+        _isSmall = false;
     }
 
     /// <summary>
@@ -41,59 +43,62 @@ public class BlueBallBehavior : BallBehavior
     /// </summary>
     public override void ExecuteFixedUpdate(BallEntity ball, float fixedDeltaTime)
     {
-        // If the ball is being dragged, skip all behavior logic !
         if (ball.IsBeingDragged || ball.IsProcessing) return;
 
         if (_isPaused)
         {
-            // Visual
-            if (!_isSmall)
-            {
-                DOTween.Kill(this);
-                // Set it smaller
-                DOTween.To(() => ball.Renderer.Radius, x => ball.Renderer.Radius = x, _originalRadius * 0.9f, 0.4f).SetEase(Ease.OutElastic).SetTarget(this);
-                DOTween.To(() => ball.Collider.radius, x => ball.Collider.radius = x, ball.ColliderRadius * 0.9f, 0.4f).SetEase(Ease.OutElastic).SetTarget(this);
-                _isSmall = true;
-            }
-
-            // Core
-            _currentPauseTimer -= fixedDeltaTime;
-
-            if(_currentPauseTimer <= 0.4f && _isSmall)
-            {
-                DOTween.Kill(this);
-                // Set it back to normal
-                DOTween.To(() => ball.Renderer.Radius, x => ball.Renderer.Radius = x, _originalRadius, 0.4f).SetEase(Ease.OutElastic).SetTarget(this);
-                DOTween.To(() => ball.Collider.radius, x => ball.Collider.radius = x, ball.ColliderRadius, 0.4f).SetEase(Ease.OutElastic).SetTarget(this);
-                _isSmall = false;
-            }
-
-            if (_currentPauseTimer <= 0f)
-            {
-                _isPaused = false;
-                //ball.Rb.bodyType = RigidbodyType2D.Dynamic;
-
-                //restart the position start
-                //_positionStart = ball.transform.position;
-                _oscillationTime = 0f;
-            }
-
+            HandlePauseState(ball, fixedDeltaTime);
             return;
         }
 
-        // Apply normal oscillation force
+        // Apply oscillation
         _oscillationTime += fixedDeltaTime;
+        float targetVelocityY = Mathf.Cos(_oscillationTime * _speed) * _amplitude;
 
-        //float newY = _positionStart.y + Mathf.Sin(_oscillationTime * _speed) * _amplitude;
+        // CRITICAL: We take the CURRENT X from physics and OVERRIDE with our calculated Y.
+        // We use Override because we want to stick strictly to the sine wave on Y.
+        Vector2 currentVelocity = ball.Passport.Rb.linearVelocity;
+        ball.Passport.RequestVelocity(new Vector2(currentVelocity.x, targetVelocityY), _priority, VelocityMode.Override);
+    }
 
-        //Vector2 newPosition = new Vector2(_positionStart.x, newY);
+    private void HandlePauseState(BallEntity ball, float fixedDeltaTime)
+    {
+        // Visual: Shrink
+        if (!_isSmall)
+        {
+            ApplyVisualScale(ball, _originalRadius * _shrinkScale, _originalColliderRadius * _shrinkScale);
+            _isSmall = true;
+        }
 
-        //ball.Rb.MovePosition(newPosition);
+        //// Core: Stop the ball while paused
+        //ball.Passport.RequestVelocity(Vector2.zero, _priority, VelocityMode.Override);
 
-        float velocityY = Mathf.Cos(_oscillationTime * _speed) * _amplitude;
+        _currentPauseTimer -= fixedDeltaTime;
 
-        // We only override the Y velocity. The X velocity remains controlled by physics collisions !
-        ball.Rb.linearVelocity = new Vector2(ball.Rb.linearVelocity.x, velocityY);
+        // Visual: Prepare to grow back
+        if (_currentPauseTimer <= _tweenDuration && _isSmall)
+        {
+            ApplyVisualScale(ball, _originalRadius, _originalColliderRadius);
+            _isSmall = false;
+        }
+
+        if (_currentPauseTimer <= 0f)
+        {
+            _isPaused = false;
+            _oscillationTime = 0f;
+        }
+    }
+
+    private void ApplyVisualScale(BallEntity ball, float targetRadius, float targetColliderRadius)
+    {
+        DOTween.Kill(this);
+        DOTween.To(() => ball.Renderer.Radius, x => ball.Renderer.Radius = x, targetRadius, _tweenDuration)
+            .SetEase(Ease.OutElastic)
+            .SetTarget(this);
+
+        DOTween.To(() => ball.Collider.radius, x => ball.Collider.radius = x, targetColliderRadius, _tweenDuration)
+            .SetEase(Ease.OutElastic)
+            .SetTarget(this);
     }
 
     /// <summary>

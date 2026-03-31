@@ -4928,6 +4928,7 @@ GameObject:
   - component: {fileID: 1335927095737727768}
   - component: {fileID: 5889817393111906894}
   - component: {fileID: 7478001344719702401}
+  - component: {fileID: 2551464477715534880}
   m_Layer: 8
   m_Name: BrownBall
   m_TagString: Untagged
@@ -5156,6 +5157,18 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &2551464477715534880
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4381004003925531019}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 179eb4d45355a77409073a30e76da408, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BallPhysicsPassport
 --- !u!1 &7083942241058875810
 GameObject:
   m_ObjectHideFlags: 0

@@ -13,6 +13,8 @@ public class BrownBallBehavior : BallBehavior
     
     private bool _isBouncing = false;
 
+    private PhysicsPriority _physicsPriority = PhysicsPriority.Behavior;
+
     /// <summary>
     /// Applies vertical force or processes pause state.
     /// </summary>
@@ -27,7 +29,7 @@ public class BrownBallBehavior : BallBehavior
         // find the nearest side of the zone (Vector 3 direction)
         if (_isBouncing)
         {
-            if (ball.Rb.linearVelocity.magnitude < 0.05f)
+            if (ball.Passport.Rb.linearVelocity.magnitude < 0.05f)
             {
                 _isBouncing = false;
             }
@@ -41,7 +43,7 @@ public class BrownBallBehavior : BallBehavior
 
         direction.Normalize();
 
-        ball.Rb.AddForce(direction * _attractionForce, ForceMode2D.Force);
+        ball.Passport.ApplyExternalForce(direction * _attractionForce, _physicsPriority, ForceMode2D.Force);
     }
 
     /// <summary>

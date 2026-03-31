@@ -29,10 +29,13 @@ public class BallEntity : MonoBehaviour, IDraggable
     private bool _isBeingDragged;
 
     public BallDataSO Data => _data;
-    public Rigidbody2D Rb => _rb;
+    protected Rigidbody2D Rb => _rb;
     public Disc Renderer => _renderer;
     public bool IsBeingDragged => _isBeingDragged;
     public BallBehavior Behavior => _behavior; // Exposed for EnergyManager
+
+    private BallPhysicsPassport _passport;
+    public BallPhysicsPassport Passport => _passport;
 
     public float ColliderRadius => _data.radius + (_renderer.Thickness / 2);
 
@@ -48,14 +51,11 @@ public class BallEntity : MonoBehaviour, IDraggable
     {
         _rb = GetComponent<Rigidbody2D>();
         _collider = GetComponent<CircleCollider2D>();
-
+        _passport = GetComponent<BallPhysicsPassport>();
         // Find the behavior component added to the prefab
         _behavior = GetComponent<BallBehavior>();
 
-        if (_data != null)
-        {
-            Initialize(_data);
-        }
+        if (_data != null) Initialize(_data);
     }
 
     private void FixedUpdate()
@@ -119,15 +119,11 @@ public class BallEntity : MonoBehaviour, IDraggable
     public void OnDragUpdate(Vector2 position)
     {
         Vector2 direction = position - _rb.position;
-
-        // i want to clamp the force before apply it
-        _rb.linearVelocity = direction * _dragForceMultiplier;
-
-        // Calcul de la vélocité désirée, puis clamp de sa magnitude avant application
         Vector2 desiredVelocity = direction * _dragForceMultiplier;
         Vector2 clampedVelocity = Vector2.ClampMagnitude(desiredVelocity, _maxDragSpeed);
 
-        _rb.linearVelocity = clampedVelocity;
+        // Use the passport instead of direct RB access
+        _passport.RequestVelocity(clampedVelocity, PhysicsPriority.Drag, VelocityMode.Override);
     }
 
     public void OnDragEnd()

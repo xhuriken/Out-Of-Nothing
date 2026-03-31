@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 6339655241896321448}
   - component: {fileID: 1592348570759576207}
   - component: {fileID: 2780313785667435763}
+  - component: {fileID: 3025895420957861471}
   m_Layer: 8
   m_Name: BlueBall
   m_TagString: Untagged
@@ -74,6 +75,8 @@ MonoBehaviour:
   _pauseDuration: 2
   _amplitude: 5
   _speed: 2
+  _shrinkScale: 0.9
+  _tweenDuration: 0.4
 --- !u!50 &3994086967771890052
 Rigidbody2D:
   serializedVersion: 5
@@ -246,6 +249,18 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &3025895420957861471
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8102840107874242056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 179eb4d45355a77409073a30e76da408, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BallPhysicsPassport
 --- !u!1001 &5750942548291262442
 PrefabInstance:
   m_ObjectHideFlags: 0

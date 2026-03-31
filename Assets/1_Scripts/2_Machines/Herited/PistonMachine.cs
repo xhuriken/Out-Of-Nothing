@@ -131,13 +131,18 @@ public class PistonMachine : MachineEntity, IEnergyStorage
                 _ballInside = useBall;
                 _ballInside.IsProcessing = true;
                 GameInputManager.Instance.ForceDrop();
+
+                // Use Passport to take full control
+                _ballInside.Passport.SetLockState(true);
+
                 // TODO: Stop collision & physics
-                _ballInside.transform.DOMove(_TargetTransformBall.position, _animationDuration).SetEase(Ease.OutElastic).OnComplete(() =>
-                {
-                    // hum, something ? i got a theory
-                    _canEjectBall = true;
-                    Debug.Log("[PistonMachine] Capture animation completed ! Ready for ejection");
-                });
+                _ballInside.transform.DOMove(_TargetTransformBall.position, _animationDuration)
+                    .SetEase(Ease.OutElastic)
+                    .OnComplete(() => {
+                        // hum, something ? i got a theory
+                        _canEjectBall = true;
+                        Debug.Log("[PistonMachine] Capture animation completed ! Ready for ejection");
+                    });
             }
         }
     }
