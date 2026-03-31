@@ -16,13 +16,11 @@ public class ElectricArc : MonoBehaviour
     private IEnergyNode _startNode;
     private IEnergyNode _endNode;
     private float _nextUpdateTime;
-    private float _baseWidth;
 
     private void Awake()
     {
         _lineRenderer = GetComponent<LineRenderer>();
         _lineRenderer.positionCount = _segmentCount;
-        _baseWidth = _lineRenderer.startWidth;
     }
 
     /// <summary>
@@ -74,23 +72,24 @@ public class ElectricArc : MonoBehaviour
     }
 
     /// <summary>
-    /// Reduces opacity and width as nodes reach their maximum connection distance.
+    /// Remaps the last 20% of range to shrink the width from 100% to 0%.
     /// </summary>
     private void ApplyDynamicFade()
     {
         float distance = Vector2.Distance(_startNode.Position, _endNode.Position);
         float maxRange = Mathf.Max(_startNode.ConnectionRadius, _endNode.ConnectionRadius);
 
-        // Calculate a 0-1 factor. 1 = Close, 0 = At Max Range
-        float fadeFactor = Mathf.Clamp01(1f - (distance / maxRange));
+        if (maxRange <= 0) return;
 
-        // Apply to width
-        _lineRenderer.widthMultiplier = fadeFactor;
+        float ratio = distance / maxRange;
 
-        // Apply to color alpha
+        // Math: (1 - ratio) / 0.2f keeps multiplier at 1.0 until ratio hits 0.8
+        // Clamp01 strictly prevents the width from ever being > 100% of your 0.1
+        _lineRenderer.widthMultiplier = Mathf.Clamp01((1f - ratio) / 0.2f) * 0.1f;
+
+        // Alpha fade (Linear)
         Color c = _lineRenderer.startColor;
-        c.a = fadeFactor;
-        _lineRenderer.startColor = c;
-        _lineRenderer.endColor = c;
+        c.a = Mathf.Clamp01(1f - ratio);
+        _lineRenderer.startColor = _lineRenderer.endColor = c;
     }
 }

@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f23b8f1285637e549b7758bd2e6ff6eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  _segmentCount: 10
+  _segmentCount: 15
   _jitterMagnitude: 0.2
   _updateFrequency: 0.04
 --- !u!120 &5460254811886737788
