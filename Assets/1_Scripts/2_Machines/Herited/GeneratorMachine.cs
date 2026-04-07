@@ -51,6 +51,11 @@ public class GeneratorMachine : MachineEntity, IEnergyStorage, IEnergyProducer
         return given;
     }
 
+    protected override void OnTickExecuted()
+    {
+        // Add synchronized SFX or particle triggers here
+    }
+
     private void Update()
     {
         UpdateVisuals();

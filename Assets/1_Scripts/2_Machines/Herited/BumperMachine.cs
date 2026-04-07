@@ -42,4 +42,9 @@ public class BumperMachine : MachineEntity
             // TODO: Play Bumper animation and sound
         }
     }
+
+    protected override void OnTickExecuted()
+    {
+        throw new System.NotImplementedException();
+    }
 }

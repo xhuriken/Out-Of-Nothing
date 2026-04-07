@@ -146,4 +146,9 @@ public class PistonMachine : MachineEntity, IEnergyStorage
             }
         }
     }
+
+    protected override void OnTickExecuted()
+    {
+        // Add synchronized SFX or particle triggers here
+    }
 }

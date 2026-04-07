@@ -34,6 +34,13 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable, IEnergyNode
     [SerializeField] private float _dragForceMultiplier = 15f;
     [SerializeField] private float _maxDragSpeed = 30f;
 
+    protected bool _isWaitingForTick;
+
+    /// <summary>
+    /// Returns true if the machine has processed its logic for the current tick 
+    /// and is waiting for the next synchronization signal.
+    /// </summary>
+    public bool IsWaitingForTick => _isWaitingForTick;
 
     private Rigidbody2D _rb;
 
@@ -185,4 +192,34 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable, IEnergyNode
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(transform.position, _connectionRadius);
     }
+
+    protected virtual void Start()
+    {
+        if (PowerTickManager.Instance != null)
+        {
+            PowerTickManager.Instance.OnPowerTick += HandleTick;
+        }
+    }
+
+    protected virtual void OnDestroy()
+    {
+        if (PowerTickManager.Instance != null)
+        {
+            PowerTickManager.Instance.OnPowerTick -= HandleTick;
+        }
+    }
+
+    private void HandleTick()
+    {
+        if (!_isRunning || _isBeingDragged) return;
+
+        _isWaitingForTick = false;
+        OnTickExecuted();
+        _isWaitingForTick = true;
+    }
+
+    /// <summary>
+    /// Specific machine logic to execute on each synchronized power tick.
+    /// </summary>
+    protected abstract void OnTickExecuted();
 }

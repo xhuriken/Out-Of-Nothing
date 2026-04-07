@@ -72,7 +72,7 @@ public class EnergyManager : MonoBehaviour
 
         foreach (EnergyNetwork network in _networks)
         {
-            network.Tick(Time.fixedDeltaTime);
+            network.ProcessTick(Time.fixedDeltaTime);
         }
     }
 

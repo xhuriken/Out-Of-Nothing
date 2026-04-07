@@ -654,7 +654,6 @@ MonoBehaviour:
   _redBallData: {fileID: 11400000, guid: 80d61bba963ad264f8475d89dc001b50, type: 2}
   _animSpeed: 1
   _maxCapacity: 1
-  _currentEnergy: 0
   _maxFlowRate: 1
 --- !u!50 &9089209472064100971
 Rigidbody2D:
@@ -1101,7 +1100,7 @@ MonoBehaviour:
     snap: 1
     size: 18.82
     spacing: 1
-    offset: 0.0019232993
+    offset: 0.019999992
     shapeModifier: 1
   fill:
     type: 0
