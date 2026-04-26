@@ -13,14 +13,7 @@ public class BrownBallBehavior : BallBehavior
     
     private bool _isBouncing = false;
 
-    /// <summary>
-    /// Clones the behavior to ensure independent runtime state.
-    /// </summary>
-    public override BallBehavior Clone()
-    {
-        // Shallow copy is sufficient for basic value types
-        return (BallBehavior) MemberwiseClone();
-    }
+    private PhysicsPriority _physicsPriority = PhysicsPriority.Behavior;
 
     /// <summary>
     /// Applies vertical force or processes pause state.
@@ -36,7 +29,7 @@ public class BrownBallBehavior : BallBehavior
         // find the nearest side of the zone (Vector 3 direction)
         if (_isBouncing)
         {
-            if (ball.Rb.linearVelocity.magnitude < 0.05f)
+            if (ball.Passport.Rb.linearVelocity.magnitude < 0.05f)
             {
                 _isBouncing = false;
             }
@@ -50,13 +43,13 @@ public class BrownBallBehavior : BallBehavior
 
         direction.Normalize();
 
-        ball.Rb.AddForce(direction * _attractionForce, ForceMode2D.Force);
+        ball.Passport.ApplyExternalForce(direction * _attractionForce, _physicsPriority, ForceMode2D.Force);
     }
 
     /// <summary>
     /// Triggers the pause state upon collision.
     /// </summary>
-    public override void OnCollisionEnter(BallEntity ball, Collision2D collision)
+    public override void OnBallCollisionEnter(BallEntity ball, Collision2D collision)
     {
         // VISUAL (LATER) :
         // PLAY SHADER EFFECT SHOCKWAVE

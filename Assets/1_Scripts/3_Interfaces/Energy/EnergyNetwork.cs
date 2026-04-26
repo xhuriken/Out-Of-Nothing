@@ -1,99 +1,159 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 /// <summary>
 /// Represents a group of connected energy nodes.
-/// Handles energy distribution between producers and consumers.
+/// Handles synchronized energy distribution between producers and consumers using proportional sharing.
 /// </summary>
 public class EnergyNetwork
 {
-    private readonly HashSet<IEnergyNode>  _nodes     = new HashSet<IEnergyNode>();
+    private readonly HashSet<IEnergyNode> _nodes = new HashSet<IEnergyNode>();
     private readonly List<IEnergyConsumer> _consumers = new List<IEnergyConsumer>();
     private readonly List<IEnergyProducer> _producers = new List<IEnergyProducer>();
-    private readonly List<IEnergyStorage>  _storages  = new List<IEnergyStorage>();
+    private readonly List<IEnergyStorage> _storages = new List<IEnergyStorage>();
 
     /// <summary>
-    /// Exposes the nodes for Gizmo drawing in the EnergyManager.
+    /// Gets the collection of nodes currently in this network.
     /// </summary>
-    public IEnumerable<IEnergyNode> Nodes
-    {
-        get { return _nodes; }
-    }
+    public IEnumerable<IEnergyNode> Nodes => _nodes;
 
     /// <summary>
-    /// Registers a node into this specific network and categorizes it based on its interfaces.
+    /// Adds a node to the network and registers its energy interfaces.
     /// </summary>
-    /// <param name="node">The node to add.</param>
     public void AddNode(IEnergyNode node)
     {
         if (_nodes.Add(node))
         {
             node.CurrentNetwork = this;
-
             if (node is IEnergyConsumer consumer) _consumers.Add(consumer);
             if (node is IEnergyProducer producer) _producers.Add(producer);
-            if (node is IEnergyStorage storage)   _storages.Add(storage);
+            if (node is IEnergyStorage storage) _storages.Add(storage);
         }
     }
+
     /// <summary>
-    /// Distributes energy prioritizing live production over stored energy.
+    /// Processes a single energy cycle. 
+    /// Executed synchronously by the EnergyManager via PowerTickManager.
     /// </summary>
-    /// <param name="deltaTime">Time elapsed since the last tick.</param>
-    public void Tick(float deltaTime)
+    public void ProcessTick(float tickDuration)
     {
-        if (_nodes.Count < 2) return; // if there are on item, let it alone !
+        float totalProduced = 0f;
+        float totalProvided = 0f;
+        float totalRequested = 0f;
 
-        float totalInstantProduction = 0f;
-
+        // 1. Production Phase: All producers generate energy into their buffers
         foreach (IEnergyProducer producer in _producers)
         {
-            totalInstantProduction += producer.ProduceEnergy(deltaTime);
+            totalProduced += producer.ProduceEnergy(tickDuration);
         }
 
-        if (totalInstantProduction > 0f)
+        // 2. Identify supply: Sum all available energy in storage nodes
+        float availableSupply = 0f;
+        foreach (IEnergyStorage storage in _storages)
         {
-            Debug.Log($"[EnergyNetwork] Generated {totalInstantProduction:F3} energy this tick from {_producers.Count} producer(s).");
+            availableSupply += storage.CurrentEnergy;
         }
+
+        // Exit early if no consumers or no energy
+        if (_nodes.Count < 2 || _consumers.Count == 0 || availableSupply <= 0)
+        {
+            if (totalProduced > 0) LogNetworkSummary(totalProduced, 0, 0);
+            return;
+        }
+
+        // 3. Demand Calculation: Gather valid requests from all consumers
+        // Structure to hold temp request data for proportional sharing
+        var requests = new List<(IEnergyConsumer Consumer, float Amount)>();
 
         foreach (IEnergyConsumer consumer in _consumers)
         {
-            if (!consumer.NeedsEnergy)
+            if (!consumer.NeedsEnergy) continue;
+
+            float flowCap = consumer.MaxFlowRate * tickDuration;
+            float amount = Mathf.Min(consumer.EnergyRequest, flowCap);
+
+            if (amount > 0)
             {
-                continue;
-            }
-
-            // Energy request = what the consumer wants
-            // MaxFlowRate = the maximum amount of energy per second that he can consume
-
-            float flowCap = consumer.MaxFlowRate * deltaTime;
-            float request = Mathf.Min(consumer.EnergyRequest, flowCap);
-
-            if (request <= 0) continue; // No need to provide energy if the request is null btw
-
-            float fromProduction = Mathf.Min(request, totalInstantProduction);
-            if (fromProduction > 0f)
-            {
-                consumer.ProvideEnergy(fromProduction);
-                totalInstantProduction -= fromProduction;
-                request -= fromProduction;
-                Debug.Log($"[EnergyNetwork] Provided {fromProduction:F3} energy directly from producers.");
-            }
-
-            if (request > 0f)
-            {
-                foreach (IEnergyStorage storage in _storages)
-                {
-                    if (request <= 0f) break;
-
-                    float fromStorage = storage.ExtractEnergy(request);
-                    if (fromStorage > 0f)
-                    {
-                        consumer.ProvideEnergy(fromStorage);
-                        request -= fromStorage;
-                        Debug.Log($"[EnergyNetwork] Extracted {fromStorage:F3} energy from storage.");
-                    }
-                }
+                requests.Add((consumer, amount));
+                totalRequested += amount;
             }
         }
+
+        if (totalRequested <= 0)
+        {
+            if (totalProduced > 0) LogNetworkSummary(totalProduced, 0, 0);
+            return;
+        }
+
+        // 4. Distribution Phase: Calculate satisfaction ratio (Fair-Share)
+        // If supply < demand, everyone gets a proportional percentage (e.g., 50% of what they asked)
+        float satisfactionRatio = Mathf.Min(1f, availableSupply / totalRequested);
+
+        foreach (var req in requests)
+        {
+            float fairAmount = req.Amount * satisfactionRatio;
+            float actuallyExtracted = ExtractFromPool(fairAmount, req.Consumer);
+
+            if (actuallyExtracted > 0)
+            {
+                req.Consumer.ProvideEnergy(actuallyExtracted);
+                totalProvided += actuallyExtracted;
+            }
+        }
+
+        // 5. Logging
+        if (totalProduced > 0 || totalProvided > 0)
+        {
+            LogNetworkSummary(totalProduced, totalProvided, totalRequested);
+        }
+    }
+
+    /// <summary>
+    /// Helper to pull energy from the available storages in the network.
+    /// </summary>
+    private float ExtractFromPool(float amount, IEnergyConsumer requester)
+    {
+        float remainingToExtract = amount;
+
+        // A. Take from Generators (Producers that are also Storage) first
+        foreach (IEnergyProducer producer in _producers)
+        {
+            if (remainingToExtract <= 0) break;
+            if (producer is IEnergyStorage storage)
+            {
+                remainingToExtract -= storage.ExtractEnergy(remainingToExtract);
+            }
+        }
+
+        // B. Take from other Storages (Yellow Balls, etc.)
+        if (remainingToExtract > 0)
+        {
+            foreach (IEnergyStorage storage in _storages)
+            {
+                if (remainingToExtract <= 0) break;
+
+                // Don't extract from yourself if you are both a consumer and storage
+                if (ReferenceEquals(requester, storage)) continue;
+
+                remainingToExtract -= storage.ExtractEnergy(remainingToExtract);
+            }
+        }
+
+        return amount - remainingToExtract;
+    }
+
+    /// <summary>
+    /// Logs a summary of the network's energy flow to the console.
+    /// </summary>
+    private void LogNetworkSummary(float produced, float provided, float requested)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append($"[Net {GetHashCode().ToString("X")}] ");
+        sb.Append($"Nodes: {_nodes.Count} | ");
+        sb.Append($"Prod: {produced:F3} | ");
+        sb.Append($"Flow: {provided:F3} / {requested:F3} (Supply/Demand)");
+
+        Debug.Log(sb.ToString());
     }
 }

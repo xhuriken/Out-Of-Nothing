@@ -7,31 +7,23 @@ using UnityEngine;
 /// Consumes energy to fill an internal buffer, then uses that buffer to instantiate RedBalls.
 /// Implements IEnergyStorage to allow other machines to potentially draw from its reserve.
 /// </summary>
-public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer, IEnergyStorage
+public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
 {
     [Header("References")]
-    [SerializeField]
-    private Rectangle _energyRenderer;
+    [SerializeField] private Rectangle _energyRenderer;
 
     [Header("Materialisator Settings")]
-    [SerializeField]
-    private float _ejectionForce = 5f;
-
-    [SerializeField]
-    private float _energyRequiredPerSpawn = 50f;
-
-    [SerializeField]
-    private BallDataSO _redBallData;
+    [SerializeField] private float _ejectionForce = 5f;
+    [SerializeField] private float _energyRequiredPerSpawn = 50f;
+    [SerializeField] private BallDataSO _redBallData;
 
     [Header("Storage Settings")]
-    [SerializeField]
-    private float _animSpeed = 0.5f;
+    [SerializeField] private float _animSpeed = 0.5f;
+    [SerializeField] private float _maxCapacity = 100f;
+    [SerializeField] private float _maxFlowRate = 10f;
 
-    [SerializeField]
-    private float _maxCapacity = 100f;
-
+    private float _currentEnergy;
     private float _currentDashOffset;
-    [SerializeField] private float _currentEnergy;
 
     /// <summary>
     /// Gets the current energy stored in the machine's buffer.
@@ -39,6 +31,7 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer, IEnergyS
     public float CurrentEnergy
     {
         get { return _currentEnergy; }
+        set { _currentEnergy = value; UpdateVisuals(); }
     }
 
     /// <summary>
@@ -65,7 +58,6 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer, IEnergyS
         get { return _maxCapacity - _currentEnergy; }
     }
 
-    [SerializeField] private float _maxFlowRate = 1f;
     public float MaxFlowRate => _maxFlowRate;
 
     /// <summary>
@@ -74,33 +66,28 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer, IEnergyS
     public void ProvideEnergy(float amount)
     {
         _currentEnergy = Mathf.Min(_currentEnergy + amount, _maxCapacity);
+        Debug.Log($"Hi i'm {gameObject.name} and i provide {amount} energy, i have {CurrentEnergy} now");
     }
-
-    /// <summary>
-    /// Allows other machines to draw from this machine's buffer if connected.
-    /// </summary>
-    public float ExtractEnergy(float amount)
+    void OnValidate()
     {
-        float given = Mathf.Min(amount, _currentEnergy);
-        _currentEnergy -= given;
-        return given;
+        UpdateVisuals();
     }
 
     private void Update()
     {
-        if (!_isRunning)
-        {
-            return;
-        }
+        //if (!_isRunning)
+        //{
+        //    return;
+        //}
 
-        UpdateLogic();
+        //UpdateLogic();
         UpdateVisuals();
     }
 
     /// <summary>
-    /// Checks if enough energy is stored to perform a spawn.
+    /// Synchronized logic executed only on PowerTick.
     /// </summary>
-    private void UpdateLogic()
+    protected override void OnTickExecuted()
     {
         if (_currentEnergy >= _energyRequiredPerSpawn)
         {

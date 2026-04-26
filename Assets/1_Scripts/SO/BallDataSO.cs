@@ -37,10 +37,4 @@ public class BallDataSO : ScriptableObject
     /// Must contain a BallEntity component.
     /// </summary>
     public BallEntity prefab;
-
-    /// <summary>
-    /// Template behavior to be cloned by instances.
-    /// </summary>
-    [SerializeReference]
-    public BallBehavior behaviorTemplate;
 }

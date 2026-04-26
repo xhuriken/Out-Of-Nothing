@@ -1,4 +1,6 @@
+using DG.Tweening;
 using UnityEngine;
+using static UnityEngine.InputSystem.OnScreen.OnScreenStick;
 
 /// <summary>
 /// Defines the allowed rotation behavior during drag operations.
@@ -18,14 +20,29 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable, IEnergyNode
     [Header("Rotation Settings")]
     [SerializeField]
     protected MachineRotationMode _rotationMode = MachineRotationMode.Fixed90Degrees;
+    [SerializeField] private float _speed = 1f;
 
     [SerializeField]
     [Tooltip("Multiplier for free rotation mode. Ignored in Fixed mode.")]
-    protected float _freeRotationSpeed = 0.5f;
+    protected float _freeRotationSpeed = 2f;
     protected bool _isRunning = true;
     private bool _isBeingDragged;
     [Header("Energy Settings")]
     [SerializeField] protected float _connectionRadius = 3.5f;
+
+    [Header("Settings")]
+    [SerializeField] private float _dragForceMultiplier = 15f;
+    [SerializeField] private float _maxDragSpeed = 30f;
+
+    protected bool _isWaitingForTick;
+
+    /// <summary>
+    /// Returns true if the machine has processed its logic for the current tick 
+    /// and is waiting for the next synchronization signal.
+    /// </summary>
+    public bool IsWaitingForTick => _isWaitingForTick;
+
+    private Rigidbody2D _rb;
 
     /// <summary>
     /// Evaluates if the machine is currently active and processing its logic.
@@ -46,6 +63,12 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable, IEnergyNode
     public EnergyNetwork CurrentNetwork { get; set; }
 
     #endregion
+
+
+    private void Awake()
+    {
+        _rb = GetComponent<Rigidbody2D>();
+    }
 
     protected virtual void OnEnable() {
         EnergyManager.Instance?.RegisterNode(this);
@@ -80,17 +103,18 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable, IEnergyNode
     {
         _isRunning = false; // Stop function while moving
         _isBeingDragged = true;
-
-
-        //ElectricManager.Instance.MarkDirty();
-        // TODO: Handle visual feedback ((Animations)
+        _rb.bodyType = RigidbodyType2D.Dynamic;
+        _rb.linearVelocity = Vector2.zero;
         return true;
     }
 
     public virtual void OnDragUpdate(Vector2 position)
     {
-        // I think we will made the same thing than the ball, but for now, position will be sufficient
-        transform.position = position;
+        Vector2 direction = position - _rb.position;
+        Vector2 desiredVelocity = direction * _dragForceMultiplier;
+        Vector2 clampedVelocity = Vector2.ClampMagnitude(desiredVelocity, _maxDragSpeed);
+
+        _rb.linearVelocity = clampedVelocity; 
     }
 
     public virtual void OnDragEnd()
@@ -98,29 +122,64 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable, IEnergyNode
         EnergyManager.Instance?.RequestRebuild();
         _isRunning = true;
         _isBeingDragged = false;
+        _rb.linearVelocity = Vector2.zero;
+        _rb.bodyType = RigidbodyType2D.Kinematic;
+
     }
 
+    /// <summary>
+    /// Handles the rotation logic. Fixed90 for 90-degree steps, 
+    /// and Free (Snap) for smaller divisors of 90.
+    /// </summary>
     public virtual void OnDragRotate(float scrollDelta)
     {
-        if (_rotationMode == MachineRotationMode.None)
+        if (_rotationMode == MachineRotationMode.None || Mathf.Approximately(scrollDelta, 0f))
         {
             return;
         }
 
-        // Determine direction
-        // +1 forward or -1 backward
         float direction = Mathf.Sign(scrollDelta);
+        float snapAngle;
+        float duration;
 
         if (_rotationMode == MachineRotationMode.Fixed90Degrees)
         {
-            // Snap rotation by exactly 90 degrees
-            transform.Rotate(0f, 0f, direction * 90f);
+            snapAngle = 90f;
+            duration = 0.15f;
         }
         else if (_rotationMode == MachineRotationMode.Free)
         {
-            // Smooth, continuous rotation based on scroll magnitude
-            transform.Rotate(0f, 0f, scrollDelta * _freeRotationSpeed);
+            snapAngle = 15f;
+            duration = 0.05f; 
         }
+        else
+        {
+            return;
+        }
+
+        ApplySnapRotation(direction, snapAngle, duration);
+    }
+
+    /// <summary>
+    /// Calculates and executes the snapped rotation tween.
+    /// </summary>
+    private void ApplySnapRotation(float direction, float snapAngle, float duration)
+    {
+        DOTween.Kill(transform);
+
+        // get current Z
+        float currentZ = transform.eulerAngles.z;
+
+        // Round the current angle to the nearest snapAngle to find the base angle
+        float baseZ = Mathf.Round(currentZ / snapAngle) * snapAngle;
+
+        // Calc target
+        float targetZ = baseZ + (direction * snapAngle);
+
+        // Tween !
+        transform.DORotate(new Vector3(0f, 0f, targetZ), duration, RotateMode.FastBeyond360)
+            .SetEase(Ease.OutBack)
+            .SetTarget(transform);
     }
 
     #endregion
@@ -133,4 +192,34 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable, IEnergyNode
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(transform.position, _connectionRadius);
     }
+
+    protected virtual void Start()
+    {
+        if (PowerTickManager.Instance != null)
+        {
+            PowerTickManager.Instance.OnPowerTick += HandleTick;
+        }
+    }
+
+    protected virtual void OnDestroy()
+    {
+        if (PowerTickManager.Instance != null)
+        {
+            PowerTickManager.Instance.OnPowerTick -= HandleTick;
+        }
+    }
+
+    private void HandleTick()
+    {
+        if (!_isRunning || _isBeingDragged) return;
+
+        _isWaitingForTick = false;
+        OnTickExecuted();
+        _isWaitingForTick = true;
+    }
+
+    /// <summary>
+    /// Specific machine logic to execute on each synchronized power tick.
+    /// </summary>
+    protected abstract void OnTickExecuted();
 }

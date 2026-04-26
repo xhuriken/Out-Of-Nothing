@@ -90,4 +90,8 @@ public class PressMachine : MachineEntity, IEnergyConsumer
             
         }
     }
+
+    protected override void OnTickExecuted()
+    {
+    }
 }
