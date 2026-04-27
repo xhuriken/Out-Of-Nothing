@@ -14,6 +14,7 @@
 - [x] Fix : Vidage des Red Machines (Spawn restauré)
 - [x] Implémenter la **Quantification** (4 décimales) pour supprimer les résidus flottants
 - [x] Asservir l'**EnergyManager** au **PowerTickManager** (Dépendance stricte)
+- [x] **FIX CRITIQUE** : Résolution de la Race Condition Singleton (Execution Order -200)
 - [x] Robustesse : Inscription des machines dans `OnEnable`
 - [x] Visibilité : Exposer l'énergie et l'état `IsRunning` dans l'inspecteur
 - [x] Commit & Push sur la branche `something`

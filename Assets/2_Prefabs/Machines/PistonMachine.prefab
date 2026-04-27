@@ -470,12 +470,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PistonMachine
   _rotationMode: 2
-  _speed: 1
   _freeRotationSpeed: 0.5
   _connectionRadius: 3.5
   _physicalRadius: 1
   _dragForceMultiplier: 15
   _maxDragSpeed: 30
+  _isRunning: 1
+  _isBeingDragged: 0
   _ballInside: {fileID: 0}
   _ballOut: {fileID: 0}
   _TargetTransformBall: {fileID: 6494625256538357422}

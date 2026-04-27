@@ -69,9 +69,22 @@ public class EnergyManager : MonoBehaviour
 
     private void OnEnable()
     {
+        SubscribeToTick();
+    }
+
+    private void Start()
+    {
+        // Second attempt if PowerTickManager was null during OnEnable
+        SubscribeToTick();
+    }
+
+    private void SubscribeToTick()
+    {
         if (PowerTickManager.Instance != null)
         {
+            PowerTickManager.Instance.OnPowerTick -= OnGlobalTick;
             PowerTickManager.Instance.OnPowerTick += OnGlobalTick;
+            if (_enableLogs) Debug.Log("[EnergyManager] Successfully subscribed to PowerTick.");
         }
     }
 

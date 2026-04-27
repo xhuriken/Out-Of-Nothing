@@ -643,12 +643,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RedMaterialisatorMachine
   _rotationMode: 2
-  _speed: 1
   _freeRotationSpeed: 0.5
   _connectionRadius: 3.5
   _physicalRadius: 1
   _dragForceMultiplier: 15
   _maxDragSpeed: 30
+  _isRunning: 1
+  _isBeingDragged: 0
   _energyRenderer: {fileID: 4782254245562662314}
   _ejectionForce: 5
   _energyRequiredPerSpawn: 1
@@ -656,7 +657,8 @@ MonoBehaviour:
   _animSpeed: 1
   _maxCapacity: 1
   _maxFlowRate: 1
-  _enableLogs: 0
+  _enableLogs: 1
+  _currentEnergy: 1
 --- !u!50 &9089209472064100971
 Rigidbody2D:
   serializedVersion: 5
@@ -1101,8 +1103,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 18.82
-    spacing: 1
-    offset: 0.033759497
+    spacing: 0
+    offset: 0.006022201
     shapeModifier: 1
   fill:
     type: 0

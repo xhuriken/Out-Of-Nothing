@@ -5,6 +5,7 @@ using UnityEngine;
 /// Orchestrates the global timing for energy processing.
 /// Separates logic from frame rate to ensure synchronized machine behavior.
 /// </summary>
+[DefaultExecutionOrder(-200)]
 public class PowerTickManager : MonoBehaviour
 {
     public static PowerTickManager Instance { get; private set; }
