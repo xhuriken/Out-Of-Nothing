@@ -6,3 +6,4 @@
 | 2026-04-10 | DEVELOPMENT_LOG.md | Initialisation du journal de bord. | Ajout de la tra√ßabilit√© des modifications. |
 | 2026-04-10 | FEATURES_DETAILED.md | Audit complet du code source. | Cr√©ation du SSOT technique pour l'architecture et les fonctionnalit√©s. |
 | 2026-04-27 | Git Merge / Push | R√©solution des conflits en faveur des versions locales. | Synchronisation vers le d√©p√¥t distant apr√®s r√©solution des conflits (commande utilisateur). |
+| 2026-04-27 | IEnergyNode.cs, MachineEntity.cs, YellowBallBehavior.cs, EnergyManager.cs, ElectricArc.cs | Modification de la dÈtection de connexion et des arcs visuels. | ImplÈmentation du Edge-to-Edge (Somme des rayons) et points d'ancrage des arcs sur la circonfÈrence (Shortest Path). AmÈlioration de la clartÈ visuelle et de la cohÈrence spatiale. |

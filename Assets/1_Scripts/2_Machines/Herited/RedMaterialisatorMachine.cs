@@ -1,5 +1,3 @@
-using UnityEngine;
-
 using Shapes;
 using UnityEngine;
 
@@ -7,7 +5,7 @@ using UnityEngine;
 /// Consumes energy to fill an internal buffer, then uses that buffer to instantiate RedBalls.
 /// Implements IEnergyStorage to allow other machines to potentially draw from its reserve.
 /// </summary>
-public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
+public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer, IEnergyStorage
 {
     [Header("References")]
     [SerializeField] private Rectangle _energyRenderer;
@@ -22,7 +20,11 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
     [SerializeField] private float _maxCapacity = 100f;
     [SerializeField] private float _maxFlowRate = 10f;
 
-    private float _currentEnergy;
+    [Header("Debug")]
+    [SerializeField] private bool _enableLogs = false;
+
+    [Header("Live Data")]
+    [SerializeField] private float _currentEnergy;
     private float _currentDashOffset;
 
     /// <summary>
@@ -65,22 +67,28 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
     /// </summary>
     public void ProvideEnergy(float amount)
     {
-        _currentEnergy = Mathf.Min(_currentEnergy + amount, _maxCapacity);
-        Debug.Log($"Hi i'm {gameObject.name} and i provide {amount} energy, i have {CurrentEnergy} now");
+        _currentEnergy = EnergyNetwork.Quantize(Mathf.Min(_currentEnergy + amount, _maxCapacity));
+        if (_enableLogs) Debug.Log($"[RedMaterialisator] {gameObject.name} received {amount} energy. Total: {_currentEnergy:F2}");
     }
-    void OnValidate()
+
+    /// <summary>
+    /// Allows others to extract energy from this machine.
+    /// </summary>
+    public float ExtractEnergy(float amount)
+    {
+        float taken = EnergyNetwork.Quantize(Mathf.Min(amount, _currentEnergy));
+        _currentEnergy = EnergyNetwork.Quantize(_currentEnergy - taken);
+        UpdateVisuals();
+        return taken;
+    }
+
+    private void OnValidate()
     {
         UpdateVisuals();
     }
 
     private void Update()
     {
-        //if (!_isRunning)
-        //{
-        //    return;
-        //}
-
-        //UpdateLogic();
         UpdateVisuals();
     }
 
@@ -89,9 +97,17 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
     /// </summary>
     protected override void OnTickExecuted()
     {
+        if (_maxCapacity < _energyRequiredPerSpawn)
+        {
+            Debug.LogWarning($"[RedMaterialisator] {gameObject.name} is misconfigured! MaxCapacity ({_maxCapacity}) is lower than EnergyRequiredPerSpawn ({_energyRequiredPerSpawn}). It will never spawn.");
+        }
+
+        // Now using quantized deterministic comparison
         if (_currentEnergy >= _energyRequiredPerSpawn)
         {
-            _currentEnergy -= _energyRequiredPerSpawn;
+            if (_enableLogs) Debug.Log($"[RedLogic] EXECUTING SPAWN. Buffer was {_currentEnergy:F4}");
+            
+            _currentEnergy = EnergyNetwork.Quantize(Mathf.Max(0, _currentEnergy - _energyRequiredPerSpawn));
             SpawnBall();
         }
     }
@@ -101,13 +117,11 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
     /// </summary>
     private void UpdateVisuals()
     {
-        if (_energyRenderer == null)
-        {
-            return;
-        }
+        if (_energyRenderer == null) return;
 
         // Adjust spacing based on energy (0 energy = wide spacing, Full = no spacing)
-        _energyRenderer.DashSpacing = 1f - (_currentEnergy / _maxCapacity);
+        float energyRatio = Mathf.Clamp01(_currentEnergy / _maxCapacity);
+        _energyRenderer.DashSpacing = 1f - energyRatio;
 
         float dashPeriod = _energyRenderer.DashSize + _energyRenderer.DashSpacing;
 
@@ -125,17 +139,16 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
     {
         if (_redBallData == null)
         {
-            Debug.LogError("[Materialisator] RedBallDataSO is not assigned, what da fuck are you doing biatch ?");
+            Debug.LogError("[Materialisator] RedBallDataSO is not assigned.");
             return;
         }
 
-        Debug.Log("[Materialisator] Buffer reached threshold. Spawning RedBall !");
+        // Logic handled through the pool manager
+        BallEntity newBall = BallPoolManager.Instance.SpawnBall(_redBallData, transform.position);
 
-        //BallEntity newBall = BallPoolManager.Instance.SpawnBall(_redBallData, transform.position);
-
-        //if (newBall != null)
-        //{
-        //    newBall.Rb.AddForce(transform.right * _ejectionForce, ForceMode2D.Impulse);
-        //}
+        if (newBall != null)
+        {
+            newBall.GetComponent<Rigidbody2D>()?.AddForce(transform.right * _ejectionForce, ForceMode2D.Impulse);
+        }
     }
 }

@@ -7,5 +7,6 @@ public interface IEnergyNode
 {
     Vector2 Position { get; }
     float ConnectionRadius { get; }
+    float PhysicalRadius { get; }
     EnergyNetwork CurrentNetwork { get; set; }
 }

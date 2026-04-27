@@ -1,4 +1,4 @@
-﻿using DG.Tweening;
+using DG.Tweening;
 using System;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -8,6 +8,11 @@ public class YellowBallBehavior : BallBehavior, IEnergyStorage, IEnergyConsumer,
 {
     [SerializeField] private float _maxStorage = 1f;
     [SerializeField] private float _maxFlowRate = 5f;
+
+    [Header("Debug")]
+    [SerializeField] private bool _enableLogs = false;
+
+    [Header("Live Data")]
     [SerializeField] private float _currentEnergy;
 
     private float _baseRendererRadius;
@@ -26,6 +31,7 @@ public class YellowBallBehavior : BallBehavior, IEnergyStorage, IEnergyConsumer,
 
     public EnergyNetwork CurrentNetwork { get; set; }
     public float ConnectionRadius => 3f;
+    public float PhysicalRadius => _me != null ? _me.Renderer.Radius : 0.5f;
 
     // FIX: Ensure position is updated for the FloodFill algorithm
     public Vector2 Position => _me != null ? (Vector2)_me.transform.position : Vector2.zero;
@@ -57,21 +63,20 @@ public class YellowBallBehavior : BallBehavior, IEnergyStorage, IEnergyConsumer,
 
     public void ProvideEnergy(float amount)
     {
-
-        _currentEnergy = Mathf.Min(_currentEnergy + amount, _maxStorage);
-        Debug.Log($"Hey I'am {gameObject.name} and I added: {amount} inside my storage of {_currentEnergy}");
+        _currentEnergy = EnergyNetwork.Quantize(Mathf.Min(_currentEnergy + amount, _maxStorage));
+        if (_enableLogs) Debug.Log($"[YellowBall] {gameObject.name} received {amount} energy. Total: {_currentEnergy:F2}");
         UpdateVisuals();
     }
 
     public float ExtractEnergy(float amount)
     {
-        float taken = Mathf.Min(amount, _currentEnergy);
-        _currentEnergy -= taken;
-        Debug.Log($"Hey I'am {gameObject.name} and we take me: " + taken);
+        float taken = EnergyNetwork.Quantize(Mathf.Min(amount, _currentEnergy));
+        _currentEnergy = EnergyNetwork.Quantize(_currentEnergy - taken);
+        if (_enableLogs) Debug.Log($"[YellowBall] {gameObject.name} extracted {taken} energy. Remaining: {_currentEnergy:F2}");
+        
         if (_currentEnergy <= 0f)
         {
-            // DESTRUCTION OU PAS A VOIR AVEC MATHEO CE NEUILLE
-            //BallPoolManager.Instance.ReleaseBall(_me);
+            // Ball destruction or release
             EnergyManager.Instance?.UnregisterNode(this);
             Destroy(this.gameObject);
         }

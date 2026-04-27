@@ -61,12 +61,14 @@ MonoBehaviour:
   _speed: 1
   _freeRotationSpeed: 0.5
   _connectionRadius: 3.5
+  _physicalRadius: 1
   _dragForceMultiplier: 15
   _maxDragSpeed: 30
   _energyRenderer: {fileID: 2328976781059393891}
   _productionRate: 1
   _maxCapacity: 5
   _animSpeed: 1
+  _enableLogs: 0
   _currentEnergy: 0
 --- !u!50 &9150112361051098576
 Rigidbody2D:
@@ -1271,7 +1273,7 @@ MonoBehaviour:
     snap: 1
     size: 20
     spacing: 1
-    offset: 0.019999992
+    offset: 0.033759497
     shapeModifier: 1
   fill:
     type: 0

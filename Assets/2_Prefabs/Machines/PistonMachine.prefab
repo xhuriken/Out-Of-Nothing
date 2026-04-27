@@ -473,6 +473,7 @@ MonoBehaviour:
   _speed: 1
   _freeRotationSpeed: 0.5
   _connectionRadius: 3.5
+  _physicalRadius: 1
   _dragForceMultiplier: 15
   _maxDragSpeed: 30
   _ballInside: {fileID: 0}

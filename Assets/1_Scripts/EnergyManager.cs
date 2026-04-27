@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -9,6 +9,10 @@ using UnityEngine;
 public class EnergyManager : MonoBehaviour
 {
     public static EnergyManager Instance { get; private set; }
+
+    [Header("Debug")]
+    [SerializeField] private bool _enableLogs = false;
+    public bool EnableLogs => _enableLogs;
 
     [Header("Arc Settings")]
     [SerializeField] private ElectricArc _arcPrefab;
@@ -63,16 +67,42 @@ public class EnergyManager : MonoBehaviour
         _isDirty = true;
     }
 
+    private void OnEnable()
+    {
+        if (PowerTickManager.Instance != null)
+        {
+            PowerTickManager.Instance.OnPowerTick += OnGlobalTick;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (PowerTickManager.Instance != null)
+        {
+            PowerTickManager.Instance.OnPowerTick -= OnGlobalTick;
+        }
+    }
+
     private void FixedUpdate()
     {
         if (_isDirty)
         {
             RebuildNetworks();
         }
+    }
+
+    /// <summary>
+    /// Executes energy distribution for all networks synchronized with the global PowerTick.
+    /// </summary>
+    private void OnGlobalTick()
+    {
+        if (PowerTickManager.Instance == null) return;
+
+        float tickDuration = PowerTickManager.Instance.TickRate;
 
         foreach (EnergyNetwork network in _networks)
         {
-            network.ProcessTick(Time.fixedDeltaTime);
+            network.ProcessTick(tickDuration);
         }
     }
 
@@ -116,7 +146,7 @@ public class EnergyManager : MonoBehaviour
                 IEnergyNode currentNode = queue.Dequeue();
                 newNetwork.AddNode(currentNode);
 
-                // Find physical neighbors using OverlapCircle
+                // Find neighbor candidate colliders intersecting our ConnectionRadius (Circle-vs-Collider)
                 int neighborCount = Physics2D.OverlapCircleNonAlloc(
                     currentNode.Position,
                     currentNode.ConnectionRadius,
@@ -127,21 +157,17 @@ public class EnergyManager : MonoBehaviour
                 {
                     IEnergyNode neighbor = GetNodeFromCollider(_neighborBuffer[i]);
 
-                    // FIX 1: Ignore if no node found, or if it's the same object
                     if (neighbor == null || neighbor == currentNode) continue;
 
-                    // FIX 2: Check connection logic BEFORE showing the arc
+                    // Strictly check connection logic AND distance (Sum of radii)
                     if (CanConnect(currentNode, neighbor))
                     {
-                        // We only "Show" the arc once per pair to avoid duplicates
-                        // But for BFS we need to know if the neighbor was visited
                         if (unvisited.Contains(neighbor))
                         {
                             queue.Enqueue(neighbor);
                             unvisited.Remove(neighbor);
                         }
 
-                        // Display the arc (Logic inside ShowArc handles pooling)
                         ShowArc(currentNode, neighbor, ref currentArcIndex);
                     }
                 }
@@ -191,7 +217,6 @@ public class EnergyManager : MonoBehaviour
 
         foreach (EnergyNetwork network in _networks)
         {
-            // SSOT: Assign a unique color based on the network's identity
             Random.InitState(network.GetHashCode());
             Gizmos.color = new Color(Random.value, Random.value, Random.value, 1f);
 
@@ -199,17 +224,11 @@ public class EnergyManager : MonoBehaviour
 
             for (int i = 0; i < nodesList.Count; i++)
             {
-                // Draw a small circle for the node itself
-                Gizmos.DrawWireSphere(nodesList[i].Position, 0.2f);
+                Gizmos.DrawWireSphere(nodesList[i].Position, nodesList[i].PhysicalRadius);
 
                 for (int j = i + 1; j < nodesList.Count; j++)
                 {
-                    // To match the Manager's logic, we check if one's center is in other's radius
-                    // OR if they are simply close enough. 
-                    float dist = Vector2.Distance(nodesList[i].Position, nodesList[j].Position);
-                    float maxRadius = Mathf.Max(nodesList[i].ConnectionRadius, nodesList[j].ConnectionRadius);
-                    // We use a small buffer to ensure the line shows up as soon as they are connected
-                    if (dist <= maxRadius && CanConnect(nodesList[i], nodesList[j]))
+                    if (CanConnect(nodesList[i], nodesList[j]))
                     {
                         Gizmos.DrawLine(nodesList[i].Position, nodesList[j].Position);
                     }
@@ -219,29 +238,24 @@ public class EnergyManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Determine if 2 EnergyNode can connect each other
+    /// Determine if 2 EnergyNode can connect each other based on type and physical overlap.
+    /// The actual distance check is handled by Physics2D.OverlapCircle in RebuildNetworks.
     /// </summary>
     private bool CanConnect(IEnergyNode a, IEnergyNode b)
     {
-        // 1: if its 2 Ylb
+        // 1. Type Check
+        // Yellow balls can connect to anything
         if (a is YellowBallBehavior || b is YellowBallBehavior)
         {
             return true;
         }
 
-        // 2 : 2 machines of the same type cant connected directly
-        // (Generator + Generator = No / Consumer + Consumer = No)
+        // Machines of same type cannot connect directly
         bool aIsProducer = a is IEnergyProducer;
         bool bIsProducer = b is IEnergyProducer;
         bool aIsConsumer = a is IEnergyConsumer;
         bool bIsConsumer = b is IEnergyConsumer;
 
-        // Valid connection if its different type
-        if ((aIsProducer && bIsConsumer) || (aIsConsumer && bIsProducer))
-        {
-            return true;
-        }
-        // otherwise, nop !
-        return false;
+        return (aIsProducer && bIsConsumer) || (aIsConsumer && bIsProducer);
     }
 }

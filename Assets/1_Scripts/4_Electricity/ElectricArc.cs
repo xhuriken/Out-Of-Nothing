@@ -49,18 +49,33 @@ public class ElectricArc : MonoBehaviour
 
     /// <summary>
     /// Calculates the positions of the LineRenderer points with random offsets.
+    /// Points are placed on the circumferences of the nodes (Shortest Path).
     /// </summary>
     private void UpdateArcGeometry()
     {
-        Vector3 startPos = _startNode.Position;
-        Vector3 endPos = _endNode.Position;
+        Vector2 startPos = _startNode.Position;
+        Vector2 endPos = _endNode.Position;
+        
+        Vector2 direction = (endPos - startPos).normalized;
+        float dist = Vector2.Distance(startPos, endPos);
+
+        // Calculate points on circumference
+        Vector3 arcStart = startPos + direction * _startNode.PhysicalRadius;
+        Vector3 arcEnd = endPos - direction * _endNode.PhysicalRadius;
+
+        // If nodes overlap, don't Draw or use centers
+        if (dist < (_startNode.PhysicalRadius + _endNode.PhysicalRadius))
+        {
+            arcStart = startPos;
+            arcEnd = endPos;
+        }
 
         for (int i = 0; i < _segmentCount; i++)
         {
             float t = i / (float)(_segmentCount - 1);
-            Vector3 targetPoint = Vector3.Lerp(startPos, endPos, t);
+            Vector3 targetPoint = Vector3.Lerp(arcStart, arcEnd, t);
 
-            // Keep endpoints locked to the nodes, jitter the middle
+            // Keep endpoints locked to the circumferences, jitter the middle
             if (i > 0 && i < _segmentCount - 1)
             {
                 Vector2 jitter = Random.insideUnitCircle * _jitterMagnitude;
@@ -73,18 +88,18 @@ public class ElectricArc : MonoBehaviour
 
     /// <summary>
     /// Remaps the last 20% of range to shrink the width from 100% to 0%.
+    /// Uses the sum of connection radii as the limit.
     /// </summary>
     private void ApplyDynamicFade()
     {
         float distance = Vector2.Distance(_startNode.Position, _endNode.Position);
-        float maxRange = Mathf.Max(_startNode.ConnectionRadius, _endNode.ConnectionRadius);
+        float maxRange = _startNode.ConnectionRadius + _endNode.ConnectionRadius;
 
         if (maxRange <= 0) return;
 
         float ratio = distance / maxRange;
 
         // Math: (1 - ratio) / 0.2f keeps multiplier at 1.0 until ratio hits 0.8
-        // Clamp01 strictly prevents the width from ever being > 100% of your 0.1
         _lineRenderer.widthMultiplier = Mathf.Clamp01((1f - ratio) / 0.2f) * 0.1f;
 
         // Alpha fade (Linear)

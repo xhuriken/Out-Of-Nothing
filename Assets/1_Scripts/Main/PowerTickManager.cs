@@ -10,8 +10,10 @@ public class PowerTickManager : MonoBehaviour
     public static PowerTickManager Instance { get; private set; }
 
     [Header("Settings")]
-    [SerializeField] private float _tickRate = 0.2f; // Seconds between ticks
+    [SerializeField] private float _tickRate = 1f;
     [SerializeField] private bool _autoStart = true;
+    [SerializeField] private bool _enableLogs = false;
+    public bool EnableLogs => _enableLogs;
 
     private float _timer;
     private bool _isTicking;
@@ -32,13 +34,12 @@ public class PowerTickManager : MonoBehaviour
         _isTicking = _autoStart;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (!_isTicking) return;
 
-        // Ticky Time !
-        _timer += Time.deltaTime;
-        if (_timer >= _tickRate)
+        _timer += Time.fixedDeltaTime;
+        if (_timer >= (_tickRate - 0.0001f))
         {
             _timer = 0f;
             ExecuteTick();
@@ -47,6 +48,9 @@ public class PowerTickManager : MonoBehaviour
 
     private void ExecuteTick()
     {
+        if (EnergyManager.Instance != null && EnergyManager.Instance.EnableLogs) 
+            Debug.Log($"[PowerTick] --- Cycle Start at {Time.time:F2} ---");
+            
         // Trigger the synchronized update across all networks and machines
         OnPowerTick?.Invoke();
     }
