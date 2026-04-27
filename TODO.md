@@ -1,26 +1,29 @@
-# Out-of-Nothing : Energy System Refactoring TODO
+# TODO List - Out Of Nothing
 
-## Phase 1 : Analyse et Exploration [TERMINÉE]
-- [x] Analyser l'architecture actuelle (Networks, Yellow Balls, Machines).
-- [x] Étudier l'implémentation actuelle des Electric Arcs.
-- [x] Localiser le bug des machines rouges (Red Materialisor).
+## Phase 1 : Initialisation & Rigueur ✅
+- [x] Créer TODO.md interne
+- [x] Configurer DEVELOPMENT_LOG.md
 
-## Phase 2 : Gestion Spatiale et Connexions [TERMINÉE]
-- [x] Modifier la détection de connexion : passage en Edge-to-Edge (Somme des rayons).
-- [x] Optimiser les Electric Arcs : calcul du Shortest Path entre circonférences.
-- [x] Implémenter l'Update Dynamique des points d'ancrage en temps réel.
+## Phase 2 : Gestion Spatiale & Rayons (SSOT) ✅
+- [x] Ajouter `PhysicalRadius` à `IEnergyNode`
+- [x] Implémenter Edge-to-Edge dans `EnergyManager`
+- [x] Corriger les arcs électriques (`Shortest Path` sur circonférence)
+- [x] **RE-CORRECTION** : Retour à la détection `Radius-vs-Collider` (Demande utilisateur)
 
-## Phase 3 : Correction de Bug & Précision Numérique [EN COURS]
-- [ ] Fix : Identifier pourquoi les machines rouges ne se vident plus à 100%.
-- [ ] Implémenter le clamping/arrondi intelligent par tick pour les floating points.
-- [ ] Ajouter des flags de log granulaires (bool) par entité/système.
+## Phase 3 : Correction de Bruit & Synchronisation ✅
+- [x] Fix : Vidage des Red Machines (Spawn restauré)
+- [x] Implémenter la **Quantification** (4 décimales) pour supprimer les résidus flottants
+- [x] Asservir l'**EnergyManager** au **PowerTickManager** (Dépendance stricte)
+- [x] Robustesse : Inscription des machines dans `OnEnable`
+- [x] Visibilité : Exposer l'énergie et l'état `IsRunning` dans l'inspecteur
+- [x] Commit & Push sur la branche `something`
 
-## Phase 4 : Tick Manager & Synchronisation
-- [ ] Implémenter le groupement par Type & Network au sein du Tick Manager.
-- [ ] Ajouter la logique de synchronisation automatique (Attente du prochain cycle).
-- [ ] Implémenter les états latents (pas de consommation, feedback visuel atténué).
-- [ ] Prévoir l'extensibilité pour l'offset manuel (Ctrl + Clic).
+## Phase 4 : Tick Manager & Synchronisation (EN COURS) 🔄
+- [ ] Groupement par Type & Network (Répartition sur ticks différents)
+- [ ] Synchronisation Automatique : Attente du cycle complet pour les nouvelles machines
+- [ ] États Latents : Feedback visuel (atténuation) et arrêt de consommation
+- [ ] Manual Sync Offset : Permettre un décalage manuel optionnel
 
-## Phase 5 : Debug & performance
-- [ ] Optimisation Scalable (~500 réseaux) via HashSets et réduction d'itérations.
-- [ ] Nettoyage final et journal de bord complet.
+## Prochaines Étapes :
+1. Définir la structure de groupement dans le `PowerTickManager`.
+2. Implémenter la logique de Latency State pour les nouvelles machines.

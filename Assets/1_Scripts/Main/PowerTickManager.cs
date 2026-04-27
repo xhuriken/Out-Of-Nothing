@@ -13,6 +13,8 @@ public class PowerTickManager : MonoBehaviour
     [SerializeField] private float _tickRate = 1f;
     [SerializeField] private bool _autoStart = true;
     [SerializeField] private bool _enableLogs = false;
+
+    public float TickRate => _tickRate;
     public bool EnableLogs => _enableLogs;
 
     private float _timer;
