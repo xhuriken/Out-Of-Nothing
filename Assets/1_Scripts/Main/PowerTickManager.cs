@@ -22,9 +22,14 @@ public class PowerTickManager : MonoBehaviour
     private bool _isTicking;
 
     /// <summary>
-    /// Event fired when a new energy cycle begins.
+    /// Event fired when a new energy cycle begins. (Machines execute their logic)
     /// </summary>
     public event Action OnPowerTick;
+
+    /// <summary>
+    /// Event fired immediately after OnPowerTick. (EnergyManager calculates allocations based on the new states)
+    /// </summary>
+    public event Action OnPostPowerTick;
 
     private void Awake()
     {
@@ -54,8 +59,11 @@ public class PowerTickManager : MonoBehaviour
         if (EnergyManager.Instance != null && EnergyManager.Instance.EnableLogs) 
             Debug.Log($"[PowerTick] --- Cycle Start at {Time.time:F2} ---");
             
-        // Trigger the synchronized update across all networks and machines
+        // Trigger the synchronized update across all machines
         OnPowerTick?.Invoke();
+
+        // Trigger the network recalculation AFTER machines consumed energy
+        OnPostPowerTick?.Invoke();
     }
 
     public void SetTickRate(float newRate) => _tickRate = newRate;

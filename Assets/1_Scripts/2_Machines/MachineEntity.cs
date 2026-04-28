@@ -24,6 +24,7 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable, IEnergyNode
     [Header("Energy Settings")]
     [SerializeField] protected float _connectionRadius = 3.5f;
     [SerializeField] protected float _physicalRadius = 1.0f;
+    [SerializeField] protected float _maxStorage = 100f;
 
     [Header("Settings")]
     [SerializeField] private float _dragForceMultiplier = 15f;
@@ -33,6 +34,7 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable, IEnergyNode
     [SerializeField] protected bool _isRunning = true;
     [SerializeField] private bool _isBeingDragged;
     protected bool _isWaitingForTick;
+    [SerializeField] protected float _currentEnergy;
     private Rigidbody2D _rb;
 
     public bool IsWaitingForTick => _isWaitingForTick;
@@ -44,6 +46,13 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable, IEnergyNode
     public float ConnectionRadius => _connectionRadius;
     public float PhysicalRadius => _physicalRadius;
     public EnergyNetwork CurrentNetwork { get; set; }
+    public float MaxStorage => _maxStorage;
+    public virtual float CurrentEnergy 
+    { 
+        get => _currentEnergy; 
+        set => _currentEnergy = value; 
+    }
+    public float EnergyAllocationRate { get; set; }
     #endregion
 
     private void Awake()

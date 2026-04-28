@@ -23,16 +23,12 @@ public class PressMachine : MachineEntity, IEnergyConsumer
 
     private bool _canEjectBall;
 
-    public bool NeedsEnergy => throw new System.NotImplementedException();
+    [Header("Energy Settings")]
+    [SerializeField] private float _inputTransferSpeed = 5f;
+    [SerializeField] private float _consumptionPerAction = 10f;
 
-    public float EnergyRequest => throw new System.NotImplementedException();
-
-    public float MaxFlowRate => throw new System.NotImplementedException();
-
-    public void ProvideEnergy(float amount)
-    {
-        throw new System.NotImplementedException();
-    }
+    public float InputTransferSpeed => _inputTransferSpeed;
+    public float ConsumptionPerAction => _consumptionPerAction;
 
     public override bool OnDragStart()
     {

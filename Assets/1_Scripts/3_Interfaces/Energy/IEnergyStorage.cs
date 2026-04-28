@@ -5,7 +5,5 @@ using UnityEngine;
 /// </summary>
 public interface IEnergyStorage : IEnergyNode
 {
-    float CurrentEnergy { get; }
-    float MaxEnergy { get; }
     float ExtractEnergy(float amount);
 }

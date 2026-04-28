@@ -4,10 +4,11 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 [Serializable]
-public class YellowBallBehavior : BallBehavior, IEnergyStorage, IEnergyConsumer, IEnergyNode
+public class YellowBallBehavior : BallBehavior, IEnergyConsumer, IEnergyProducer, IEnergyNode
 {
     [SerializeField] private float _maxStorage = 1f;
-    [SerializeField] private float _maxFlowRate = 5f;
+    [SerializeField] private float _inputTransferSpeed = 5f;
+    [SerializeField] private float _outputTransferSpeed = 5f;
 
     [Header("Debug")]
     [SerializeField] private bool _enableLogs = false;
@@ -22,12 +23,26 @@ public class YellowBallBehavior : BallBehavior, IEnergyStorage, IEnergyConsumer,
     public float CurrentEnergy
     {
         get { return _currentEnergy; }
-        set { _currentEnergy = value; UpdateVisuals(); }
+        set 
+        { 
+            _currentEnergy = value; 
+            UpdateVisuals(); 
+            
+            // Destroy battery if empty
+            if (_currentEnergy <= 0f)
+            {
+                EnergyManager.Instance?.UnregisterNode(this);
+                if (this.gameObject != null) Destroy(this.gameObject);
+            }
+        }
     }
     public float MaxEnergy => _maxStorage;
-    public float MaxFlowRate => _maxFlowRate;
-    public bool NeedsEnergy => _currentEnergy < _maxStorage;
-    public float EnergyRequest => _maxStorage - _currentEnergy;
+    public float MaxStorage => _maxStorage;
+    public float InputTransferSpeed => _inputTransferSpeed;
+    public float ConsumptionPerAction => 0f; // Batteries do not consume energy for actions
+    public float ProductionPerTick => 0f; // Batteries do not produce energy
+    public float OutputTransferSpeed => _outputTransferSpeed;
+    public float EnergyAllocationRate { get; set; }
 
     public EnergyNetwork CurrentNetwork { get; set; }
     public float ConnectionRadius => 3f;
@@ -61,28 +76,6 @@ public class YellowBallBehavior : BallBehavior, IEnergyStorage, IEnergyConsumer,
         //EnergyManager.Instance?.RegisterNode(this);
     }
 
-    public void ProvideEnergy(float amount)
-    {
-        _currentEnergy = EnergyNetwork.Quantize(Mathf.Min(_currentEnergy + amount, _maxStorage));
-        if (_enableLogs) Debug.Log($"[YellowBall] {gameObject.name} received {amount} energy. Total: {_currentEnergy:F2}");
-        UpdateVisuals();
-    }
-
-    public float ExtractEnergy(float amount)
-    {
-        float taken = EnergyNetwork.Quantize(Mathf.Min(amount, _currentEnergy));
-        _currentEnergy = EnergyNetwork.Quantize(_currentEnergy - taken);
-        if (_enableLogs) Debug.Log($"[YellowBall] {gameObject.name} extracted {taken} energy. Remaining: {_currentEnergy:F2}");
-        
-        if (_currentEnergy <= 0f)
-        {
-            // Ball destruction or release
-            EnergyManager.Instance?.UnregisterNode(this);
-            Destroy(this.gameObject);
-        }
-        UpdateVisuals();
-        return taken;
-    }
 
     public void UpdateVisuals()
     {

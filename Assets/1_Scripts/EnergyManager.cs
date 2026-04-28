@@ -69,22 +69,9 @@ public class EnergyManager : MonoBehaviour
 
     private void OnEnable()
     {
-        SubscribeToTick();
-    }
-
-    private void Start()
-    {
-        // Second attempt if PowerTickManager was null during OnEnable
-        SubscribeToTick();
-    }
-
-    private void SubscribeToTick()
-    {
         if (PowerTickManager.Instance != null)
         {
-            PowerTickManager.Instance.OnPowerTick -= OnGlobalTick;
-            PowerTickManager.Instance.OnPowerTick += OnGlobalTick;
-            if (_enableLogs) Debug.Log("[EnergyManager] Successfully subscribed to PowerTick.");
+            PowerTickManager.Instance.OnPostPowerTick += HandlePowerTick;
         }
     }
 
@@ -92,7 +79,30 @@ public class EnergyManager : MonoBehaviour
     {
         if (PowerTickManager.Instance != null)
         {
-            PowerTickManager.Instance.OnPowerTick -= OnGlobalTick;
+            PowerTickManager.Instance.OnPostPowerTick -= HandlePowerTick;
+        }
+    }
+
+    private void Start()
+    {
+        if (PowerTickManager.Instance != null)
+        {
+            PowerTickManager.Instance.OnPostPowerTick -= HandlePowerTick;
+            PowerTickManager.Instance.OnPostPowerTick += HandlePowerTick;
+        }
+    }
+
+    private void HandlePowerTick()
+    {
+        if (_isDirty)
+        {
+            RebuildNetworks();
+        }
+
+        float tickRate = PowerTickManager.Instance.TickRate;
+        foreach (EnergyNetwork network in _networks)
+        {
+            network.CalculateAllocation(tickRate);
         }
     }
 
@@ -102,22 +112,14 @@ public class EnergyManager : MonoBehaviour
         {
             RebuildNetworks();
         }
-    }
 
-    /// <summary>
-    /// Executes energy distribution for all networks synchronized with the global PowerTick.
-    /// </summary>
-    private void OnGlobalTick()
-    {
-        if (PowerTickManager.Instance == null) return;
-
-        float tickDuration = PowerTickManager.Instance.TickRate;
-
+        // Fluid processing: interpolates the allocated energy every frame
         foreach (EnergyNetwork network in _networks)
         {
-            network.ProcessTick(tickDuration);
+            network.ProcessFluidTransfer(Time.fixedDeltaTime);
         }
     }
+
 
     /// <summary>
     /// Core Algorithm: Reconstructs all isolated EnergyNetworks from scratch.

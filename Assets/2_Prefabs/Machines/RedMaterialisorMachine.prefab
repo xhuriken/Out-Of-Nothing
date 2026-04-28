@@ -646,19 +646,19 @@ MonoBehaviour:
   _freeRotationSpeed: 0.5
   _connectionRadius: 3.5
   _physicalRadius: 1
+  _maxStorage: 100
   _dragForceMultiplier: 15
   _maxDragSpeed: 30
   _isRunning: 1
   _isBeingDragged: 0
+  _currentEnergy: 1
   _energyRenderer: {fileID: 4782254245562662314}
   _ejectionForce: 5
-  _energyRequiredPerSpawn: 1
+  _consumptionPerAction: 1
+  _inputTransferSpeed: 5
   _redBallData: {fileID: 11400000, guid: 80d61bba963ad264f8475d89dc001b50, type: 2}
   _animSpeed: 1
-  _maxCapacity: 1
-  _maxFlowRate: 1
   _enableLogs: 1
-  _currentEnergy: 1
 --- !u!50 &9089209472064100971
 Rigidbody2D:
   serializedVersion: 5
@@ -1103,8 +1103,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 18.82
-    spacing: 0
-    offset: 0.006022201
+    spacing: 0.99
+    offset: 0.0353341
     shapeModifier: 1
   fill:
     type: 0

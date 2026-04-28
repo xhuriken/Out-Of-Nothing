@@ -1,10 +1,10 @@
-﻿using DG.Tweening;
+using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-public class PistonMachine : MachineEntity, IEnergyStorage
+public class PistonMachine : MachineEntity
 {
     // No energy required
     // Stock energy
@@ -36,35 +36,22 @@ public class PistonMachine : MachineEntity, IEnergyStorage
     /// </summary>
     [SerializeField] private float _animationDuration = 0.4f;
 
-    //local vars
-    private float _currentEnergy;
-    private float _maxEnergy = 100f;
     private bool _canEjectBall;
     private bool _isProcessing;
-
-    public float CurrentEnergy => _currentEnergy;
-
-    public float MaxEnergy => _maxEnergy;
 
     // This is local, did i need to make it in the IEnergyStorage ?
     public float AddEnergy(float amount)
     {
         // We clamp between 0 and Max ! 
-        _currentEnergy = Mathf.Clamp(_currentEnergy + amount, 0f, _maxEnergy);
-        Debug.Log($"[PistonMachine] Added {amount} energy. Actually {_currentEnergy}/{_maxEnergy}");
+        CurrentEnergy = Mathf.Clamp(CurrentEnergy + amount, 0f, _maxStorage);
+        Debug.Log($"[PistonMachine] Added {amount} energy. Actually {CurrentEnergy}/{_maxStorage}");
         return amount;
     }
 
-    public float ExtractEnergy(float amount)
+    protected override void Start()
     {
-        float available = Mathf.Min(amount, _currentEnergy);
-        _currentEnergy -= available;
-        return available;
-    }
-
-    public void Start()
-    {
-        _currentEnergy = MaxEnergy;
+        base.Start();
+        CurrentEnergy = _maxStorage;
     }
 
     // I choose the fixed update because if we have a lag, i dont want the machine to be desync with other...
@@ -72,7 +59,7 @@ public class PistonMachine : MachineEntity, IEnergyStorage
     {
         //Todo  Return when dragged.
 
-        if (_currentEnergy >= _maxEnergy)
+        if (CurrentEnergy >= _maxStorage)
         {
             // play SFX, animation, etc...
             if (_ballInside != null && _ballInside.Data.id == "RedBall" && _canEjectBall)
@@ -80,7 +67,7 @@ public class PistonMachine : MachineEntity, IEnergyStorage
                 Debug.Log("[PistonMachine] Max energy and ball => Ejecting ball !");
                 // Animation
                 // remove the actual energy (with dotween animation too)
-                _currentEnergy = 0f;
+                CurrentEnergy = 0f;
                 // destroy the ball inside with the BallPoolManager
                 // Instanciate the ballOut with the BallPoolManager
                 // Eject Her !

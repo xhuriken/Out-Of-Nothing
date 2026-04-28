@@ -5,5 +5,6 @@ using UnityEngine;
 /// </summary>
 public interface IEnergyProducer : IEnergyNode
 {
-    float ProduceEnergy(float deltaTime);
+    float ProductionPerTick { get; }
+    float OutputTransferSpeed { get; }
 }

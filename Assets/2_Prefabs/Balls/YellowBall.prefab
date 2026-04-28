@@ -9898,7 +9898,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::YellowBallBehavior
   _maxStorage: 1
-  _maxFlowRate: 5
+  _inputTransferSpeed: 5
+  _outputTransferSpeed: 5
   _enableLogs: 0
   _currentEnergy: 0
 --- !u!50 &1344634683005742415

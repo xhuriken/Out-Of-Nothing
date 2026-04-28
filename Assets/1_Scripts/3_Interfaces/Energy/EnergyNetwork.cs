@@ -4,14 +4,13 @@ using UnityEngine;
 
 /// <summary>
 /// Represents a group of connected energy nodes.
-/// Handles synchronized energy distribution between producers and consumers using proportional sharing.
+/// Handles synchronized energy distribution between producers and consumers using proportional load balancing.
 /// </summary>
 public class EnergyNetwork
 {
     private readonly HashSet<IEnergyNode> _nodes = new HashSet<IEnergyNode>();
     private readonly List<IEnergyConsumer> _consumers = new List<IEnergyConsumer>();
     private readonly List<IEnergyProducer> _producers = new List<IEnergyProducer>();
-    private readonly List<IEnergyStorage> _storages = new List<IEnergyStorage>();
 
     /// <summary>
     /// Gets the collection of nodes currently in this network.
@@ -28,7 +27,6 @@ public class EnergyNetwork
             node.CurrentNetwork = this;
             if (node is IEnergyConsumer consumer) _consumers.Add(consumer);
             if (node is IEnergyProducer producer) _producers.Add(producer);
-            if (node is IEnergyStorage storage) _storages.Add(storage);
         }
     }
 
@@ -39,120 +37,104 @@ public class EnergyNetwork
     public static float Quantize(float value) => Mathf.Round(value * 10000f) / 10000f;
 
     /// <summary>
-    /// Processes a single energy cycle. 
-    /// Executed synchronously by the EnergyManager.
+    /// Phase 5: Calculate energy allocation for the upcoming tick.
+    /// Executed synchronously by the EnergyManager when a PowerTick occurs.
     /// </summary>
-    public void ProcessTick(float tickDuration)
+    /// <param name="tickRate">The duration of the tick in seconds.</param>
+    public void CalculateAllocation(float tickRate)
     {
-        float totalProduced = 0f;
-        float totalProvided = 0f;
-        float totalRequested = 0f;
+        float totalAvailableSupply = 0f;
+        float totalDemand = 0f;
 
-        // 1. Production Phase
+        // Reset allocations
+        foreach (var node in _nodes)
+        {
+            node.EnergyAllocationRate = 0f;
+        }
+
+        // 1. Calculate Demand (Consumers)
+        foreach (IEnergyConsumer consumer in _consumers)
+        {
+            float missing = consumer.MaxStorage - consumer.CurrentEnergy;
+            if (missing > 0f)
+            {
+                // Demand is capped by their TransferSpeed per tick
+                float pullable = Mathf.Min(consumer.InputTransferSpeed, missing);
+                totalDemand += pullable;
+            }
+        }
+
+        // 2. Calculate Supply (Producers / Batteries)
         foreach (IEnergyProducer producer in _producers)
         {
-            totalProduced += Quantize(producer.ProduceEnergy(tickDuration));
+            // Note: production logic itself (creation of energy from nowhere) is handled 
+            // fluidly or independently. Here we just count what can be pushed to the network.
+            float pushable = Mathf.Min(producer.OutputTransferSpeed, producer.CurrentEnergy);
+            totalAvailableSupply += pushable;
         }
 
-        // 2. Identify supply
-        float availableSupply = 0f;
-        foreach (IEnergyStorage storage in _storages)
-        {
-            availableSupply += storage.CurrentEnergy;
-        }
-        availableSupply = Quantize(availableSupply);
+        // Quantize totals
+        totalAvailableSupply = Quantize(totalAvailableSupply);
+        totalDemand = Quantize(totalDemand);
 
-        // Exit early if no consumers or no energy
-        if (_nodes.Count < 2 || _consumers.Count == 0 || availableSupply <= 0)
+        if (totalAvailableSupply <= 0f || totalDemand <= 0f || _nodes.Count < 2)
         {
             return;
         }
 
-        // 3. Demand Calculation
-        var requests = new List<(IEnergyConsumer Consumer, float Amount)>();
+        // 3. Load Balancing Ratios (Pure Pro-Rata)
+        float consumerRatio = Mathf.Min(1f, totalAvailableSupply / totalDemand);
+        float producerRatio = Mathf.Min(1f, totalDemand / totalAvailableSupply);
 
+        // 4. Allocate Rates (Energy per Second)
         foreach (IEnergyConsumer consumer in _consumers)
         {
-            if (!consumer.NeedsEnergy) continue;
-
-            float flowCap = Quantize(consumer.MaxFlowRate * tickDuration);
-            float amount = Quantize(Mathf.Min(consumer.EnergyRequest, flowCap));
-
-            if (amount > 0)
+            float missing = consumer.MaxStorage - consumer.CurrentEnergy;
+            if (missing > 0f)
             {
-                requests.Add((consumer, amount));
-                totalRequested += amount;
+                float pullable = Mathf.Min(consumer.InputTransferSpeed, missing);
+                float allocatedForTick = Quantize(pullable * consumerRatio);
+                consumer.EnergyAllocationRate += allocatedForTick / tickRate;
             }
         }
-        totalRequested = Quantize(totalRequested);
 
-        if (totalRequested <= 0) return;
-
-        // 4. Distribution Phase: Calculate satisfaction ratio
-        // We clamp the ratio to 1.0 but keep it as float for proportion
-        float satisfactionRatio = Mathf.Min(1f, availableSupply / totalRequested);
-
-        foreach (var req in requests)
-        {
-            // PROPER PACKETING: We quantize the result of the proportion
-            float fairAmount = Quantize(req.Amount * satisfactionRatio);
-
-            if (fairAmount <= 0) continue;
-
-            float actuallyExtracted = ExtractFromPool(fairAmount, req.Consumer);
-
-            if (actuallyExtracted > 0)
-            {
-                req.Consumer.ProvideEnergy(actuallyExtracted);
-                totalProvided += actuallyExtracted;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Helper to pull energy from the available storages in the network.
-    /// </summary>
-    private float ExtractFromPool(float amount, IEnergyConsumer requester)
-    {
-        float remainingToExtract = amount;
-
-        // A. Take from Generators first
         foreach (IEnergyProducer producer in _producers)
         {
-            if (remainingToExtract <= 0) break;
-            if (producer is IEnergyStorage storage)
+            float pushable = Mathf.Min(producer.OutputTransferSpeed, producer.CurrentEnergy);
+            if (pushable > 0f)
             {
-                remainingToExtract = Quantize(remainingToExtract - storage.ExtractEnergy(remainingToExtract));
+                float debitForTick = Quantize(pushable * producerRatio);
+                // Subtracted from the node fluidly
+                producer.EnergyAllocationRate -= debitForTick / tickRate;
             }
         }
 
-        // B. Take from other Storages
-        if (remainingToExtract > 0)
-        {
-            foreach (IEnergyStorage storage in _storages)
-            {
-                if (remainingToExtract <= 0) break;
-                if (ReferenceEquals(requester, storage)) continue;
-
-                remainingToExtract = Quantize(remainingToExtract - storage.ExtractEnergy(remainingToExtract));
-            }
-        }
-
-        return Quantize(amount - remainingToExtract);
+        // LogNetworkSummary(totalAvailableSupply, totalDemand, consumerRatio);
     }
 
-
     /// <summary>
-    /// Logs a summary of the network's energy flow to the console.
+    /// Applies the calculated allocation fluidly over the frame.
+    /// Executed in FixedUpdate by EnergyManager.
     /// </summary>
-    private void LogNetworkSummary(float produced, float provided, float requested)
+    public void ProcessFluidTransfer(float deltaTime)
     {
-        // TODO: Integration with a global logging system via flags
+        foreach (IEnergyNode node in _nodes)
+        {
+            if (Mathf.Abs(node.EnergyAllocationRate) > 0.0001f)
+            {
+                float deltaEnergy = node.EnergyAllocationRate * deltaTime;
+                node.CurrentEnergy = Quantize(Mathf.Clamp(node.CurrentEnergy + deltaEnergy, 0f, node.MaxStorage));
+            }
+        }
+    }
+
+    private void LogNetworkSummary(float supply, float demand, float ratio)
+    {
         StringBuilder sb = new StringBuilder();
         sb.Append($"[Net {GetHashCode().ToString("X")}] ");
         sb.Append($"Nodes: {_nodes.Count} | ");
-        sb.Append($"Prod: {produced:F3} | ");
-        sb.Append($"Flow: {provided:F3} / {requested:F3}");
+        sb.Append($"Supply: {supply:F3} | ");
+        sb.Append($"Demand: {demand:F3} | Ratio: {ratio:F2}");
 
         Debug.Log(sb.ToString());
     }

@@ -20,11 +20,18 @@
 - [x] Commit & Push sur la branche `something`
 
 ## Phase 4 : Tick Manager & Synchronisation (EN COURS) 🔄
+- [x] **HYBRIDATION** : Rétablissement de la fluidité (Flux en FixedUpdate, Logique en PowerTick)
 - [ ] Groupement par Type & Network (Répartition sur ticks différents)
 - [ ] Synchronisation Automatique : Attente du cycle complet pour les nouvelles machines
 - [ ] États Latents : Feedback visuel (atténuation) et arrêt de consommation
 - [ ] Manual Sync Offset : Permettre un décalage manuel optionnel
 
+## Phase 5 : Refonte Théorique du Flux (VALIDÉE) ✅
+- [x] Rédiger la spécification technique (Tick-Flow, Load Balancing)
+- [x] Obtenir la validation de l'utilisateur (Simplification: pur pro-rata, pas d'efficiency ni priorité)
+- [x] Implémenter l'Équation de Flux (Tick-Flow Integration)
+- [x] Implémenter le Solver de Réseau Global (Load Balancing)
+
 ## Prochaines Étapes :
-1. Définir la structure de groupement dans le `PowerTickManager`.
-2. Implémenter la logique de Latency State pour les nouvelles machines.
+1. Implémenter la nouvelle logique de propriétés (TransferSpeed, MaxStorage).
+2. Refactoriser le FixedUpdate de EnergyManager pour l'équation de flux.
