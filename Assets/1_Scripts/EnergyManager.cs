@@ -44,7 +44,7 @@ public class EnergyManager : MonoBehaviour
         {
             _allNodes.Add(node);
             Debug.Log($"[EnergyManager] Registered new node. Total nodes: {_allNodes.Count}");
-            RequestRebuild();
+            MarkTopologyDirty();
         }
     }
 
@@ -56,13 +56,13 @@ public class EnergyManager : MonoBehaviour
         if (_allNodes.Remove(node))
         {
             Debug.Log($"[EnergyManager] Unregistered node. Total nodes: {_allNodes.Count}");
-            RequestRebuild();
+            MarkTopologyDirty();
         }
     }
     /// <summary>
-    /// Marks the current topology as outdated. Rebuild will happen on the next FixedUpdate.
+    /// Marks the current topology as outdated. Rebuild will happen on the next PowerTick.
     /// </summary>
-    public void RequestRebuild()
+    public void MarkTopologyDirty()
     {
         _isDirty = true;
     }
@@ -108,11 +108,6 @@ public class EnergyManager : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (_isDirty)
-        {
-            RebuildNetworks();
-        }
-
         // Fluid processing: interpolates the allocated energy every frame
         foreach (EnergyNetwork network in _networks)
         {
@@ -258,7 +253,11 @@ public class EnergyManager : MonoBehaviour
     /// </summary>
     private bool CanConnect(IEnergyNode a, IEnergyNode b)
     {
-        // 1. Type Check
+        // 1. Isolate dragged machines
+        if (a is MachineEntity ma && ma.IsBeingDragged) return false;
+        if (b is MachineEntity mb && mb.IsBeingDragged) return false;
+
+        // 2. Type Check
         // Yellow balls can connect to anything
         if (a is YellowBallBehavior || b is YellowBallBehavior)
         {

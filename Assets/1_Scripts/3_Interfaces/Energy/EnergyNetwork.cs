@@ -18,6 +18,11 @@ public class EnergyNetwork
     public IEnumerable<IEnergyNode> Nodes => _nodes;
 
     /// <summary>
+    /// Returns true if the network contains at least one energy producer.
+    /// </summary>
+    public bool HasProducers => _producers.Count > 0;
+
+    /// <summary>
     /// Adds a node to the network and registers its energy interfaces.
     /// </summary>
     public void AddNode(IEnergyNode node)
@@ -27,6 +32,19 @@ public class EnergyNetwork
             node.CurrentNetwork = this;
             if (node is IEnergyConsumer consumer) _consumers.Add(consumer);
             if (node is IEnergyProducer producer) _producers.Add(producer);
+        }
+    }
+
+    /// <summary>
+    /// Removes a node from the network (used during drag).
+    /// </summary>
+    public void RemoveNode(IEnergyNode node)
+    {
+        if (_nodes.Remove(node))
+        {
+            if (node.CurrentNetwork == this) node.CurrentNetwork = null;
+            if (node is IEnergyConsumer consumer) _consumers.Remove(consumer);
+            if (node is IEnergyProducer producer) _producers.Remove(producer);
         }
     }
 

@@ -11,7 +11,7 @@ public class PowerTickManager : MonoBehaviour
     public static PowerTickManager Instance { get; private set; }
 
     [Header("Settings")]
-    [SerializeField] private float _tickRate = 1f;
+    [SerializeField] private float _tickRate = 0.1666f; // 6 ticks per second
     [SerializeField] private bool _autoStart = true;
     [SerializeField] private bool _enableLogs = false;
 
@@ -20,6 +20,9 @@ public class PowerTickManager : MonoBehaviour
 
     private float _timer;
     private bool _isTicking;
+    private long _currentTickCount;
+
+    public long CurrentTickCount => _currentTickCount;
 
     /// <summary>
     /// Event fired when a new energy cycle begins. (Machines execute their logic)
@@ -56,8 +59,10 @@ public class PowerTickManager : MonoBehaviour
 
     private void ExecuteTick()
     {
+        _currentTickCount++;
+
         if (EnergyManager.Instance != null && EnergyManager.Instance.EnableLogs) 
-            Debug.Log($"[PowerTick] --- Cycle Start at {Time.time:F2} ---");
+            Debug.Log($"[PowerTick] --- Cycle Start at {Time.time:F2} (Tick: {_currentTickCount}) ---");
             
         // Trigger the synchronized update across all machines
         OnPowerTick?.Invoke();

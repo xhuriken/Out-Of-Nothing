@@ -13,25 +13,57 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
     [Header("Materialisator Settings")]
     [SerializeField] private float _ejectionForce = 5f;
     [SerializeField] private float _consumptionPerAction = 1f;
-    [SerializeField] private float _inputTransferSpeed = 5f;
+    [SerializeField] private float _inputTransferSpeed = 0.05f; // Absorb slowly (0.05 per tick)
     [SerializeField] private BallDataSO _redBallData;
 
     [Header("Storage Settings")]
     [SerializeField] private float _animSpeed = 0.5f;
 
+    [Header("Sequencer Settings")]
+    [Tooltip("Number of global ticks before attempting an action. (e.g., 20 ticks = 1 action every 20 ticks)")]
+    [SerializeField] private int _actionCadenceTicks = 20;
+    [Tooltip("Offset to offset the cadence. Useful for creating alternating patterns.")]
+    [SerializeField] private int _tickOffset = 0;
+
     [Header("Debug")]
     [SerializeField] private bool _enableLogs = false;
 
     private float _currentDashOffset;
+    private Color _originalColor;
+    private long _startFillTick;
 
     public override float CurrentEnergy
     {
         get { return base.CurrentEnergy; }
-        set { base.CurrentEnergy = value; UpdateVisuals(); }
+        set { base.CurrentEnergy = value; }
     }
 
-    public float InputTransferSpeed => _inputTransferSpeed;
+    public float InputTransferSpeed 
+    {
+        get
+        {
+            if (IsWaiting()) return 0f;
+            return _inputTransferSpeed;
+        }
+    }
+    
     public float ConsumptionPerAction => _consumptionPerAction;
+
+    protected override void Start()
+    {
+        base.Start();
+        if (_energyRenderer != null)
+        {
+            _originalColor = _energyRenderer.Color;
+        }
+        RecalculateStartFillTick();
+    }
+
+    public override void OnDragEnd()
+    {
+        base.OnDragEnd();
+        RecalculateStartFillTick();
+    }
 
     /// <summary>
     /// Kept for compatibility if anything calls it manually outside of network loop.
@@ -46,18 +78,16 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
     {
         float taken = EnergyNetwork.Quantize(Mathf.Min(amount, CurrentEnergy));
         CurrentEnergy = EnergyNetwork.Quantize(CurrentEnergy - taken);
-        UpdateVisuals();
         return taken;
     }
 
     private void OnValidate()
     {
-        UpdateVisuals();
-    }
-
-    private void Update()
-    {
-        UpdateVisuals();
+        if (_energyRenderer != null && _maxStorage > 0f)
+        {
+            float energyRatio = Mathf.Clamp01(CurrentEnergy / _maxStorage);
+            _energyRenderer.DashSpacing = 1f - energyRatio;
+        }
     }
 
     /// <summary>
@@ -70,24 +100,29 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
             Debug.LogWarning($"[RedMaterialisator] {gameObject.name} is misconfigured! MaxStorage ({_maxStorage}) is lower than ConsumptionPerAction ({_consumptionPerAction}). It will never spawn.");
         }
 
-        // Now using quantized deterministic comparison
-        if (CurrentEnergy >= _consumptionPerAction)
+        long currentTick = PowerTickManager.Instance.CurrentTickCount;
+        
+        if (currentTick % _actionCadenceTicks == _tickOffset)
         {
-            if (_enableLogs) Debug.Log($"[RedLogic] EXECUTING SPAWN. Buffer was {CurrentEnergy:F4}");
-            
-            CurrentEnergy = EnergyNetwork.Quantize(Mathf.Max(0, CurrentEnergy - _consumptionPerAction));
-            SpawnBall();
+            if (CurrentEnergy >= _consumptionPerAction)
+            {
+                if (_enableLogs) Debug.Log($"[RedLogic] EXECUTING SPAWN at tick {currentTick}. Buffer was {CurrentEnergy}");
+                
+                CurrentEnergy = EnergyNetwork.Quantize(Mathf.Max(0, CurrentEnergy - _consumptionPerAction));
+                SpawnBall();
+            }
+
+            // Always recalculate on the deadline tick.
+            // This guarantees the machine will WAIT FIRST before pumping if it missed the previous deadline.
+            RecalculateStartFillTick();
         }
     }
 
-    /// <summary>
-    /// Synchronizes the Shapes Rectangle dashes with the energy level and animates them.
-    /// </summary>
-    private void UpdateVisuals()
+    private void Update()
     {
-        if (_energyRenderer == null) return;
+        if (_energyRenderer == null || !_isRunning) return;
 
-        // Adjust spacing based on energy (0 energy = wide spacing, Full = no spacing)
+        // 1. Visual Animation (Fluid)
         float energyRatio = Mathf.Clamp01(CurrentEnergy / _maxStorage);
         _energyRenderer.DashSpacing = 1f - energyRatio;
 
@@ -97,6 +132,58 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
         {
             _currentDashOffset += Time.deltaTime * _animSpeed;
             _energyRenderer.DashOffset = _currentDashOffset % dashPeriod;
+        }
+
+        // 2. Just-In-Time Feedback
+        _energyRenderer.Color = IsWaiting() ? Color.gray : _originalColor;
+    }
+
+    private bool IsWaiting()
+    {
+        if (PowerTickManager.Instance == null || !_isRunning) return false;
+
+        // If we are completely disconnected from any producer, we cannot fill anyway. Stay in waiting state.
+        if (CurrentNetwork == null || !CurrentNetwork.HasProducers)
+        {
+            return true;
+        }
+
+        bool isWaiting = PowerTickManager.Instance.CurrentTickCount < _startFillTick;
+        return isWaiting;
+    }
+
+    private void RecalculateStartFillTick()
+    {
+        if (PowerTickManager.Instance == null || _inputTransferSpeed <= 0f) return;
+
+        long currentTick = PowerTickManager.Instance.CurrentTickCount;
+        float missingEnergy = Mathf.Max(0, _consumptionPerAction - CurrentEnergy);
+        
+        int ticksRequiredToFill = Mathf.CeilToInt(missingEnergy / _inputTransferSpeed);
+
+        long targetTick = currentTick;
+        int distance = 0;
+        
+        while (targetTick % _actionCadenceTicks != _tickOffset)
+        {
+            targetTick++;
+            distance++;
+        }
+        
+        // If we missed this exact tick, target the next cycle
+        if (distance == 0) distance = _actionCadenceTicks;
+
+        // NEW FIX: If we don't have enough time to fill before this deadline, we must target a future deadline!
+        while (distance < ticksRequiredToFill)
+        {
+            distance += _actionCadenceTicks;
+        }
+
+        _startFillTick = currentTick + distance - ticksRequiredToFill;
+
+        if (_enableLogs)
+        {
+            Debug.Log($"[RedLogic] {gameObject.name} RECALCULATED -> Tick: {currentTick}, Missing: {missingEnergy:F2}, TicksReq: {ticksRequiredToFill}, Distance: {distance}, StartFillTick: {_startFillTick}");
         }
     }
 

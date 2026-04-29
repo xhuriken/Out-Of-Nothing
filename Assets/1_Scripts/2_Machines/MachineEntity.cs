@@ -119,6 +119,12 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable, IEnergyNode
     {
         _isRunning = false;
         _isBeingDragged = true;
+        
+        // Isolate from network
+        CurrentNetwork?.RemoveNode(this);
+        EnergyAllocationRate = 0f;
+        EnergyManager.Instance?.MarkTopologyDirty();
+
         _rb.bodyType = RigidbodyType2D.Dynamic;
         _rb.linearVelocity = Vector2.zero;
         return true;
@@ -134,7 +140,7 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable, IEnergyNode
 
     public virtual void OnDragEnd()
     {
-        EnergyManager.Instance?.RequestRebuild();
+        EnergyManager.Instance?.MarkTopologyDirty();
         _isRunning = true;
         _isBeingDragged = false;
         _rb.linearVelocity = Vector2.zero;

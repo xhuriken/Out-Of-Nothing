@@ -2,6 +2,7 @@ using DG.Tweening;
 using System;
 using Unity.VisualScripting;
 using UnityEngine;
+using System.Collections.Generic;
 
 [Serializable]
 public class YellowBallBehavior : BallBehavior, IEnergyConsumer, IEnergyProducer, IEnergyNode
@@ -19,6 +20,9 @@ public class YellowBallBehavior : BallBehavior, IEnergyConsumer, IEnergyProducer
     private float _baseRendererRadius;
     private float _baseRendererThickness;
     private float _baseColliderRadius;
+
+    private readonly HashSet<Collider2D> _currentNeighbors = new HashSet<Collider2D>();
+    private readonly Collider2D[] _overlapResults = new Collider2D[16];
 
     public float CurrentEnergy
     {
@@ -108,7 +112,58 @@ public class YellowBallBehavior : BallBehavior, IEnergyConsumer, IEnergyProducer
     public override void OnDragEnd(BallEntity ball)
     {
         base.OnDragEnd(ball);
-        EnergyManager.Instance?.RequestRebuild();
+        EnergyManager.Instance?.MarkTopologyDirty();
+    }
+
+    public override void ExecuteFixedUpdate(BallEntity ball, float fixedDeltaTime)
+    {
+        if (ball.IsBeingDragged)
+        {
+            CheckTopologyChanges();
+        }
+    }
+
+    private void CheckTopologyChanges()
+    {
+        int count = Physics2D.OverlapCircleNonAlloc(Position, ConnectionRadius, _overlapResults);
+        
+        bool hasChanged = false;
+        int validCount = 0;
+        
+        for (int i = 0; i < count; i++)
+        {
+            if (_overlapResults[i].gameObject != this.gameObject) validCount++;
+        }
+
+        if (validCount != _currentNeighbors.Count)
+        {
+            hasChanged = true;
+        }
+        else
+        {
+            for (int i = 0; i < count; i++)
+            {
+                Collider2D col = _overlapResults[i];
+                if (col.gameObject == this.gameObject) continue;
+                if (!_currentNeighbors.Contains(col))
+                {
+                    hasChanged = true;
+                    break;
+                }
+            }
+        }
+
+        if (hasChanged)
+        {
+            _currentNeighbors.Clear();
+            for (int i = 0; i < count; i++)
+            {
+                Collider2D col = _overlapResults[i];
+                if (col.gameObject == this.gameObject) continue;
+                _currentNeighbors.Add(col);
+            }
+            EnergyManager.Instance?.MarkTopologyDirty();
+        }
     }
     public override void OnEnableBehavior(BallEntity ball)
     {
