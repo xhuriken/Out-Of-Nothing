@@ -11,6 +11,7 @@ public class EnergyNetwork
     private readonly HashSet<IEnergyNode> _nodes = new HashSet<IEnergyNode>();
     private readonly List<IEnergyConsumer> _consumers = new List<IEnergyConsumer>();
     private readonly List<IEnergyProducer> _producers = new List<IEnergyProducer>();
+    private readonly List<YellowBallBehavior> _cables = new List<YellowBallBehavior>();
 
     /// <summary>
     /// Gets the collection of nodes currently in this network.
@@ -18,9 +19,20 @@ public class EnergyNetwork
     public IEnumerable<IEnergyNode> Nodes => _nodes;
 
     /// <summary>
-    /// Returns true if the network contains at least one energy producer.
+    /// Returns true if the network contains at least one generator or a storage node with energy.
     /// </summary>
-    public bool HasProducers => _producers.Count > 0;
+    public bool HasProducers
+    {
+        get
+        {
+            foreach (var prod in _producers)
+            {
+                if (!(prod is YellowBallBehavior)) return true; // It's a generator
+                if (prod.CurrentEnergy > 0.001f) return true; // It's a cable with energy
+            }
+            return false;
+        }
+    }
 
     /// <summary>
     /// Adds a node to the network and registers its energy interfaces.
@@ -32,6 +44,7 @@ public class EnergyNetwork
             node.CurrentNetwork = this;
             if (node is IEnergyConsumer consumer) _consumers.Add(consumer);
             if (node is IEnergyProducer producer) _producers.Add(producer);
+            if (node is YellowBallBehavior cable) _cables.Add(cable);
         }
     }
 
@@ -45,9 +58,17 @@ public class EnergyNetwork
             if (node.CurrentNetwork == this) node.CurrentNetwork = null;
             if (node is IEnergyConsumer consumer) _consumers.Remove(consumer);
             if (node is IEnergyProducer producer) _producers.Remove(producer);
+            if (node is YellowBallBehavior cable) _cables.Remove(cable);
         }
     }
-
+    /// <summary>
+    /// Sorts the cables (YellowBalls) by their topological distance to the nearest producer.
+    /// Should be called after a network rebuild is complete.
+    /// </summary>
+    public void SortCables()
+    {
+        _cables.Sort((a, b) => a.DistanceToSource.CompareTo(b.DistanceToSource));
+    }
     /// <summary>
     /// Quantizes energy values to 4 decimal places to prevent floating point drift
     /// and ensure "clean" energy packets.
@@ -61,73 +82,91 @@ public class EnergyNetwork
     /// <param name="tickRate">The duration of the tick in seconds.</param>
     public void CalculateAllocation(float tickRate)
     {
-        float totalAvailableSupply = 0f;
-        float totalDemand = 0f;
+        // 1. Reset allocations
+        foreach (var node in _nodes) node.EnergyAllocationRate = 0f;
 
-        // Reset allocations
-        foreach (var node in _nodes)
+        // 2. Identify "Source" Producers (Generators) vs Consumers (Machines)
+        float sourceSupply = 0f;
+        List<IEnergyProducer> generators = new List<IEnergyProducer>();
+        foreach (var prod in _producers)
         {
-            node.EnergyAllocationRate = 0f;
+            if (prod is YellowBallBehavior) continue; // Cables are processed separately
+            generators.Add(prod);
+            sourceSupply += Quantize(Mathf.Min(prod.OutputTransferSpeed, prod.CurrentEnergy));
         }
 
-        // 1. Calculate Demand (Consumers)
-        foreach (IEnergyConsumer consumer in _consumers)
+        float machineDemand = 0f;
+        List<IEnergyConsumer> machines = new List<IEnergyConsumer>();
+        foreach (var cons in _consumers)
         {
-            float missing = consumer.MaxStorage - consumer.CurrentEnergy;
+            if (cons is YellowBallBehavior) continue; // Cables are processed separately
+            float missing = cons.MaxStorage - cons.CurrentEnergy;
             if (missing > 0f)
             {
-                // Demand is capped by their TransferSpeed per tick
-                float pullable = Mathf.Min(consumer.InputTransferSpeed, missing);
-                totalDemand += pullable;
+                float pull = Mathf.Min(cons.InputTransferSpeed, missing);
+                machineDemand += pull;
+                machines.Add(cons);
             }
         }
 
-        // 2. Calculate Supply (Producers / Batteries)
-        foreach (IEnergyProducer producer in _producers)
+        // 3. Phase A: Fill Cables from Source (Near -> Far)
+        float remainingSource = sourceSupply;
+        foreach (var cable in _cables)
         {
-            // Note: production logic itself (creation of energy from nowhere) is handled 
-            // fluidly or independently. Here we just count what can be pushed to the network.
-            float pushable = Mathf.Min(producer.OutputTransferSpeed, producer.CurrentEnergy);
-            totalAvailableSupply += pushable;
-        }
-
-        // Quantize totals
-        totalAvailableSupply = Quantize(totalAvailableSupply);
-        totalDemand = Quantize(totalDemand);
-
-        if (totalAvailableSupply <= 0f || totalDemand <= 0f || _nodes.Count < 2)
-        {
-            return;
-        }
-
-        // 3. Load Balancing Ratios (Pure Pro-Rata)
-        float consumerRatio = Mathf.Min(1f, totalAvailableSupply / totalDemand);
-        float producerRatio = Mathf.Min(1f, totalDemand / totalAvailableSupply);
-
-        // 4. Allocate Rates (Energy per Second)
-        foreach (IEnergyConsumer consumer in _consumers)
-        {
-            float missing = consumer.MaxStorage - consumer.CurrentEnergy;
-            if (missing > 0f)
+            float missing = cable.MaxStorage - cable.CurrentEnergy;
+            if (missing > 0f && remainingSource > 0f)
             {
-                float pullable = Mathf.Min(consumer.InputTransferSpeed, missing);
-                float allocatedForTick = Quantize(pullable * consumerRatio);
-                consumer.EnergyAllocationRate += allocatedForTick / tickRate;
+                float pull = Mathf.Min(cable.InputTransferSpeed, missing, remainingSource);
+                cable.EnergyAllocationRate += pull / tickRate;
+                remainingSource -= pull;
             }
         }
 
-        foreach (IEnergyProducer producer in _producers)
+        // 4. Phase B: Supply Machines from remaining Source
+        float providedBySourceToMachines = Mathf.Min(machineDemand, remainingSource);
+        remainingSource -= providedBySourceToMachines;
+        float remainingMachineDemand = machineDemand - providedBySourceToMachines;
+
+        // 5. Phase C: Draw from Cables for Machines (Far -> Near)
+        float providedByCablesToMachines = 0f;
+        if (remainingMachineDemand > 0f)
         {
-            float pushable = Mathf.Min(producer.OutputTransferSpeed, producer.CurrentEnergy);
-            if (pushable > 0f)
+            // Reverse iteration: farthest first
+            for (int i = _cables.Count - 1; i >= 0; i--)
             {
-                float debitForTick = Quantize(pushable * producerRatio);
-                // Subtracted from the node fluidly
-                producer.EnergyAllocationRate -= debitForTick / tickRate;
+                var cable = _cables[i];
+                float available = Mathf.Min(cable.OutputTransferSpeed, cable.CurrentEnergy);
+                if (available > 0f)
+                {
+                    float take = Mathf.Min(available, remainingMachineDemand);
+                    cable.EnergyAllocationRate -= take / tickRate;
+                    providedByCablesToMachines += take;
+                    remainingMachineDemand -= take;
+                    if (remainingMachineDemand <= 0f) break;
+                }
             }
         }
 
-        // LogNetworkSummary(totalAvailableSupply, totalDemand, consumerRatio);
+        // 6. Finalize Machine Allocations (Pro-rata if total supply < total demand)
+        float totalProvidedToMachines = providedBySourceToMachines + providedByCablesToMachines;
+        float machineRatio = machineDemand > 0 ? totalProvidedToMachines / machineDemand : 0f;
+        foreach (var machine in machines)
+        {
+            float missing = machine.MaxStorage - machine.CurrentEnergy;
+            float pull = Mathf.Min(machine.InputTransferSpeed, missing);
+            machine.EnergyAllocationRate += (pull * machineRatio) / tickRate;
+        }
+
+        // 7. Finalize Generator Allocations (Pro-rata based on what was actually drawn from them)
+        float totalSourceConsumed = sourceSupply - remainingSource;
+        float generatorRatio = sourceSupply > 0 ? totalSourceConsumed / sourceSupply : 0f;
+        foreach (var gen in generators)
+        {
+            float pushable = Mathf.Min(gen.OutputTransferSpeed, gen.CurrentEnergy);
+            gen.EnergyAllocationRate -= (pushable * generatorRatio) / tickRate;
+        }
+
+        // LogNetworkSummary(sourceSupply, machineDemand, machineRatio);
     }
 
     /// <summary>

@@ -14,6 +14,10 @@ public class YellowBallBehavior : BallBehavior, IEnergyConsumer, IEnergyProducer
     [Header("Debug")]
     [SerializeField] private bool _enableLogs = false;
 
+    [Header("Visual Settings")]
+    [SerializeField] private Color _colorFull = new Color(1f, 0.92f, 0.016f, 1f);
+    [SerializeField] private Color _colorEmpty = Color.gray;
+
     [Header("Live Data")]
     [SerializeField] private float _currentEnergy;
 
@@ -31,13 +35,6 @@ public class YellowBallBehavior : BallBehavior, IEnergyConsumer, IEnergyProducer
         { 
             _currentEnergy = value; 
             UpdateVisuals(); 
-            
-            // Destroy battery if empty
-            if (_currentEnergy <= 0f)
-            {
-                EnergyManager.Instance?.UnregisterNode(this);
-                if (this.gameObject != null) Destroy(this.gameObject);
-            }
         }
     }
     public float MaxEnergy => _maxStorage;
@@ -49,6 +46,7 @@ public class YellowBallBehavior : BallBehavior, IEnergyConsumer, IEnergyProducer
     public float EnergyAllocationRate { get; set; }
 
     public EnergyNetwork CurrentNetwork { get; set; }
+    public int DistanceToSource { get; set; }
     public float ConnectionRadius => 3f;
     public float PhysicalRadius => _me != null ? _me.Renderer.Radius : 0.5f;
 
@@ -83,30 +81,13 @@ public class YellowBallBehavior : BallBehavior, IEnergyConsumer, IEnergyProducer
 
     public void UpdateVisuals()
     {
-        if (_me == null) return;
+        if (_me == null || _me.Renderer == null) return;
 
         float energyRatio = _currentEnergy / _maxStorage;
         energyRatio = Mathf.Clamp01(energyRatio);
 
-        Debug.Log($"Hey I'am {gameObject.name} and i have this size ratio now: " + energyRatio);
-
-        DOTween.Kill(this);
-
-        float targetRadius = _baseRendererRadius * energyRatio;
-        float targetThickness = _baseRendererThickness * energyRatio;
-        float targetColliderRadius = _baseColliderRadius * energyRatio;
-
-        const float minVisible = 0.001f;
-        if (_me.Renderer != null)
-        {
-            _me.Renderer.Radius = Mathf.Max(minVisible, targetRadius);
-            _me.Renderer.Thickness = Mathf.Max(minVisible, targetThickness);
-        }
-
-        if (_me.Collider != null)
-        {
-            _me.Collider.radius = Mathf.Max(minVisible, targetColliderRadius);
-        }
+        // Smooth transition from empty (gray) to full (yellow)
+        _me.Renderer.Color = Color.Lerp(_colorEmpty, _colorFull, energyRatio);
     }
 
     public override void OnDragEnd(BallEntity ball)

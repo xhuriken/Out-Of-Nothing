@@ -14,4 +14,5 @@ public interface IEnergyNode
     float MaxStorage { get; }
     float CurrentEnergy { get; set; }
     float EnergyAllocationRate { get; set; }
+    int DistanceToSource { get; set; }
 }

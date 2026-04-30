@@ -71,5 +71,11 @@
 - **Corrections & Synchronisation Avancée :**
   - *Bug "Ghost Energy"* : Les machines saisies continuaient à recevoir de l'énergie. Le solver `EnergyManager.CanConnect` rejette désormais formellement toute connexion si `IsBeingDragged` est vrai, garantissant une isolation physique absolue.
   - *Sequencer Sync (Cadence)* : Ajout d'un système de *Step Sequencer* global dans `PowerTickManager` (`CurrentTickCount`). Les `RedMaterialisators` ne tirent plus bêtement quand ils sont pleins. Ils patientent sagement jusqu'à ce que `(CurrentTickCount % Cadence == Offset)`.
-  - *Dumb Just-In-Time* : Pour éviter que les machines ne se "battent" pour la priorité de l'énergie en recalculant constamment leur besoin, la logique a été simplifiée. Une machine calcule **une seule fois** (à son apparition, quand on la lâche, ou après un tir) son `_startFillTick`. Elle devient "idiote" et attend patiemment ce tick avant d'ouvrir les vannes. Si le réseau est trop faible, elle manquera la deadline et ciblera la prochaine (sans démarrer immédiatement). De plus, si la machine est totalement déconnectée d'un générateur, elle reste intelligemment en attente (Grise).
+- **Refonte des Yellow Balls (Câbles/Batteries) :**
+  - *Visuels* : Suppression du scale dynamique. Ajout d'une transition de couleur Jaune -> Gris basée sur l'énergie. Exposition de `_currentEnergy` dans l'Inspector.
+  - *Topologie (Near/Far)* : Implémentation d'un double BFS dans le `EnergyManager`. Chaque nœud connaît sa distance au générateur le plus proche (`DistanceToSource`).
+  - *Logique de Flux Prioritaire* : Réécriture complète de `CalculateAllocation`. L'énergie suit désormais un ordre strict : 
+    1. Remplissage des câbles en priorité (du plus proche au plus loin du générateur).
+    2. Distribution aux machines (Consumers).
+    3. Si manque d'énergie, les machines puisent dans les câbles (du plus loin au plus proche).
 - **Résultat :** Compilation Unity validée à 100% (0 Erreurs). Prêt pour les tests In-Game.

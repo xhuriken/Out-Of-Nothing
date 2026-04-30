@@ -53,6 +53,7 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable, IEnergyNode
         set => _currentEnergy = value; 
     }
     public float EnergyAllocationRate { get; set; }
+    public int DistanceToSource { get; set; }
     #endregion
 
     private void Awake()

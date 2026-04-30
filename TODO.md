@@ -1,37 +1,15 @@
-# TODO List - Out Of Nothing
+# TO-DO : Visuals & Topologie des Yellow Balls
 
-## Phase 1 : Initialisation & Rigueur ✅
-- [x] Créer TODO.md interne
-- [x] Configurer DEVELOPMENT_LOG.md
+## 1. Visuels des Yellow Balls
+- [x] Retirer la modification du `transform.localScale` dans `YellowBallBehavior.cs`.
+- [x] Ajouter une gestion de couleur (Color de début "Jaune" et de fin "Gris neutre") avec une transition fluide basée sur `CurrentEnergy / MaxStorage`.
+- [x] Désactiver la destruction automatique (`Destroy`) lorsque la balle atteint 0 énergie (elle devient juste grise et inactive).
 
-## Phase 2 : Gestion Spatiale & Rayons (SSOT) ✅
-- [x] Ajouter `PhysicalRadius` à `IEnergyNode`
-- [x] Implémenter Edge-to-Edge dans `EnergyManager`
-- [x] Corriger les arcs électriques (`Shortest Path` sur circonférence)
-- [x] **RE-CORRECTION** : Retour à la détection `Radius-vs-Collider` (Demande utilisateur)
-
-## Phase 3 : Correction de Bruit & Synchronisation ✅
-- [x] Fix : Vidage des Red Machines (Spawn restauré)
-- [x] Implémenter la **Quantification** (4 décimales) pour supprimer les résidus flottants
-- [x] Asservir l'**EnergyManager** au **PowerTickManager** (Dépendance stricte)
-- [x] **FIX CRITIQUE** : Résolution de la Race Condition Singleton (Execution Order -200)
-- [x] Robustesse : Inscription des machines dans `OnEnable`
-- [x] Visibilité : Exposer l'énergie et l'état `IsRunning` dans l'inspecteur
-- [x] Commit & Push sur la branche `something`
-
-## Phase 4 : Tick Manager & Synchronisation (EN COURS) 🔄
-- [x] **HYBRIDATION** : Rétablissement de la fluidité (Flux en FixedUpdate, Logique en PowerTick)
-- [ ] Groupement par Type & Network (Répartition sur ticks différents)
-- [ ] Synchronisation Automatique : Attente du cycle complet pour les nouvelles machines
-- [ ] États Latents : Feedback visuel (atténuation) et arrêt de consommation
-- [ ] Manual Sync Offset : Permettre un décalage manuel optionnel
-
-## Phase 5 : Refonte Théorique du Flux (VALIDÉE) ✅
-- [x] Rédiger la spécification technique (Tick-Flow, Load Balancing)
-- [x] Obtenir la validation de l'utilisateur (Simplification: pur pro-rata, pas d'efficiency ni priorité)
-- [x] Implémenter l'Équation de Flux (Tick-Flow Integration)
-- [x] Implémenter le Solver de Réseau Global (Load Balancing)
-
-## Prochaines Étapes :
-1. Implémenter la nouvelle logique de propriétés (TransferSpeed, MaxStorage).
-2. Refactoriser le FixedUpdate de EnergyManager pour l'équation de flux.
+## 2. Refonte du Solver (Pathfinding & Priorités)
+- [x] Modifier le BFS dans `EnergyManager.RebuildNetworks()` pour démarrer à partir des `IEnergyProducer` (Générateurs) et propager un entier `DistanceToSource` à chaque nœud.
+- [x] Dans `EnergyNetwork`, stocker une liste séparée `List<YellowBallBehavior> _cables` triée par `DistanceToSource` croissante.
+- [x] Réécrire la logique de `CalculateAllocation` et `ProcessFluidTransfer` :
+    - Étape A (Remplissage) : Injecter la production des Générateurs EN PRIORITÉ dans la liste `_cables` (du plus proche au plus lointain).
+    - Étape B (Distribution) : S'il reste de l'énergie des Générateurs, l'allouer aux Consumers.
+    - Étape C (Soutirage) : Si les Consumers manquent d'énergie, ils ponctionnent le déficit dans la liste `_cables` à l'envers (du plus lointain au plus proche).
+- [ ] Mettre à jour `DOC_ENERGY_ARCHITECTURE.md` et `DEVELOPMENT_LOG.md`.

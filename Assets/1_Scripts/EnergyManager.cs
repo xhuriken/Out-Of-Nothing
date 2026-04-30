@@ -141,22 +141,29 @@ public class EnergyManager : MonoBehaviour
             EnergyNetwork newNetwork = new EnergyNetwork();
             _networks.Add(newNetwork);
 
-            // Get any starting node
+            // Pass 1: Discover all nodes in this isolated component
+            List<IEnergyNode> componentNodes = new List<IEnergyNode>();
+            List<IEnergyNode> producersInNetwork = new List<IEnergyNode>();
+            
             IEnumerator<IEnergyNode> enumerator = unvisited.GetEnumerator();
             enumerator.MoveNext();
             IEnergyNode root = enumerator.Current;
 
-            // BFS Queue to find all connected neighbors
-            Queue<IEnergyNode> queue = new Queue<IEnergyNode>();
-            queue.Enqueue(root);
+            Queue<IEnergyNode> discoveryQueue = new Queue<IEnergyNode>();
+            discoveryQueue.Enqueue(root);
             unvisited.Remove(root);
 
-            while (queue.Count > 0)
+            while (discoveryQueue.Count > 0)
             {
-                IEnergyNode currentNode = queue.Dequeue();
+                IEnergyNode currentNode = discoveryQueue.Dequeue();
                 newNetwork.AddNode(currentNode);
+                componentNodes.Add(currentNode);
+                
+                if (currentNode is IEnergyProducer)
+                {
+                    producersInNetwork.Add(currentNode);
+                }
 
-                // Find neighbor candidate colliders intersecting our ConnectionRadius (Circle-vs-Collider)
                 int neighborCount = Physics2D.OverlapCircleNonAlloc(
                     currentNode.Position,
                     currentNode.ConnectionRadius,
@@ -166,15 +173,13 @@ public class EnergyManager : MonoBehaviour
                 for (int i = 0; i < neighborCount; i++)
                 {
                     IEnergyNode neighbor = GetNodeFromCollider(_neighborBuffer[i]);
-
                     if (neighbor == null || neighbor == currentNode) continue;
 
-                    // Strictly check connection logic AND distance (Sum of radii)
                     if (CanConnect(currentNode, neighbor))
                     {
                         if (unvisited.Contains(neighbor))
                         {
-                            queue.Enqueue(neighbor);
+                            discoveryQueue.Enqueue(neighbor);
                             unvisited.Remove(neighbor);
                         }
 
@@ -182,6 +187,47 @@ public class EnergyManager : MonoBehaviour
                     }
                 }
             }
+
+            // Pass 2: Calculate DistanceToSource (BFS from all producers simultaneously)
+            if (producersInNetwork.Count > 0)
+            {
+                foreach (var node in componentNodes) node.DistanceToSource = int.MaxValue;
+
+                Queue<IEnergyNode> distQueue = new Queue<IEnergyNode>();
+                foreach (var prod in producersInNetwork)
+                {
+                    prod.DistanceToSource = 0;
+                    distQueue.Enqueue(prod);
+                }
+
+                while (distQueue.Count > 0)
+                {
+                    IEnergyNode curr = distQueue.Dequeue();
+                    
+                    int count = Physics2D.OverlapCircleNonAlloc(curr.Position, curr.ConnectionRadius, _neighborBuffer);
+                    for (int i = 0; i < count; i++)
+                    {
+                        IEnergyNode neighbor = GetNodeFromCollider(_neighborBuffer[i]);
+                        if (neighbor == null || neighbor == curr) continue;
+
+                        if (neighbor.DistanceToSource == int.MaxValue && CanConnect(curr, neighbor))
+                        {
+                            neighbor.DistanceToSource = curr.DistanceToSource + 1;
+                            distQueue.Enqueue(neighbor);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // No generator in this network
+                foreach (var node in componentNodes) node.DistanceToSource = 999;
+            }
+        }
+
+        foreach (var network in _networks)
+        {
+            network.SortCables();
         }
 
         Debug.Log($"[EnergyManager] Rebuild complete. Found {_networks.Count} independent networks.");
