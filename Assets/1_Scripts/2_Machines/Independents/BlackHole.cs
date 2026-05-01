@@ -79,7 +79,7 @@ public class BlackHole : MonoBehaviour
 
         targetRb.AddForce(pullDirection * _attractForce * forceMultiplier, ForceMode2D.Force);
 
-        // TODO: détecter si c'est une boulle qu'on est en train de drag
+        // TODO: detecter si c'est une boulle qu'on est en train de drag
         GameInputManager.Instance.ForceDrop();
     }
 
@@ -104,7 +104,7 @@ public class BlackHole : MonoBehaviour
         }
 
         //IncrementManager.Instance.AddPoints(ball.Data.point);
-        // si il bouffe une machine, on donne le nombre de point qu'elle à couter a crafter ?
+        // si il bouffe une machine, on donne le nombre de point qu'elle ï¿½ couter a crafter ?
 
         NothingLoveEating();
     }

@@ -16,8 +16,27 @@ public class EnergyManager : MonoBehaviour
 
     [Header("Arc Settings")]
     [SerializeField] private ElectricArc _arcPrefab;
+    [SerializeField] private int _neighborMaxCount = 32;
 
-    private readonly List<IEnergyNode> _allNodes = new List<IEnergyNode>();
+    private struct Edge : System.IEquatable<Edge>
+    {
+        public IEnergyNode A;
+        public IEnergyNode B;
+        public Edge(IEnergyNode a, IEnergyNode b)
+        {
+            if (a.GetHashCode() < b.GetHashCode()) { A = a; B = b; }
+            else { A = b; B = a; }
+        }
+        public bool Equals(Edge other) => A == other.A && B == other.B;
+        public override bool Equals(object obj) => obj is Edge other && Equals(other);
+        public override int GetHashCode() => (A.GetHashCode() * 397) ^ B.GetHashCode();
+    }
+
+    private HashSet<Edge> _previousEdges = new HashSet<Edge>();
+    private HashSet<Edge> _currentEdges = new HashSet<Edge>();
+    private HashSet<Edge> _edgeBuffer = new HashSet<Edge>(); // To avoid duplicate arcs
+
+    private List<IEnergyNode> _allNodes = new List<IEnergyNode>();
     private readonly List<EnergyNetwork> _networks = new List<EnergyNetwork>();
     private readonly Collider2D[] _neighborBuffer = new Collider2D[16];
     private readonly List<ElectricArc> _arcPool = new List<ElectricArc>();
@@ -116,42 +135,63 @@ public class EnergyManager : MonoBehaviour
     private void HandlePreviewArcs()
     {
         // 1. Find the currently dragged node
-        IEnergyNode draggedNode = null;
-        foreach (var node in _allNodes)
+        IEnergyNode draggedNode = GetDraggedNode();
+
+        if (draggedNode == null)
         {
-            if (node is MachineEntity ma && ma.IsBeingDragged)
+            // Just hide any remaining arcs in the pool beyond the active ones
+            for (int i = _activeArcCount; i < _arcPool.Count; i++)
             {
-                draggedNode = node;
-                break;
+                if (_arcPool[i].gameObject.activeSelf)
+                    _arcPool[i].gameObject.SetActive(false);
             }
+            return;
         }
 
-        int totalArcIndex = _activeArcCount;
-
-        if (draggedNode != null)
+        // 2. Hide any existing network arcs connected to the dragged node 
+        // to avoid visual overlap (Blue vs Gray).
+        // EXCEPTION: Yellow balls stay connected, so we keep their real arcs visible.
+        bool canStayConnected = draggedNode is YellowBallBehavior;
+        if (!canStayConnected)
         {
-            // 2. Find potential neighbors for the dragged node
-            int neighborCount = Physics2D.OverlapCircleNonAlloc(
-                draggedNode.Position,
-                draggedNode.ConnectionRadius,
-                _neighborBuffer
-            );
-
-            for (int i = 0; i < neighborCount; i++)
+            for (int i = 0; i < _activeArcCount; i++)
             {
-                IEnergyNode neighbor = GetNodeFromCollider(_neighborBuffer[i]);
-                if (neighbor == null || neighbor == draggedNode) continue;
-
-                // For preview, we check if they COULD connect (ignoring the "IsBeingDragged" flag for the check itself)
-                if (CanConnectInternal(draggedNode, neighbor, true))
+                if (_arcPool[i].IsConnectedTo(draggedNode))
                 {
-                    ShowArc(draggedNode, neighbor, ref totalArcIndex, true);
+                    _arcPool[i].gameObject.SetActive(false);
                 }
             }
         }
 
-        // 3. Deactivate remaining arcs in the pool (those not used by real networks OR previews)
-        for (int i = totalArcIndex; i < _arcPool.Count; i++)
+        // 3. Find potential neighbors for the dragged node
+        int currentPreviewIndex = _activeArcCount;
+        _edgeBuffer.Clear();
+
+        int neighborCount = Physics2D.OverlapCircleNonAlloc(
+            draggedNode.Position,
+            draggedNode.ConnectionRadius,
+            _neighborBuffer
+        );
+
+        for (int i = 0; i < neighborCount; i++)
+        {
+            IEnergyNode neighbor = GetNodeFromCollider(_neighborBuffer[i]);
+            if (neighbor == null || neighbor == draggedNode) continue;
+
+            // For preview, we ignore the "IsBeingDragged" flag for the check itself
+            if (CanConnectInternal(draggedNode, neighbor, true))
+            {
+                Edge edge = new Edge(draggedNode, neighbor);
+                if (!_edgeBuffer.Contains(edge))
+                {
+                    ShowArc(draggedNode, neighbor, ref currentPreviewIndex, true);
+                    _edgeBuffer.Add(edge);
+                }
+            }
+        }
+
+        // 4. Deactivate remaining arcs in the pool
+        for (int i = currentPreviewIndex; i < _arcPool.Count; i++)
         {
             if (_arcPool[i].gameObject.activeSelf)
                 _arcPool[i].gameObject.SetActive(false);
@@ -176,6 +216,8 @@ public class EnergyManager : MonoBehaviour
     {
         _isDirty = false;
         _networks.Clear();
+        _currentEdges.Clear();
+        _edgeBuffer.Clear();
 
         // reset all arcs before rebuilding
         foreach (ElectricArc arc in _arcPool)
@@ -185,7 +227,7 @@ public class EnergyManager : MonoBehaviour
         int currentArcIndex = 0;
 
         //HashSet for O(1) lookup during traversal
-        HashSet < IEnergyNode > unvisited = new HashSet<IEnergyNode>(_allNodes);
+        HashSet<IEnergyNode> unvisited = new HashSet<IEnergyNode>(_allNodes);
 
         while (unvisited.Count > 0)
         {
@@ -229,13 +271,21 @@ public class EnergyManager : MonoBehaviour
 
                     if (CanConnectInternal(currentNode, neighbor))
                     {
+                        Edge edge = new Edge(currentNode, neighbor);
+                        _currentEdges.Add(edge);
+
                         if (unvisited.Contains(neighbor))
                         {
                             discoveryQueue.Enqueue(neighbor);
                             unvisited.Remove(neighbor);
                         }
 
-                        ShowArc(currentNode, neighbor, ref currentArcIndex);
+                        // Prevent duplicate visual arcs
+                        if (!_edgeBuffer.Contains(edge))
+                        {
+                            ShowArc(currentNode, neighbor, ref currentArcIndex);
+                            _edgeBuffer.Add(edge);
+                        }
                     }
                 }
             }
@@ -283,7 +333,8 @@ public class EnergyManager : MonoBehaviour
         }
 
         _activeArcCount = currentArcIndex;
-        Debug.Log($"[EnergyManager] Rebuild complete. Found {_networks.Count} independent networks. Arcs: {_activeArcCount}");
+        _previousEdges = new HashSet<Edge>(_currentEdges);
+        Debug.Log($"[EnergyManager] Rebuild complete. Found {_networks.Count} networks. Arcs: {_activeArcCount}");
     }
 
     /// <summary>
@@ -346,20 +397,53 @@ public class EnergyManager : MonoBehaviour
         }
     }
 
+    private IEnergyNode GetDraggedNode()
+    {
+        foreach (var node in _allNodes)
+        {
+            if (node.IsBeingDragged) return node;
+        }
+        return null;
+    }
+
     /// <summary>
     /// Determine if 2 EnergyNode can connect each other based on type and physical overlap.
     /// </summary>
     private bool CanConnectInternal(IEnergyNode a, IEnergyNode b, bool ignoreDrag = false)
     {
-        // 1. Isolate dragged machines (unless we are in preview mode)
+        // 1. Isolate dragged nodes (unless we are in preview mode)
+        // EXCEPTION: Yellow balls stay connected even during drag.
         if (!ignoreDrag)
         {
-            if (a is MachineEntity ma && ma.IsBeingDragged) return false;
-            if (b is MachineEntity mb && mb.IsBeingDragged) return false;
+            bool aIsYellow = a is YellowBallBehavior;
+            bool bIsYellow = b is YellowBallBehavior;
+
+            if (a.IsBeingDragged && !aIsYellow) return false;
+            if (b.IsBeingDragged && !bIsYellow) return false;
         }
 
-        // 2. Physical Check (Refined Collider-based logic)
-        if (!EnergyCollisionUtility.AreConnected(a, b)) return false;
+        // 2. Physical Check (Hysteresis logic)
+        Edge edge = new Edge(a, b);
+        bool wasConnected = _previousEdges.Contains(edge);
+        
+        bool isPhysicallyConnected;
+        if (ignoreDrag)
+        {
+            // PREVIEW: Always use Radius-to-Radius (no sticky preview during drag)
+            isPhysicallyConnected = EnergyCollisionUtility.AreConnected(a, b);
+        }
+        else if (wasConnected)
+        {
+            // MAINTENANCE: Stay connected as long as the connection radius touches the collider
+            isPhysicallyConnected = EnergyCollisionUtility.IsConnectionMaintained(a, b);
+        }
+        else
+        {
+            // CONNECTION: Initial connection requires attraction radius to touch physical radius
+            isPhysicallyConnected = EnergyCollisionUtility.AreConnected(a, b);
+        }
+
+        if (!isPhysicallyConnected) return false;
 
         // 3. Type Check
         // Yellow balls can connect to anything

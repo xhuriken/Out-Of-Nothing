@@ -42,12 +42,17 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
     {
         get
         {
+            // If we already have enough energy for the next action, we stop demanding immediately.
+            // Using a small margin to avoid floating point precision issues near 1.0.
+            if (CurrentEnergy >= _consumptionPerAction - 0.0001f) return 0f;
+
             if (IsWaiting()) return 0f;
             return _inputTransferSpeed;
         }
     }
     
     public float ConsumptionPerAction => _consumptionPerAction;
+    public override bool IsDemanding => !IsWaiting();
 
     protected override void Start()
     {
@@ -104,7 +109,7 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
         
         if (currentTick % _actionCadenceTicks == _tickOffset)
         {
-            if (CurrentEnergy >= _consumptionPerAction)
+            if (CurrentEnergy >= _consumptionPerAction - 0.001f)
             {
                 if (_enableLogs) Debug.Log($"[RedLogic] EXECUTING SPAWN at tick {currentTick}. Buffer was {CurrentEnergy}");
                 
@@ -135,6 +140,8 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
         }
 
         // 2. Just-In-Time Feedback
+        // Machine is gray ONLY if it is waiting for its scheduled pumping window.
+        // If it's full and ready to fire, it stays colored (Active).
         _energyRenderer.Color = IsWaiting() ? Color.gray : _originalColor;
     }
 
@@ -148,6 +155,7 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
             return true;
         }
 
+        // Only wait if the current tick is before our calculated start window.
         bool isWaiting = PowerTickManager.Instance.CurrentTickCount < _startFillTick;
         return isWaiting;
     }

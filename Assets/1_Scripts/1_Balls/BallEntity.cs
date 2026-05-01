@@ -29,7 +29,7 @@ public class BallEntity : MonoBehaviour, IDraggable
     private bool _isBeingDragged;
 
     public BallDataSO Data => _data;
-    protected Rigidbody2D Rb => _rb;
+    public Rigidbody2D Rb => _rb;
     public Disc Renderer => _renderer;
     public bool IsBeingDragged => _isBeingDragged;
     public BallBehavior Behavior => _behavior; // Exposed for EnergyManager
@@ -60,7 +60,12 @@ public class BallEntity : MonoBehaviour, IDraggable
 
     private void FixedUpdate()
     {
-        if (_isBeingDragged || _isProcessing) return;
+        if (_isProcessing) return;
+
+        // Skip behavior execution if being dragged, EXCEPT for Yellow Balls 
+        // which need to rebuild topology and pump energy while moving.
+        if (_isBeingDragged && !(_behavior is YellowBallBehavior)) return;
+
         _behavior?.ExecuteFixedUpdate(this, Time.fixedDeltaTime);
     }
 

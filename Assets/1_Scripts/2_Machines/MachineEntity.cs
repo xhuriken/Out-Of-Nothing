@@ -55,6 +55,7 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable, IEnergyNode
     public float EnergyAllocationRate { get; set; }
     public int DistanceToSource { get; set; }
     public Collider2D PhysicsCollider => GetComponent<Collider2D>();
+    public virtual bool IsDemanding => true;
     #endregion
 
     private void Awake()

@@ -48,6 +48,8 @@ public class YellowBallBehavior : BallBehavior, IEnergyConsumer, IEnergyProducer
     public EnergyNetwork CurrentNetwork { get; set; }
     public int DistanceToSource { get; set; }
     public Collider2D PhysicsCollider => _me != null ? _me.Collider : null;
+    public bool IsBeingDragged => _me != null && _me.IsBeingDragged;
+    public bool IsDemanding => true;
     public float ConnectionRadius => 3f;
     public float PhysicalRadius => _me != null ? _me.Renderer.Radius : 0.5f;
 
@@ -99,7 +101,8 @@ public class YellowBallBehavior : BallBehavior, IEnergyConsumer, IEnergyProducer
 
     public override void ExecuteFixedUpdate(BallEntity ball, float fixedDeltaTime)
     {
-        if (ball.IsBeingDragged)
+        // Trigger topology update if the ball is dragged OR moving (physics/collisions)
+        if (ball.IsBeingDragged || ball.Rb.linearVelocity.sqrMagnitude > 0.01f)
         {
             CheckTopologyChanges();
         }

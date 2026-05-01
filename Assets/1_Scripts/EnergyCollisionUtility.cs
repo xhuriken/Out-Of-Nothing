@@ -7,18 +7,31 @@ using UnityEngine;
 public static class EnergyCollisionUtility
 {
     /// <summary>
-    /// Checks if two energy nodes are within connection range using a Collider-based logic.
-    /// A connection is valid if node A's ConnectionRadius touches node B's physical Collider.
+    /// Checks if two energy nodes are within connection range using radius-to-radius logic.
+    /// A connection is valid if node A's ConnectionRadius touches node B's physical radius.
     /// </summary>
     public static bool AreConnected(IEnergyNode a, IEnergyNode b)
     {
+        if (a == null || b == null) return false;
+
+        float dist = Vector2.Distance(a.Position, b.Position);
+        
+        // Attraction Radius of A touches Physical Radius of B
+        // OR Attraction Radius of B touches Physical Radius of A
+        bool aTouchesB = dist <= (a.ConnectionRadius + b.PhysicalRadius);
+        bool bTouchesA = dist <= (b.ConnectionRadius + a.PhysicalRadius);
+
+        return aTouchesB || bTouchesA;
+    }
+
+    /// <summary>
+    /// Checks if a connection is maintained using Collider-based logic.
+    /// The arc stays as long as the Connection Radius touches the actual Collider.
+    /// </summary>
+    public static bool IsConnectionMaintained(IEnergyNode a, IEnergyNode b)
+    {
         if (a == null || b == null || a.PhysicsCollider == null || b.PhysicsCollider == null) return false;
 
-        // Condition: Connection Radius of A touches Collider of B
-        // OR Connection Radius of B touches Collider of A (symmetric)
-        
-        // Let's implement it precisely:
-        // Does Circle(a.Position, a.ConnectionRadius) overlap b.PhysicsCollider?
         bool aTouchesB = IsPointNearCollider(a.Position, a.ConnectionRadius, b.PhysicsCollider);
         bool bTouchesA = IsPointNearCollider(b.Position, b.ConnectionRadius, a.PhysicsCollider);
 
@@ -31,21 +44,18 @@ public static class EnergyCollisionUtility
     public static bool IsPointNearCollider(Vector2 point, float radius, Collider2D collider)
     {
         if (collider == null) return false;
-        
-        // ClosestPoint returns the point on the edge or inside.
         Vector2 closest = collider.ClosestPoint(point);
         float distanceSq = (closest - point).sqrMagnitude;
-        
         return distanceSq <= (radius * radius);
     }
 
     /// <summary>
-    /// Calculates the anchor point on the edge of a node's collider closest to a target position.
-    /// Used for placing arc endpoints precisely on the "hull" of machines.
+    /// Calculates the anchor point on the visual edge (Physical Radius) of a node.
     /// </summary>
     public static Vector2 GetAnchorPoint(IEnergyNode node, Vector2 targetPosition)
     {
-        if (node == null || node.PhysicsCollider == null) return targetPosition;
-        return node.PhysicsCollider.ClosestPoint(targetPosition);
+        if (node == null) return targetPosition;
+        Vector2 direction = (targetPosition - node.Position).normalized;
+        return node.Position + direction * node.PhysicalRadius;
     }
 }

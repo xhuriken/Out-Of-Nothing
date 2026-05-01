@@ -13,8 +13,8 @@ public class ElectricArc : MonoBehaviour
     [SerializeField] private float _updateFrequency = 0.04f;
 
     [Header("Colors")]
-    [SerializeField] private Color _activeColor = new Color(0.2f, 0.6f, 1f, 1f); // Sky Blue
-    [SerializeField] private Color _waitingColor = new Color(0.5f, 0.5f, 0.5f, 0.5f); // Grayish
+    [SerializeField] private Color _activeColor = new Color(1f, 0.9f, 0f, 1f); // Golden Yellow
+    [SerializeField] private Color _waitingColor = new Color(0.5f, 0.5f, 0.5f, 0.6f); // Neutral Gray
 
     private LineRenderer _lineRenderer;
     private IEnergyNode _startNode;
@@ -40,6 +40,11 @@ public class ElectricArc : MonoBehaviour
         UpdateVisualState();
     }
 
+    public bool IsConnectedTo(IEnergyNode node)
+    {
+        return _startNode == node || _endNode == node;
+    }
+
     private void LateUpdate()
     {
         if (_startNode == null || _endNode == null) return;
@@ -56,26 +61,70 @@ public class ElectricArc : MonoBehaviour
 
     private void UpdateVisualState()
     {
-        ApplyDynamicFade();
+        // 1. Calculate base color based on state
+        // A node is "Powerable" if it belongs to a network with producers.
+        bool startPowered = _startNode.CurrentNetwork != null && _startNode.CurrentNetwork.HasProducers;
+        bool endPowered = _endNode.CurrentNetwork != null && _endNode.CurrentNetwork.HasProducers;
 
-        // Determine if active or waiting
-        bool isActive = !_isPreview && (Mathf.Abs(_startNode.EnergyAllocationRate) > 0.001f || Mathf.Abs(_endNode.EnergyAllocationRate) > 0.001f);
+        // A node is "Ready" if it's a source (Producer) OR if it's demanding energy (Consumer/Cable not waiting).
+        bool startReady = _startNode is IEnergyProducer || _startNode.IsDemanding;
+        bool endReady = _endNode is IEnergyProducer || _endNode.IsDemanding;
+
+        // An arc is Active (Yellow) if it's part of a powered path and both ends are ready.
+        // We removed !_isPreview to allow yellow balls to show active connections during drag.
+        bool isActive = startPowered && endPowered && startReady && endReady;
         
         Color targetColor = isActive ? _activeColor : _waitingColor;
-        
-        // Preserve alpha from ApplyDynamicFade
-        float currentAlpha = _lineRenderer.startColor.a;
-        targetColor.a *= currentAlpha;
 
-        _lineRenderer.startColor = _lineRenderer.endColor = targetColor;
+        if (EnergyManager.Instance.EnableLogs && isActive)
+        {
+            Debug.Log($"[Arc] Arc between {_startNode} and {_endNode} is ACTIVE (Allocation: {_startNode.EnergyAllocationRate:F3} / {_endNode.EnergyAllocationRate:F3})");
+        }
+
+        // 2. Calculate alpha based on distance
+        float distance = Vector2.Distance(_startNode.Position, _endNode.Position);
+        float maxRange = _startNode.ConnectionRadius + _endNode.ConnectionRadius;
+        float ratio = maxRange > 0 ? distance / maxRange : 1f;
+        float alpha = Mathf.Clamp01(1f - ratio);
+
+        // 3. Apply width fading
+        _lineRenderer.widthMultiplier = Mathf.Clamp01((1f - ratio) / 0.2f) * 0.1f;
+
+        // 4. Apply final color with alpha
+        targetColor.a *= alpha;
+        
+        // Force update the LineRenderer properties
+        _lineRenderer.startColor = targetColor;
+        _lineRenderer.endColor = targetColor;
+        
+        Gradient g = new Gradient();
+        g.SetKeys(
+            new GradientColorKey[] { new GradientColorKey(targetColor, 0.0f), new GradientColorKey(targetColor, 1.0f) },
+            new GradientAlphaKey[] { new GradientAlphaKey(targetColor.a, 0.0f), new GradientAlphaKey(targetColor.a, 1.0f) }
+        );
+        _lineRenderer.colorGradient = g;
+
+        // NEW: If the material color is overriding vertex colors (common with some shaders),
+        // we force the color on the material instance.
+        if (_lineRenderer.material != null)
+        {
+            // We use .material (not .sharedMaterial) to get a unique instance for this arc
+            _lineRenderer.material.color = targetColor;
+            
+            // Some particle shaders use _TintColor instead of _Color
+            if (_lineRenderer.material.HasProperty("_TintColor"))
+            {
+                _lineRenderer.material.SetColor("_TintColor", targetColor);
+            }
+        }
     }
 
     /// <summary>
-    /// Calculates the positions of the LineRenderer points using anchor points on colliders.
+    /// Calculates the positions of the LineRenderer points using anchor points on physical radii.
     /// </summary>
     private void UpdateArcGeometry()
     {
-        // Use the utility to find the closest points on the collider hulls
+        // Use the utility to find the anchor points on the visual edge (circle)
         Vector3 arcStart = EnergyCollisionUtility.GetAnchorPoint(_startNode, _endNode.Position);
         Vector3 arcEnd = EnergyCollisionUtility.GetAnchorPoint(_endNode, _startNode.Position);
         
@@ -95,25 +144,5 @@ public class ElectricArc : MonoBehaviour
 
             _lineRenderer.SetPosition(i, targetPoint);
         }
-    }
-
-    /// <summary>
-    /// Remaps the last 20% of range to shrink the width from 100% to 0%.
-    /// </summary>
-    private void ApplyDynamicFade()
-    {
-        float distance = Vector2.Distance(_startNode.Position, _endNode.Position);
-        float maxRange = _startNode.ConnectionRadius + _endNode.ConnectionRadius;
-
-        if (maxRange <= 0) return;
-
-        float ratio = distance / maxRange;
-
-        // Shrink width and alpha when reaching max range
-        _lineRenderer.widthMultiplier = Mathf.Clamp01((1f - ratio) / 0.2f) * 0.1f;
-        
-        Color c = _lineRenderer.startColor;
-        c.a = Mathf.Clamp01(1f - ratio);
-        _lineRenderer.startColor = _lineRenderer.endColor = c;
     }
 }

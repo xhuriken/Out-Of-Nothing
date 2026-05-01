@@ -32,7 +32,7 @@ public class GeneratorMachine : MachineEntity, IEnergyProducer
 
     private void FixedUpdate()
     {
-        if (PowerTickManager.Instance == null) return;
+        if (PowerTickManager.Instance == null || !_isRunning) return;
 
         // Produce energy fluidly over time based on the tick rate
         float tickRate = PowerTickManager.Instance.TickRate;

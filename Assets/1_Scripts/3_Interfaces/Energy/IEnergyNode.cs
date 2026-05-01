@@ -16,4 +16,6 @@ public interface IEnergyNode
     float EnergyAllocationRate { get; set; }
     int DistanceToSource { get; set; }
     Collider2D PhysicsCollider { get; }
+    bool IsBeingDragged { get; }
+    bool IsDemanding { get; }
 }

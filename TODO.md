@@ -1,24 +1,23 @@
-# TO-DO : Visuals & Topologie des Yellow Balls
+# TODO - Correctif Comportement Balles, Arcs et Machines
 
-## 1. Visuels des Yellow Balls
-- [x] Retirer la modification du `transform.localScale` dans `YellowBallBehavior.cs`.
-- [x] Ajouter une gestion de couleur (Color de début "Jaune" et de fin "Gris neutre") avec une transition fluide basée sur `CurrentEnergy / MaxStorage`.
-- [x] Désactiver la destruction automatique (`Destroy`) lorsque la balle atteint 0 énergie (elle devient juste grise et inactive).
+## 1. Comportement des Balles & Drag
+- [x] Modifier `BallEntity.cs` : Toutes les balles retournent `false` dans `ExecuteFixedUpdate` si `IsBeingDragged` est vrai, SAUF la balle jaune.
+- [x] Modifier `YellowBallBehavior.cs` : Forcer le rebuild du network (`EnergyManager.Instance.IsTopologyDirty = true`) dès que la balle bouge, même en drag. (Déjà géré dans le behavior)
+- [x] Modifier `YellowBallBehavior.cs` : S'assurer que la balle peut "pomper" (Energy Allocation) même pendant le drag si elle est proche d'une machine. (Géré via EnergyManager.CanConnectInternal)
 
-## 2. Refonte du Solver (Pathfinding & Priorités)
-- [x] Modifier le BFS dans `EnergyManager.RebuildNetworks()` pour démarrer à partir des `IEnergyProducer` (Générateurs) et propager un entier `DistanceToSource` à chaque nœud.
-- [x] Dans `EnergyNetwork`, stocker une liste séparée `List<YellowBallBehavior> _cables` triée par `DistanceToSource` croissante.
-- [x] Réécrire la logique de `CalculateAllocation` et `ProcessFluidTransfer` :
-    - Étape A (Remplissage) : Injecter la production des Générateurs EN PRIORITÉ dans la liste `_cables` (du plus proche au plus lointain).
-    - Étape B (Distribution) : S'il reste de l'énergie des Générateurs, l'allouer aux Consumers.
-    - Étape C (Soutirage) : Si les Consumers manquent d'énergie, ils ponctionnent le déficit dans la liste `_cables` à l'envers (du plus lointain au plus proche).
-- [x] Mettre à jour `DOC_ENERGY_ARCHITECTURE.md` et `DEVELOPMENT_LOG.md`.
+## 2. Visualisation des Arcs (ElectricArc)
+- [x] Modifier `ElectricArc.cs` : Corriger l'override des couleurs du dégradé (Gradient) sur le `LineRenderer`.
+- [x] Implémenter les états de couleur :
+    - **Gris** : Machine proche non connectée OU machine en attente de tick de pompage.
+    - **Jaune** : Flux d'énergie actif (pompage en cours).
+- [x] Ajouter des logs stratégiques pour debugger le changement de couleur si nécessaire.
 
-## 3. Refonte des Collisions & Arcs (Phase 6)
-- [x] Créer `EnergyCollisionUtility` pour les calculs géométriques (Narrow-phase).
-- [x] Implémenter `IEnergyNode.PhysicsCollider` sur toutes les entités.
-- [x] Mettre à jour `EnergyManager` pour utiliser la détection par collider.
-- [x] Ajouter la gestion des "Preview Arcs" (Gris) pendant le drag.
-- [x] Mettre à jour `ElectricArc` pour utiliser les points d'ancrage dynamiques sur les colliders.
-- [x] Implémenter le changement de couleur (Bleu/Gris) selon l'état d'activité.
-- [x] Nettoyer la compilation et enregistrer les nouveaux fichiers dans le `.csproj`.
+## 3. Bug de Pumping (Regression)
+- [x] Analyser `MachineEntity.cs` et `PowerTickManager.cs`.
+- [x] Correction : Empêcher le remplissage instantané à la connexion (Limitation de la demande au besoin réel).
+- [x] Garantir que la machine commence son cycle de pompage UNIQUEMENT si elle peut atteindre son prochain tick sans interruption.
+
+## 4. Finalisation
+- [x] Vérifier la compilation.
+- [x] Mettre à jour `DEVELOPMENT_LOG.md`.
+- [x] Supprimer les logs de debug temporaires.

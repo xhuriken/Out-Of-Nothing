@@ -48,6 +48,8 @@ MonoBehaviour:
   _segmentCount: 15
   _jitterMagnitude: 0.2
   _updateFrequency: 0.04
+  _activeColor: {r: 1, g: 0.79882646, b: 0.19999999, a: 1}
+  _waitingColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
 --- !u!120 &5460254811886737788
 LineRenderer:
   serializedVersion: 3
@@ -148,7 +150,7 @@ LineRenderer:
     colorGradient:
       serializedVersion: 2
       key0: {r: 1, g: 1, b: 1, a: 1}
-      key1: {r: 0, g: 1, b: 0.9301295, a: 1}
+      key1: {r: 1, g: 1, b: 0.9301295, a: 1}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
