@@ -9901,6 +9901,8 @@ MonoBehaviour:
   _inputTransferSpeed: 5
   _outputTransferSpeed: 5
   _enableLogs: 0
+  _colorFull: {r: 1, g: 0.92, b: 0.016, a: 1}
+  _colorEmpty: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _currentEnergy: 0
 --- !u!50 &1344634683005742415
 Rigidbody2D:

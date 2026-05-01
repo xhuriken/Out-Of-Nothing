@@ -12,4 +12,13 @@
     - Étape A (Remplissage) : Injecter la production des Générateurs EN PRIORITÉ dans la liste `_cables` (du plus proche au plus lointain).
     - Étape B (Distribution) : S'il reste de l'énergie des Générateurs, l'allouer aux Consumers.
     - Étape C (Soutirage) : Si les Consumers manquent d'énergie, ils ponctionnent le déficit dans la liste `_cables` à l'envers (du plus lointain au plus proche).
-- [ ] Mettre à jour `DOC_ENERGY_ARCHITECTURE.md` et `DEVELOPMENT_LOG.md`.
+- [x] Mettre à jour `DOC_ENERGY_ARCHITECTURE.md` et `DEVELOPMENT_LOG.md`.
+
+## 3. Refonte des Collisions & Arcs (Phase 6)
+- [x] Créer `EnergyCollisionUtility` pour les calculs géométriques (Narrow-phase).
+- [x] Implémenter `IEnergyNode.PhysicsCollider` sur toutes les entités.
+- [x] Mettre à jour `EnergyManager` pour utiliser la détection par collider.
+- [x] Ajouter la gestion des "Preview Arcs" (Gris) pendant le drag.
+- [x] Mettre à jour `ElectricArc` pour utiliser les points d'ancrage dynamiques sur les colliders.
+- [x] Implémenter le changement de couleur (Bleu/Gris) selon l'état d'activité.
+- [x] Nettoyer la compilation et enregistrer les nouveaux fichiers dans le `.csproj`.

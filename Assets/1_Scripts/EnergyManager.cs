@@ -92,6 +92,8 @@ public class EnergyManager : MonoBehaviour
         }
     }
 
+    private int _activeArcCount = 0;
+
     private void HandlePowerTick()
     {
         if (_isDirty)
@@ -103,6 +105,56 @@ public class EnergyManager : MonoBehaviour
         foreach (EnergyNetwork network in _networks)
         {
             network.CalculateAllocation(tickRate);
+        }
+    }
+
+    private void Update()
+    {
+        HandlePreviewArcs();
+    }
+
+    private void HandlePreviewArcs()
+    {
+        // 1. Find the currently dragged node
+        IEnergyNode draggedNode = null;
+        foreach (var node in _allNodes)
+        {
+            if (node is MachineEntity ma && ma.IsBeingDragged)
+            {
+                draggedNode = node;
+                break;
+            }
+        }
+
+        int totalArcIndex = _activeArcCount;
+
+        if (draggedNode != null)
+        {
+            // 2. Find potential neighbors for the dragged node
+            int neighborCount = Physics2D.OverlapCircleNonAlloc(
+                draggedNode.Position,
+                draggedNode.ConnectionRadius,
+                _neighborBuffer
+            );
+
+            for (int i = 0; i < neighborCount; i++)
+            {
+                IEnergyNode neighbor = GetNodeFromCollider(_neighborBuffer[i]);
+                if (neighbor == null || neighbor == draggedNode) continue;
+
+                // For preview, we check if they COULD connect (ignoring the "IsBeingDragged" flag for the check itself)
+                if (CanConnectInternal(draggedNode, neighbor, true))
+                {
+                    ShowArc(draggedNode, neighbor, ref totalArcIndex, true);
+                }
+            }
+        }
+
+        // 3. Deactivate remaining arcs in the pool (those not used by real networks OR previews)
+        for (int i = totalArcIndex; i < _arcPool.Count; i++)
+        {
+            if (_arcPool[i].gameObject.activeSelf)
+                _arcPool[i].gameObject.SetActive(false);
         }
     }
 
@@ -175,7 +227,7 @@ public class EnergyManager : MonoBehaviour
                     IEnergyNode neighbor = GetNodeFromCollider(_neighborBuffer[i]);
                     if (neighbor == null || neighbor == currentNode) continue;
 
-                    if (CanConnect(currentNode, neighbor))
+                    if (CanConnectInternal(currentNode, neighbor))
                     {
                         if (unvisited.Contains(neighbor))
                         {
@@ -210,7 +262,7 @@ public class EnergyManager : MonoBehaviour
                         IEnergyNode neighbor = GetNodeFromCollider(_neighborBuffer[i]);
                         if (neighbor == null || neighbor == curr) continue;
 
-                        if (neighbor.DistanceToSource == int.MaxValue && CanConnect(curr, neighbor))
+                        if (neighbor.DistanceToSource == int.MaxValue && CanConnectInternal(curr, neighbor))
                         {
                             neighbor.DistanceToSource = curr.DistanceToSource + 1;
                             distQueue.Enqueue(neighbor);
@@ -230,7 +282,8 @@ public class EnergyManager : MonoBehaviour
             network.SortCables();
         }
 
-        Debug.Log($"[EnergyManager] Rebuild complete. Found {_networks.Count} independent networks.");
+        _activeArcCount = currentArcIndex;
+        Debug.Log($"[EnergyManager] Rebuild complete. Found {_networks.Count} independent networks. Arcs: {_activeArcCount}");
     }
 
     /// <summary>
@@ -246,7 +299,7 @@ public class EnergyManager : MonoBehaviour
     /// <summary>
     /// Activates an arc from the pool and initializes it.
     /// </summary>
-    private void ShowArc(IEnergyNode a, IEnergyNode b, ref int index)
+    private void ShowArc(IEnergyNode a, IEnergyNode b, ref int index, bool isPreview = false)
     {
         ElectricArc arc;
         if (index < _arcPool.Count)
@@ -260,7 +313,7 @@ public class EnergyManager : MonoBehaviour
         }
 
         arc.gameObject.SetActive(true);
-        arc.Initialize(a, b);
+        arc.Initialize(a, b, isPreview);
         index++;
     }
 
@@ -284,7 +337,7 @@ public class EnergyManager : MonoBehaviour
 
                 for (int j = i + 1; j < nodesList.Count; j++)
                 {
-                    if (CanConnect(nodesList[i], nodesList[j]))
+                    if (CanConnectInternal(nodesList[i], nodesList[j]))
                     {
                         Gizmos.DrawLine(nodesList[i].Position, nodesList[j].Position);
                     }
@@ -295,15 +348,20 @@ public class EnergyManager : MonoBehaviour
 
     /// <summary>
     /// Determine if 2 EnergyNode can connect each other based on type and physical overlap.
-    /// The actual distance check is handled by Physics2D.OverlapCircle in RebuildNetworks.
     /// </summary>
-    private bool CanConnect(IEnergyNode a, IEnergyNode b)
+    private bool CanConnectInternal(IEnergyNode a, IEnergyNode b, bool ignoreDrag = false)
     {
-        // 1. Isolate dragged machines
-        if (a is MachineEntity ma && ma.IsBeingDragged) return false;
-        if (b is MachineEntity mb && mb.IsBeingDragged) return false;
+        // 1. Isolate dragged machines (unless we are in preview mode)
+        if (!ignoreDrag)
+        {
+            if (a is MachineEntity ma && ma.IsBeingDragged) return false;
+            if (b is MachineEntity mb && mb.IsBeingDragged) return false;
+        }
 
-        // 2. Type Check
+        // 2. Physical Check (Refined Collider-based logic)
+        if (!EnergyCollisionUtility.AreConnected(a, b)) return false;
+
+        // 3. Type Check
         // Yellow balls can connect to anything
         if (a is YellowBallBehavior || b is YellowBallBehavior)
         {

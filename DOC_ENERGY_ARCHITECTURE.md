@@ -96,3 +96,20 @@ C'est l'ADN du système. Aucune classe ne communique directement avec une autre 
 2. Le `EnergyNetwork` applique le prorata : `Offre / Demande = 1 / 2 = 0.5`.
 3. Chaque Red Materialisator reçoit un `AllocationRate` de 0.5.
 4. **Résultat :** Les Red Materialisators se rempliront deux fois moins vite, et cracheront donc une boule tous les 2 Ticks, de manière parfaitement synchronisée.
+
+---
+
+## 6. Géométrie et Visualisation (Nouveau)
+
+### `EnergyCollisionUtility` (Narrow-Phase)
+**Rôle :** Centralise les calculs géométriques complexes pour éviter la duplication.
+- **`AreConnected(a, b)` :** Valide une connexion si le cercle de connexion d'un nœud intersecte le **Collider physique** de l'autre.
+- **`GetAnchorPoint(node, target)` :** Trouve le point précis sur le bord du collider le plus proche de la cible.
+
+### Arcs Électriques (`ElectricArc`)
+**Rôle :** Feedback visuel de l'état du réseau.
+- **Ancrage :** Les extrémités de l'arc sont fixées sur les bords des colliders (via `GetAnchorPoint`), et non au centre, pour un rendu "industriel" et précis.
+- **Codes Couleurs :**
+  - **Gris (Alpha 0.5) :** Preview ou Attente. L'arc existe mais l'énergie ne circule pas (encore).
+  - **Bleu Cyan :** Actif. L'énergie circule entre les deux nœuds (`AllocationRate > 0`).
+- **Comportement :** Jitter aléatoire et fondu de largeur/alpha en fonction de la distance (disparition progressive quand on s'éloigne trop).

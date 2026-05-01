@@ -47,6 +47,7 @@ public class YellowBallBehavior : BallBehavior, IEnergyConsumer, IEnergyProducer
 
     public EnergyNetwork CurrentNetwork { get; set; }
     public int DistanceToSource { get; set; }
+    public Collider2D PhysicsCollider => _me != null ? _me.Collider : null;
     public float ConnectionRadius => 3f;
     public float PhysicalRadius => _me != null ? _me.Renderer.Radius : 0.5f;
 

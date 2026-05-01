@@ -79,3 +79,31 @@
     2. Distribution aux machines (Consumers).
     3. Si manque d'énergie, les machines puisent dans les câbles (du plus loin au plus proche).
 - **Résultat :** Compilation Unity validée à 100% (0 Erreurs). Prêt pour les tests In-Game.
+
+---
+
+## [Phase 6] - Refonte des Collisions (Collider-Based) & Arcs Électriques
+**Date** : 2026-05-01
+**Auteur** : Antigravity (AI)
+
+### 1. Détection par Colliders (Précision Arbitraire)
+- **Problème** : La détection centre-à-centre (cercles) était imprécise pour les machines non circulaires.
+- **Solution** : Création de `EnergyCollisionUtility`. 
+  - Utilise `Collider2D.ClosestPoint` et `Physics2D.OverlapCircle` pour vérifier si le rayon de connexion d'un nœud touche réellement la "carrosserie" (collider) de l'autre.
+  - S'adapte à n'importe quelle forme (Box, Polygon, etc.).
+- **Contrat** : Ajout de `IEnergyNode.PhysicsCollider` pour garantir l'accès au composant physique.
+
+### 2. Visualisation Premium des Arcs
+- **Ancrage Dynamique** : Les arcs ne partent plus du centre des machines mais du point le plus proche sur le bord de leur collider (`EnergyCollisionUtility.GetAnchorPoint`).
+- **États Visuels (Feedback)** :
+  - **Gris (Preview/Drag)** : L'arc s'affiche en temps réel dès qu'on approche une machine d'un réseau potentiel (géré dans `EnergyManager.Update`).
+  - **Gris (Waiting/Sync)** : L'arc est connecté mais la machine attend son tick de synchronisation (allocation = 0).
+  - **Bleu (Active)** : L'arc s'allume en bleu cyan quand l'énergie circule réellement.
+- **Optimisation** : Pool d'arcs dynamique avec indexation séparée pour les arcs de réseau (persistants) et les arcs de preview (éphémères).
+
+### 3. Nettoyage Technique
+- Migration de `CanConnect` vers `CanConnectInternal` (ajout de l'option `ignoreDrag` pour les previews).
+- Correction de `Rigidbody2D.GetAttachedComponent` en `GetComponent<Collider2D>()`.
+- Enregistrement de `EnergyCollisionUtility.cs` dans `Assembly-CSharp.csproj` pour la compilation.
+
+- **Résultat** : Réseaux robustes aux formes complexes, feedback visuel instantané et premium. 0 erreurs de compilation.
