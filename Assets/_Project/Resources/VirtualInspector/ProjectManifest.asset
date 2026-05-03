@@ -20,16 +20,13 @@ MonoBehaviour:
   - MainCamera
   - Player
   - GameController
-  - Zone
   layersName:
   - Default
   - TransparentFX
   - Ignore Raycast
   - Water
   - UI
-  - Zone
-  - Balls
-  layersID: 00000000010000000200000004000000050000000600000008000000
+  layersID: 0000000001000000020000000400000005000000
   componentsRoot:
   - Name: Sprite Library
     FullTypeName: UnityEngine.U2D.Animation.SpriteLibrary
@@ -276,113 +273,8 @@ MonoBehaviour:
     IconPath: 
     CategoryPath: Scripts
     tempCategoryId: 0
-  - Name: BallPhysicsPassport
-    FullTypeName: BallPhysicsPassport
-    IconPath: 
-    CategoryPath: Scripts
-    tempCategoryId: 0
-  - Name: BallPoolManager
-    FullTypeName: BallPoolManager
-    IconPath: 
-    CategoryPath: Scripts
-    tempCategoryId: 0
-  - Name: BlackHole
-    FullTypeName: BlackHole
-    IconPath: 
-    CategoryPath: Scripts
-    tempCategoryId: 0
-  - Name: BlueBallBehavior
-    FullTypeName: BlueBallBehavior
-    IconPath: 
-    CategoryPath: Scripts
-    tempCategoryId: 0
-  - Name: BrownBallBehavior
-    FullTypeName: BrownBallBehavior
-    IconPath: 
-    CategoryPath: Scripts
-    tempCategoryId: 0
-  - Name: BumperMachine
-    FullTypeName: BumperMachine
-    IconPath: 
-    CategoryPath: Scripts
-    tempCategoryId: 0
-  - Name: BumpPiston
-    FullTypeName: BumpPiston
-    IconPath: 
-    CategoryPath: Scripts
-    tempCategoryId: 0
-  - Name: ConstantBounceSurface
-    FullTypeName: ConstantBounceSurface
-    IconPath: 
-    CategoryPath: Scripts
-    tempCategoryId: 0
-  - Name: DefaultBehavior
-    FullTypeName: DefaultBehavior
-    IconPath: 
-    CategoryPath: Scripts
-    tempCategoryId: 0
-  - Name: ElectricArc
-    FullTypeName: ElectricArc
-    IconPath: 
-    CategoryPath: Scripts
-    tempCategoryId: 0
-  - Name: EnergyManager
-    FullTypeName: EnergyManager
-    IconPath: 
-    CategoryPath: Scripts
-    tempCategoryId: 0
-  - Name: GameInputManager
-    FullTypeName: GameInputManager
-    IconPath: 
-    CategoryPath: Scripts
-    tempCategoryId: 0
   - Name: GameZone
     FullTypeName: GameZone
-    IconPath: 
-    CategoryPath: Scripts
-    tempCategoryId: 0
-  - Name: GeneratorMachine
-    FullTypeName: GeneratorMachine
-    IconPath: 
-    CategoryPath: Scripts
-    tempCategoryId: 0
-  - Name: IncrementManager
-    FullTypeName: IncrementManager
-    IconPath: 
-    CategoryPath: Scripts
-    tempCategoryId: 0
-  - Name: MachineColliderProxy
-    FullTypeName: MachineColliderProxy
-    IconPath: 
-    CategoryPath: Scripts
-    tempCategoryId: 0
-  - Name: NothingManager
-    FullTypeName: NothingManager
-    IconPath: 
-    CategoryPath: Scripts
-    tempCategoryId: 0
-  - Name: PhysicsSurface
-    FullTypeName: PhysicsSurface
-    IconPath: 
-    CategoryPath: Scripts
-    tempCategoryId: 0
-  - Name: PistonMachine
-    FullTypeName: PistonMachine
-    IconPath: 
-    CategoryPath: Scripts
-    tempCategoryId: 0
-  - Name: PowerTickManager
-    FullTypeName: PowerTickManager
-    IconPath: 
-    CategoryPath: Scripts
-    tempCategoryId: 0
-  - Name: PressMachine
-    FullTypeName: PressMachine
-    IconPath: 
-    CategoryPath: Scripts
-    tempCategoryId: 0
-  - Name: YellowBallBehavior
-    FullTypeName: YellowBallBehavior
     IconPath: 
     CategoryPath: Scripts
     tempCategoryId: 0
@@ -1076,11 +968,6 @@ MonoBehaviour:
     IconPath: 
     CategoryPath: UnityComponents/UnityEngine
     tempCategoryId: 0
-  - Name: LightAnchor
-    FullTypeName: UnityEngine.LightAnchor
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine
-    tempCategoryId: 0
   - Name: LightProbeGroup
     FullTypeName: UnityEngine.LightProbeGroup
     IconPath: 
@@ -1341,230 +1228,10 @@ MonoBehaviour:
     IconPath: 
     CategoryPath: UnityComponents/UnityEngine/InputSystem/XR
     tempCategoryId: 0
-  - Name: CameraSwitcher
-    FullTypeName: UnityEngine.Rendering.CameraSwitcher
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering
-    tempCategoryId: 0
-  - Name: FreeCamera
-    FullTypeName: UnityEngine.Rendering.FreeCamera
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering
-    tempCategoryId: 0
-  - Name: LensFlareComponentSRP
-    FullTypeName: UnityEngine.Rendering.LensFlareComponentSRP
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering
-    tempCategoryId: 0
-  - Name: ProbeAdjustmentVolume
-    FullTypeName: UnityEngine.Rendering.ProbeAdjustmentVolume
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering
-    tempCategoryId: 0
-  - Name: ProbeVolume
-    FullTypeName: UnityEngine.Rendering.ProbeVolume
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering
-    tempCategoryId: 0
-  - Name: ProbeVolumePerSceneData
-    FullTypeName: UnityEngine.Rendering.ProbeVolumePerSceneData
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering
-    tempCategoryId: 0
-  - Name: SceneRenderPipeline
-    FullTypeName: UnityEngine.Rendering.SceneRenderPipeline
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering
-    tempCategoryId: 0
   - Name: SortingGroup
     FullTypeName: UnityEngine.Rendering.SortingGroup
     IconPath: 
     CategoryPath: UnityComponents/UnityEngine/Rendering
-    tempCategoryId: 0
-  - Name: Volume
-    FullTypeName: UnityEngine.Rendering.Volume
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering
-    tempCategoryId: 0
-  - Name: PostProcessDebug
-    FullTypeName: UnityEngine.Rendering.PostProcessing.PostProcessDebug
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/PostProcessing
-    tempCategoryId: 0
-  - Name: PostProcessLayer
-    FullTypeName: UnityEngine.Rendering.PostProcessing.PostProcessLayer
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/PostProcessing
-    tempCategoryId: 0
-  - Name: PostProcessVolume
-    FullTypeName: UnityEngine.Rendering.PostProcessing.PostProcessVolume
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/PostProcessing
-    tempCategoryId: 0
-  - Name: DebugUIHandlerBitField
-    FullTypeName: UnityEngine.Rendering.UI.DebugUIHandlerBitField
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/UI
-    tempCategoryId: 0
-  - Name: DebugUIHandlerButton
-    FullTypeName: UnityEngine.Rendering.UI.DebugUIHandlerButton
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/UI
-    tempCategoryId: 0
-  - Name: DebugUIHandlerCanvas
-    FullTypeName: UnityEngine.Rendering.UI.DebugUIHandlerCanvas
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/UI
-    tempCategoryId: 0
-  - Name: DebugUIHandlerColor
-    FullTypeName: UnityEngine.Rendering.UI.DebugUIHandlerColor
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/UI
-    tempCategoryId: 0
-  - Name: DebugUIHandlerContainer
-    FullTypeName: UnityEngine.Rendering.UI.DebugUIHandlerContainer
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/UI
-    tempCategoryId: 0
-  - Name: DebugUIHandlerEnumField
-    FullTypeName: UnityEngine.Rendering.UI.DebugUIHandlerEnumField
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/UI
-    tempCategoryId: 0
-  - Name: DebugUIHandlerEnumHistory
-    FullTypeName: UnityEngine.Rendering.UI.DebugUIHandlerEnumHistory
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/UI
-    tempCategoryId: 0
-  - Name: DebugUIHandlerFloatField
-    FullTypeName: UnityEngine.Rendering.UI.DebugUIHandlerFloatField
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/UI
-    tempCategoryId: 0
-  - Name: DebugUIHandlerFoldout
-    FullTypeName: UnityEngine.Rendering.UI.DebugUIHandlerFoldout
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/UI
-    tempCategoryId: 0
-  - Name: DebugUIHandlerGroup
-    FullTypeName: UnityEngine.Rendering.UI.DebugUIHandlerGroup
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/UI
-    tempCategoryId: 0
-  - Name: DebugUIHandlerHBox
-    FullTypeName: UnityEngine.Rendering.UI.DebugUIHandlerHBox
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/UI
-    tempCategoryId: 0
-  - Name: DebugUIHandlerIndirectFloatField
-    FullTypeName: UnityEngine.Rendering.UI.DebugUIHandlerIndirectFloatField
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/UI
-    tempCategoryId: 0
-  - Name: DebugUIHandlerIndirectToggle
-    FullTypeName: UnityEngine.Rendering.UI.DebugUIHandlerIndirectToggle
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/UI
-    tempCategoryId: 0
-  - Name: DebugUIHandlerIntField
-    FullTypeName: UnityEngine.Rendering.UI.DebugUIHandlerIntField
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/UI
-    tempCategoryId: 0
-  - Name: DebugUIHandlerMessageBox
-    FullTypeName: UnityEngine.Rendering.UI.DebugUIHandlerMessageBox
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/UI
-    tempCategoryId: 0
-  - Name: DebugUIHandlerObject
-    FullTypeName: UnityEngine.Rendering.UI.DebugUIHandlerObject
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/UI
-    tempCategoryId: 0
-  - Name: DebugUIHandlerObjectList
-    FullTypeName: UnityEngine.Rendering.UI.DebugUIHandlerObjectList
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/UI
-    tempCategoryId: 0
-  - Name: DebugUIHandlerObjectPopupField
-    FullTypeName: UnityEngine.Rendering.UI.DebugUIHandlerObjectPopupField
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/UI
-    tempCategoryId: 0
-  - Name: DebugUIHandlerPanel
-    FullTypeName: UnityEngine.Rendering.UI.DebugUIHandlerPanel
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/UI
-    tempCategoryId: 0
-  - Name: DebugUIHandlerProgressBar
-    FullTypeName: UnityEngine.Rendering.UI.DebugUIHandlerProgressBar
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/UI
-    tempCategoryId: 0
-  - Name: DebugUIHandlerRenderingLayerField
-    FullTypeName: UnityEngine.Rendering.UI.DebugUIHandlerRenderingLayerField
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/UI
-    tempCategoryId: 0
-  - Name: DebugUIHandlerRow
-    FullTypeName: UnityEngine.Rendering.UI.DebugUIHandlerRow
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/UI
-    tempCategoryId: 0
-  - Name: DebugUIHandlerToggle
-    FullTypeName: UnityEngine.Rendering.UI.DebugUIHandlerToggle
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/UI
-    tempCategoryId: 0
-  - Name: DebugUIHandlerToggleHistory
-    FullTypeName: UnityEngine.Rendering.UI.DebugUIHandlerToggleHistory
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/UI
-    tempCategoryId: 0
-  - Name: DebugUIHandlerUIntField
-    FullTypeName: UnityEngine.Rendering.UI.DebugUIHandlerUIntField
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/UI
-    tempCategoryId: 0
-  - Name: DebugUIHandlerValue
-    FullTypeName: UnityEngine.Rendering.UI.DebugUIHandlerValue
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/UI
-    tempCategoryId: 0
-  - Name: DebugUIHandlerValueTuple
-    FullTypeName: UnityEngine.Rendering.UI.DebugUIHandlerValueTuple
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/UI
-    tempCategoryId: 0
-  - Name: DebugUIHandlerVBox
-    FullTypeName: UnityEngine.Rendering.UI.DebugUIHandlerVBox
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/UI
-    tempCategoryId: 0
-  - Name: DebugUIHandlerVector2
-    FullTypeName: UnityEngine.Rendering.UI.DebugUIHandlerVector2
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/UI
-    tempCategoryId: 0
-  - Name: DebugUIHandlerVector3
-    FullTypeName: UnityEngine.Rendering.UI.DebugUIHandlerVector3
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/UI
-    tempCategoryId: 0
-  - Name: DebugUIHandlerVector4
-    FullTypeName: UnityEngine.Rendering.UI.DebugUIHandlerVector4
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/UI
-    tempCategoryId: 0
-  - Name: DebugUIHandlerWidget
-    FullTypeName: UnityEngine.Rendering.UI.DebugUIHandlerWidget
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/UI
-    tempCategoryId: 0
-  - Name: UIFoldout
-    FullTypeName: UnityEngine.Rendering.UI.UIFoldout
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/Rendering/UI
     tempCategoryId: 0
   - Name: GridInformation
     FullTypeName: UnityEngine.Tilemaps.GridInformation
@@ -1756,11 +1423,6 @@ MonoBehaviour:
     IconPath: 
     CategoryPath: UnityComponents/UnityEngine/VFX
     tempCategoryId: 0
-  - Name: VFXPropertyBinder
-    FullTypeName: UnityEngine.VFX.Utility.VFXPropertyBinder
-    IconPath: 
-    CategoryPath: UnityComponents/UnityEngine/VFX/Utility
-    tempCategoryId: 0
   - Name: Video Player
     FullTypeName: UnityEngine.Video.VideoPlayer
     IconPath: VideoPlayer Icon
@@ -1768,53 +1430,48 @@ MonoBehaviour:
     tempCategoryId: 0
   xmlPath: VirtualInspector/predefined_components.xml
   sceneEntries:
-  - id: 3309066886279439485
-    guid: a6c920fdb40845b4a9c8ece5e037227f
-    path: Assets/_Project/Scenes/Deuse Test.unity
-    name: Deuse Test
-    buildIndex: -1
-  - id: 12284386671593573260
+  - id: 7881447870420812221
     guid: 2cda990e2423bbf4892e6590ba056729
-    path: Assets/_Project/Scenes/First Tests.unity
+    path: Assets/Scenes/First Tests.unity
     name: First Tests
     buildIndex: 0
-  - id: 1950531414453479981
+  - id: 7527366871009345230
     guid: 2325b345d9810c24a919c462927b2078
-    path: Assets/Plugins/Shapes/Samples/Color Picker.unity
+    path: Assets/Shapes/Samples/Color Picker.unity
     name: Color Picker
     buildIndex: -1
-  - id: 9998181964224303710
+  - id: 16798450158777223875
     guid: 1c746ffda7825e24780d680a666fb428
-    path: Assets/Plugins/Shapes/Samples/FPS HUD.unity
+    path: Assets/Shapes/Samples/FPS HUD.unity
     name: FPS HUD
     buildIndex: -1
-  - id: 13509341676757317324
+  - id: 15133550409226405079
     guid: 8afa9121d1bcb244582ba4bae29b08f3
-    path: Assets/Plugins/Shapes/Samples/IMCanvas.unity
+    path: Assets/Shapes/Samples/IMCanvas.unity
     name: IMCanvas
     buildIndex: -1
-  - id: 5240632635008736181
+  - id: 4606267400968471776
     guid: b5c8ff0ed1ac629418c3a8fd0e6edc0e
-    path: Assets/Plugins/Shapes/Samples/Procedural Tree.unity
+    path: Assets/Shapes/Samples/Procedural Tree.unity
     name: Procedural Tree
     buildIndex: -1
-  - id: 234776877379549962
+  - id: 16703212703663258865
     guid: 3df8d809b1a6fe44e89804f35a3ebd62
-    path: Assets/Plugins/Shapes/Samples/Shapes Gallery.unity
+    path: Assets/Shapes/Samples/Shapes Gallery.unity
     name: Shapes Gallery
     buildIndex: -1
-  - id: 16236168328544811121
+  - id: 3660454507111018834
     guid: 27e4ee520652895418fac16b492ab366
-    path: Assets/Plugins/Shapes/Samples/Spinning Color Discs.unity
+    path: Assets/Shapes/Samples/Spinning Color Discs.unity
     name: Spinning Color Discs
     buildIndex: -1
-  - id: 5475999338088387189
+  - id: 3767624190822324810
     guid: 6a01559914fe1a148886031f6173bb60
-    path: Assets/Plugins/VirtualInspector/Demo/Scenes/Demo.unity
+    path: Assets/VirtualInspector/Demo/Scenes/Demo.unity
     name: Demo
     buildIndex: -1
-  - id: 13817833431206450541
+  - id: 16222635726309754470
     guid: 075b0b2ac53a04741addc6b8bf7cb0ab
-    path: Assets/Plugins/VirtualInspector/Demo/Scenes/InspectorScene.unity
+    path: Assets/VirtualInspector/Demo/Scenes/InspectorScene.unity
     name: InspectorScene
     buildIndex: -1
