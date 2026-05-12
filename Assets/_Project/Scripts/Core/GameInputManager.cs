@@ -37,6 +37,7 @@ public class GameInputManager : MonoBehaviour
     {
         if (context.performed && _currentDraggedObject == null)
         {
+            GameCursor.Instance?.PlayClickAnimation();
             HandleClick();
         }
     }
@@ -60,6 +61,7 @@ public class GameInputManager : MonoBehaviour
                 if (draggable.OnDragStart())
                 {
                     _currentDraggedObject = draggable;
+                    GameCursor.Instance?.SetDragAnimation(true);
                 }
             }
         }
@@ -138,6 +140,7 @@ public class GameInputManager : MonoBehaviour
         {
             _currentDraggedObject.OnDragEnd();
             _currentDraggedObject = null;
+            GameCursor.Instance?.SetDragAnimation(false);
         }
     }
 
