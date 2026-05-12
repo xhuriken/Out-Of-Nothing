@@ -92,7 +92,7 @@ public class GameInputManager : MonoBehaviour
     {
         if (context.performed)
         {
-            //Start Crafting logic
+            GameCursor.Instance?.ToggleMode();
         }
     }
 

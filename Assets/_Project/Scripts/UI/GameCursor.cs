@@ -1,15 +1,22 @@
+using DG.Tweening;
+using Shapes;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using Shapes;
-using DG.Tweening;
+
+public enum CursorMode { Normal, Craft }
 
 /// <summary>
 /// Singleton class that continuously follows the game mouse cursor with customizable smoothing.
 /// Handles DOTween animations for clicking and dragging, manipulating Shapes.Disc components.
+/// Supports swapping between Normal (Discs) and Craft (Hammer) modes.
 /// </summary>
 public class GameCursor : MonoBehaviour
 {
     public static GameCursor Instance { get; private set; }
+
+    [Header("Visual Roots")]
+    [SerializeField] private GameObject _normalRoot;
+    [SerializeField] private GameObject _craftRoot;
 
     [Header("Visuals (Shapes)")]
     [SerializeField] private Disc _largeDisc;
@@ -28,16 +35,22 @@ public class GameCursor : MonoBehaviour
     [SerializeField] private float _dragThicknessMultiplier = 1.5f;
     [SerializeField] private float _dragDuration = 0.2f;
 
+    [Header("Mode Switch")]
+    [SerializeField] private float _modeSwitchDuration = 0.3f;
+
     private Camera _mainCamera;
     private Vector3 _velocity = Vector3.zero;
-    
+
+
     private float _largeDiscInitialRadius;
     private float _largeDiscInitialThickness;
     private float _smallDiscInitialRadius;
     private float _smallDiscInitialThickness;
 
+    private CursorMode _currentMode = CursorMode.Normal;
     private Sequence _clickSequence;
     private Sequence _dragSequence;
+    private Sequence _modeSwitchSequence;
     private Tween _rotationTween;
 
     private void Awake()
@@ -51,15 +64,17 @@ public class GameCursor : MonoBehaviour
 
         // Hide the default system cursor
         Cursor.visible = false;
-        
+
         // Ensure DOTween starts cleanly
+
         DOTween.Init();
     }
 
     private void Start()
     {
         _mainCamera = Camera.main; // TODO: Cache this properly based on project rules
-        
+
+
         if (_largeDisc != null)
         {
             _largeDiscInitialRadius = _largeDisc.Radius;
@@ -71,6 +86,10 @@ public class GameCursor : MonoBehaviour
             _smallDiscInitialRadius = _smallDisc.Radius;
             _smallDiscInitialThickness = _smallDisc.Thickness;
         }
+
+        // Initialize visibility
+        if (_normalRoot != null) _normalRoot.transform.localScale = Vector3.one;
+        if (_craftRoot != null) _craftRoot.transform.localScale = Vector3.zero;
     }
 
     private void Update()
@@ -98,21 +117,33 @@ public class GameCursor : MonoBehaviour
     /// </summary>
     public void PlayClickAnimation()
     {
-        _clickSequence?.Kill(true);
-        _clickSequence = DOTween.Sequence();
-
-        if (_smallDisc != null)
+        if (_currentMode == CursorMode.Normal)
         {
-            float targetRadius = _largeDisc != null ? _largeDisc.Radius * 1.3f : _smallDiscInitialRadius * 2f;
-            _clickSequence.Join(DOTween.To(() => _smallDisc.Radius, x => _smallDisc.Radius = x, targetRadius, _clickDuration * 0.5f).SetEase(Ease.OutCubic));
-            _clickSequence.Append(DOTween.To(() => _smallDisc.Radius, x => _smallDisc.Radius = x, _smallDiscInitialRadius, _clickDuration).SetEase(Ease.OutElastic));
+            _clickSequence?.Kill(true);
+            _clickSequence = DOTween.Sequence();
+
+            if (_smallDisc != null)
+            {
+                float targetRadius = _largeDisc != null ? _largeDisc.Radius * 1.3f : _smallDiscInitialRadius * 2f;
+                _clickSequence.Join(DOTween.To(() => _smallDisc.Radius, x => _smallDisc.Radius = x, targetRadius, _clickDuration * 0.5f).SetEase(Ease.OutCubic));
+                _clickSequence.Append(DOTween.To(() => _smallDisc.Radius, x => _smallDisc.Radius = x, _smallDiscInitialRadius, _clickDuration).SetEase(Ease.OutElastic));
+            }
+
+            if (_largeDisc != null)
+            {
+                float targetRadius = _largeDiscInitialRadius * 0.8f;
+                _clickSequence.Join(DOTween.To(() => _largeDisc.Radius, x => _largeDisc.Radius = x, targetRadius, _clickDuration * 0.5f).SetEase(Ease.OutCubic));
+                _clickSequence.Join(DOTween.To(() => _largeDisc.Radius, x => _largeDisc.Radius = x, _largeDiscInitialRadius, _clickDuration).SetEase(Ease.OutElastic));
+            }
         }
-
-        if (_largeDisc != null)
+        else
         {
-            float targetRadius = _largeDiscInitialRadius * 0.8f;
-            _clickSequence.Join(DOTween.To(() => _largeDisc.Radius, x => _largeDisc.Radius = x, targetRadius, _clickDuration * 0.5f).SetEase(Ease.OutCubic));
-            _clickSequence.Join(DOTween.To(() => _largeDisc.Radius, x => _largeDisc.Radius = x, _largeDiscInitialRadius, _clickDuration).SetEase(Ease.OutElastic));
+            // Hammer Click: Elastic rotation punch
+            if (_craftRoot != null)
+            {
+                _craftRoot.transform.DOComplete();
+                _craftRoot.transform.DOPunchRotation(new Vector3(0, 0, -30f), 0.4f, 10, 1f).SetEase(Ease.OutElastic);
+            }
         }
     }
 
@@ -126,50 +157,106 @@ public class GameCursor : MonoBehaviour
         _dragSequence?.Kill();
         _dragSequence = DOTween.Sequence();
 
-        if (isDragging)
+        if (_currentMode == CursorMode.Normal)
         {
-            // Small Disc: Larger, Dotted, Rotating
-            if (_smallDisc != null)
+            if (isDragging)
             {
-                _smallDisc.Dashed = true;
-                _smallDisc.DashSpacing = 0.5f; // Increase spacing for "less dots"
-                
-                float targetRadius = _largeDiscInitialRadius * 1.4f; // More radius (was 1.1f)
-                _dragSequence.Join(DOTween.To(() => _smallDisc.Radius, x => _smallDisc.Radius = x, targetRadius, _dragDuration).SetEase(Ease.OutBack));
-                
-                _rotationTween?.Kill();
-                _smallDisc.transform.localRotation = Quaternion.identity; // Reset to avoid gimbal/accumulated bugs
-                _rotationTween = _smallDisc.transform.DORotate(new Vector3(0, 0, 360), 2f, RotateMode.LocalAxisAdd)
-                    .SetLoops(-1, LoopType.Incremental)
-                    .SetEase(Ease.Linear);
-            }
+                // Small Disc: Larger, Dotted, Rotating
+                if (_smallDisc != null)
+                {
+                    _smallDisc.Dashed = true;
+                    _smallDisc.DashSpacing = 0.5f; // Increase spacing for "less dots"
 
-            // Large Disc: Smaller, Thicker
-            if (_largeDisc != null)
+
+                    float targetRadius = _largeDiscInitialRadius * 1.4f; // More radius (was 1.1f)
+                    _dragSequence.Join(DOTween.To(() => _smallDisc.Radius, x => _smallDisc.Radius = x, targetRadius, _dragDuration).SetEase(Ease.OutBack));
+
+
+                    _rotationTween?.Kill();
+                    _smallDisc.transform.localRotation = Quaternion.identity; // Reset to avoid gimbal/accumulated bugs
+                    _rotationTween = _smallDisc.transform.DORotate(new Vector3(0, 0, 360), 2f, RotateMode.LocalAxisAdd)
+                        .SetLoops(-1, LoopType.Incremental)
+                        .SetEase(Ease.Linear);
+                }
+
+                // Large Disc: Smaller, Thicker
+                if (_largeDisc != null)
+                {
+                    _dragSequence.Join(DOTween.To(() => _largeDisc.Radius, x => _largeDisc.Radius = x, _largeDiscInitialRadius * 0.8f, _dragDuration).SetEase(Ease.OutBack));
+                    _dragSequence.Join(DOTween.To(() => _largeDisc.Thickness, x => _largeDisc.Thickness = x, _largeDiscInitialThickness * _dragThicknessMultiplier, _dragDuration).SetEase(Ease.OutBack));
+                }
+            }
+            else
             {
-                _dragSequence.Join(DOTween.To(() => _largeDisc.Radius, x => _largeDisc.Radius = x, _largeDiscInitialRadius * 0.8f, _dragDuration).SetEase(Ease.OutBack));
-                _dragSequence.Join(DOTween.To(() => _largeDisc.Thickness, x => _largeDisc.Thickness = x, _largeDiscInitialThickness * _dragThicknessMultiplier, _dragDuration).SetEase(Ease.OutBack));
+                // Reset
+                _rotationTween?.Kill();
+
+
+                if (_smallDisc != null)
+                {
+                    _dragSequence.Join(DOTween.To(() => _smallDisc.Radius, x => _smallDisc.Radius = x, _smallDiscInitialRadius, _dragDuration).SetEase(Ease.OutQuad));
+                    _dragSequence.OnComplete(() =>
+                    {
+                        _smallDisc.Dashed = false;
+                        _smallDisc.transform.localRotation = Quaternion.identity;
+                    });
+                }
+
+                if (_largeDisc != null)
+                {
+                    _dragSequence.Join(DOTween.To(() => _largeDisc.Radius, x => _largeDisc.Radius = x, _largeDiscInitialRadius, _dragDuration).SetEase(Ease.OutQuad));
+                    _dragSequence.Join(DOTween.To(() => _largeDisc.Thickness, x => _largeDisc.Thickness = x, _largeDiscInitialThickness, _dragDuration).SetEase(Ease.OutQuad));
+                }
             }
         }
         else
         {
-            // Reset
-            _rotationTween?.Kill();
-            
-            if (_smallDisc != null)
+            // Hammer Drag: Weighty tilt + vibrate
+            if (_craftRoot != null)
             {
-                _dragSequence.Join(DOTween.To(() => _smallDisc.Radius, x => _smallDisc.Radius = x, _smallDiscInitialRadius, _dragDuration).SetEase(Ease.OutQuad));
-                _dragSequence.OnComplete(() => {
-                    _smallDisc.Dashed = false;
-                    _smallDisc.transform.localRotation = Quaternion.identity;
-                });
+                if (isDragging)
+                {
+                    _dragSequence.Join(_craftRoot.transform.DOLocalRotate(new Vector3(0, 0, 20f), 0.2f).SetEase(Ease.OutQuad));
+                    _dragSequence.Join(_craftRoot.transform.DOShakePosition(1000f, 0.03f, 20, 90, false, false).SetLoops(-1));
+                }
+                else
+                {
+                    _dragSequence.Join(_craftRoot.transform.DOLocalRotate(Vector3.zero, 0.2f).SetEase(Ease.OutBack));
+                }
             }
+        }
+    }
 
-            if (_largeDisc != null)
-            {
-                _dragSequence.Join(DOTween.To(() => _largeDisc.Radius, x => _largeDisc.Radius = x, _largeDiscInitialRadius, _dragDuration).SetEase(Ease.OutQuad));
-                _dragSequence.Join(DOTween.To(() => _largeDisc.Thickness, x => _largeDisc.Thickness = x, _largeDiscInitialThickness, _dragDuration).SetEase(Ease.OutQuad));
-            }
+    /// <summary>
+    /// Switches between Normal and Craft cursor modes.
+    /// </summary>
+    public void ToggleMode()
+    {
+        SetMode(_currentMode == CursorMode.Normal ? CursorMode.Craft : CursorMode.Normal);
+    }
+
+    /// <summary>
+    /// Sets the cursor mode with a smooth transition animation.
+    /// </summary>
+    public void SetMode(CursorMode mode)
+    {
+        if (_currentMode == mode) return;
+        _currentMode = mode;
+
+
+        _modeSwitchSequence?.Kill();
+        _modeSwitchSequence = DOTween.Sequence();
+
+
+        if (_currentMode == CursorMode.Craft)
+        {
+            if (_normalRoot != null) _modeSwitchSequence.Join(_normalRoot.transform.DOScale(0f, _modeSwitchDuration).SetEase(Ease.InBack));
+            if (_craftRoot != null) _modeSwitchSequence.Append(_craftRoot.transform.DOScale(1f, _modeSwitchDuration).SetEase(Ease.OutBack));
+        }
+        else
+        {
+            if (_craftRoot != null) _modeSwitchSequence.Join(_craftRoot.transform.DOScale(0f, _modeSwitchDuration).SetEase(Ease.InBack));
+            if (_normalRoot != null) _modeSwitchSequence.Append(_normalRoot.transform.DOScale(1f, _modeSwitchDuration).SetEase(Ease.OutBack));
         }
     }
 
