@@ -114,7 +114,6 @@ public class BallEntity : MonoBehaviour, IDraggable
 
     public bool OnDragStart()
     {
-        if (_isProcessing) return false;
         _isBeingDragged = true;
         //_rb.linearVelocity = Vector2.zero;
         _behavior?.OnDragStart(this);

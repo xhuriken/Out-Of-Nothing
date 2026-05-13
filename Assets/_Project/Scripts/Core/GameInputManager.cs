@@ -35,10 +35,20 @@ public class GameInputManager : MonoBehaviour
 
     public void OnClick(InputAction.CallbackContext context)
     {
-        if (context.performed && _currentDraggedObject == null)
+        if (context.performed)
         {
-            GameCursor.Instance?.PlayClickAnimation();
-            HandleClick();
+            // If crafting is active, route the click ONLY to the crafting system
+            if (CraftingManager.Instance != null && CraftingManager.Instance.IsCrafting)
+            {
+                CraftingManager.Instance.OnClickSelection();
+                return;
+            }
+
+            if (_currentDraggedObject == null)
+            {
+                GameCursor.Instance?.PlayClickAnimation();
+                HandleClick();
+            }
         }
     }
 
@@ -47,6 +57,7 @@ public class GameInputManager : MonoBehaviour
     /// </summary>
     public void OnDrag(InputAction.CallbackContext context)
     {
+        // Allow dragging even in crafting mode
         if (context.performed)
         {
             Vector2 mousePosition = GetMouseWorldPosition();
@@ -92,7 +103,10 @@ public class GameInputManager : MonoBehaviour
     {
         if (context.performed)
         {
-            GameCursor.Instance?.ToggleMode();
+            // Toggle mode: if it was hold, now it's toggle.
+            // We only care about performed for toggle.
+            bool newState = !(CraftingManager.Instance != null && CraftingManager.Instance.IsCrafting);
+            CraftingManager.Instance?.OnCraftInput(newState);
         }
     }
 
