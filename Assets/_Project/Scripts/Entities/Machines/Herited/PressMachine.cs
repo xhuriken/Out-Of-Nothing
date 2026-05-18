@@ -38,10 +38,10 @@ public class PressMachine : MachineEntity, IEnergyConsumer
         return base.OnDragStart();
 
     }
+
     private void FixedUpdate()
     {
         //Todo  Return when dragged.
-
         
             // play SFX, animation, etc...
             if (_ballInside != null && _ballInside.Data.id == "RedBall" && _canEjectBall)

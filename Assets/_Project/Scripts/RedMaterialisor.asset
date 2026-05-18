@@ -15,5 +15,5 @@ MonoBehaviour:
   requirements:
   - ballData: {fileID: 11400000, guid: 80d61bba963ad264f8475d89dc001b50, type: 2}
     count: 3
-  resultPrefab: {fileID: 0}
-  shadowPrefab: {fileID: 0}
+  resultPrefab: {fileID: 6162139808707930919, guid: 4f7b0be5d41156a4f9e469ffb2370fd4, type: 3}
+  shadowPrefab: {fileID: 7400269335471674966, guid: 34d45925aa59bf540b52b27a38166c55, type: 3}
