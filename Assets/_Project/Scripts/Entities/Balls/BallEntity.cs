@@ -3,7 +3,7 @@ using Shapes;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D), typeof(CircleCollider2D))]
+[RequireComponent(typeof(Rigidbody2D), typeof(CircleCollider2D), typeof(BallJellyBounce))]
 public class BallEntity : MonoBehaviour, IDraggable
 {
     [Required]
@@ -168,6 +168,7 @@ public class BallEntity : MonoBehaviour, IDraggable
     {
         if (_isProcessing) return;
         DOTween.Kill(this);
+        transform.localScale = Vector3.one;
         _particlesDuplicate.Play();
         BallEntity newBall = BallPoolManager.Instance.SpawnBall(_data, transform.position);
 

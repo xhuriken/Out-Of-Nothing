@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 1592348570759576207}
   - component: {fileID: 2780313785667435763}
   - component: {fileID: 3025895420957861471}
+  - component: {fileID: 6578492761034194774}
   m_Layer: 8
   m_Name: BlueBall
   m_TagString: Untagged
@@ -261,6 +262,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 179eb4d45355a77409073a30e76da408, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BallPhysicsPassport
+--- !u!114 &6578492761034194774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8102840107874242056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e88f7a0626332c419f919d8ca4f7f9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BallJellyBounce
+  _minCollisionVelocity: 1
+  _maxCollisionVelocity: 15
+  _jellyPunchMultiplier: 0.03
+  _maxJellyPunch: 0.4
+  _jellyDurationMultiplier: 0.05
+  _minJellyDuration: 0.3
+  _maxJellyDuration: 1
+  _jellyVibrato: 6
+  _jellyElasticity: 1
+  _collisionCooldown: 0.05
 --- !u!1001 &5750942548291262442
 PrefabInstance:
   m_ObjectHideFlags: 0
