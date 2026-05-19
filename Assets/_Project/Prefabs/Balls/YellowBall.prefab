@@ -10101,15 +10101,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e88f7a0626332c419f919d8ca4f7f9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BallJellyBounce
-  _minCollisionVelocity: 1
+  _minCollisionVelocity: 0.1
   _maxCollisionVelocity: 15
-  _jellyPunchMultiplier: 0.03
-  _maxJellyPunch: 0.4
-  _jellyDurationMultiplier: 0.05
-  _minJellyDuration: 0.3
+  _minJellyPunch: 0.001
+  _maxJellyPunch: 0.25
+  _minJellyDuration: 0.05
   _maxJellyDuration: 1
   _jellyVibrato: 6
-  _jellyElasticity: 1
+  _jellyElasticity: 2
   _collisionCooldown: 0.05
 --- !u!1 &5315152641140204183
 GameObject:

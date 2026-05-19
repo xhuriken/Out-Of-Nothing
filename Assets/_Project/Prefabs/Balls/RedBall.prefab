@@ -270,14 +270,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BallJellyBounce
   _minCollisionVelocity: 0.1
-  _maxCollisionVelocity: 5
-  _jellyPunchMultiplier: 1
-  _maxJellyPunch: 0.2
-  _jellyDurationMultiplier: 0.2
-  _minJellyDuration: 1.2
-  _maxJellyDuration: 5
-  _jellyVibrato: 8
-  _jellyElasticity: 1.2
+  _maxCollisionVelocity: 15
+  _minJellyPunch: 0.001
+  _maxJellyPunch: 0.25
+  _minJellyDuration: 0.05
+  _maxJellyDuration: 1
+  _jellyVibrato: 6
+  _jellyElasticity: 2
   _collisionCooldown: 0.05
 --- !u!1001 &3684954513481821394
 PrefabInstance:

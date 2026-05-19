@@ -34,3 +34,8 @@
 - [x] Prevent click animation when clicking while dragging an object.
 - [x] Fix dragged object missing reference exception causing game input lockup.
 - [x] Fix balls remaining locked (IsProcessing) when deselected from crafting circle.
+
+## 6. Physics & Visuals
+- [x] Implement procedural additive jelly squash/stretch on ball collisions.
+- [x] Separate jelly bounce logic into BallJellyBounce.cs for SRP.
+- [x] Optimize jelly bounce with collision cooldown and dynamic intensity clamping.
