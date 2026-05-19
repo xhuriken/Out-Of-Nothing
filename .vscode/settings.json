@@ -1,11 +1,12 @@
 {
-    "dotnet.defaultSolution": "Out-Of-Nothing.sln",
+    "dotnet.defaultSolution": "Out Of Nothing.sln",
     "dotnet.dotnetPath": "C:/Program Files/dotnet/dotnet.exe",
+    "dotrush.roslyn.dotnetSdkDirectory": "C:/Program Files/dotnet/sdk/10.0.103",
     "dotrush.msbuildProperties": {
         "DefineConstants": "UNITY_EDITOR"
     },
     "dotrush.roslyn.projectOrSolutionFiles": [
-        "S:/ProjetUnity/Out-Of-Nothing/Out-Of-Nothing.sln"
+        "C:/Users/celes/Documents/Unity Games/Out Of Nothing/Out Of Nothing.sln"
     ],
     "dotrush.roslyn.restoreProjectsBeforeLoading": false,
     "files.exclude": {
