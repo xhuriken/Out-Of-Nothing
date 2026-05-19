@@ -13,6 +13,8 @@ public class GameInputManager : MonoBehaviour
 
     private Camera _mainCamera;
     private IDraggable _currentDraggedObject;
+
+    public IDraggable CurrentDraggedObject => _currentDraggedObject;
     private void Awake()
     { 
         if (Instance != null && Instance != this)

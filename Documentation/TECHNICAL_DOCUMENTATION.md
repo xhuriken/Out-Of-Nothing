@@ -14,3 +14,11 @@
 ### Systèmes de Tiers
 - Odin Inspector (détecté via .csproj)
 - Shapes (détecté via .csproj)
+
+### Système de Physique (Balles & Rebond)
+- **Problématique EdgeCollider2D :** Le moteur physique d'Unity gère mal les impacts à haute vitesse sur les arêtes d'un EdgeCollider2D (création de forces de dépénétration latérales aberrantes et normales faussées).
+- **Contournement mis en place :**
+  - **`BallPhysicsPassport` :** La variable `TrueVelocity` capture la vélocité via `FixedUpdate` avant que le moteur de collision d'Unity ne s'exécute. C'est l'unique source de vérité pour le rebond.
+  - **Rebond Géométrique (`GameZone.GetNearestSide`) :** Plutôt que de se fier aux normales de collision d'Unity, les vecteurs normaux des murs sont calculés purement via la géométrie relative (distance au MinX/MaxX/MinY/MaxY en espace local).
+  - **`ConstantBounceSurface` :** Ce script gère désormais intégralement les collisions des murs, appliquant une vélocité forcée et gérant les balles ayant une vitesse inférieure au `_thresholdSpeed`.
+  - **Dépénétration Manuelle :** Lors du calcul du rebond, on déplace physiquement le `Rigidbody2D` vers l'extérieur (le long de la normale) en fonction de la pénétration `separation` pour empêcher Unity d'appliquer son impulse correctif défectueux au frame suivant.

@@ -106,10 +106,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4f99a94b5a5ed64bb212ab9ab135e76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameZone
-  _width: 17.8
-  _height: 10
+  _width: 35.5
+  _height: 20
   _rendering: {fileID: 750939741934925205}
   _tickness: 0.1
+  _minBounceVelocity: 3
+  _enableDebugLogs: 1
 --- !u!114 &8671214652506943910
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -153,8 +155,8 @@ MonoBehaviour:
   stencilReadMask: 255
   stencilWriteMask: 255
   pivot: 1
-  width: 17.8
-  height: 10
+  width: 35.5
+  height: 20
   type: 3
   cornerRadiusMode: 0
   cornerRadii: {x: 0.25, y: 0.25, z: 0.25, w: 0.25}
@@ -217,11 +219,11 @@ EdgeCollider2D:
   m_Offset: {x: 0, y: 0}
   m_EdgeRadius: 0
   m_Points:
-  - {x: -8.799999, y: 4.9}
-  - {x: 8.799999, y: 4.9}
-  - {x: 8.799999, y: -4.9}
-  - {x: -8.799999, y: -4.9}
-  - {x: -8.799999, y: 4.9}
+  - {x: -17.65, y: 9.9}
+  - {x: 17.65, y: 9.9}
+  - {x: 17.65, y: -9.9}
+  - {x: -17.65, y: -9.9}
+  - {x: -17.65, y: 9.9}
   m_AdjacentStartPoint: {x: 0, y: 0}
   m_AdjacentEndPoint: {x: 0, y: 0}
   m_UseAdjacentStartPoint: 0

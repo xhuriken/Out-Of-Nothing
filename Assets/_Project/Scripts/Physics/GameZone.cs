@@ -16,19 +16,19 @@ public class GameZone : MonoBehaviour
     [SerializeField] private Rectangle _rendering;
     [SerializeField] private float _tickness = 0.1f;
 
-    [Header("Bounce Rules")]
-    
-    //[Tooltip("The minimum velocity magnitude applied to balls hitting the wall.")]
-    //[SerializeField] private float _minBounceVelocity = 3f;
+
+
+    [Header("Debug")]
+    [SerializeField] private bool _enableDebugLogs = false;
 
     private EdgeCollider2D _edgeCollider;
 
     // Limits properties for easy access
     // Left = minX, Right = maxX, Top = maxY, Bottom = minY
     // We must substract the tickness of the _renderer for better alignement
-    public float MinX => - _width / 2f + _tickness;
+    public float MinX => -_width / 2f + _tickness;
     public float MaxX => _width / 2f - _tickness;
-    public float MinY => - _height / 2f + _tickness;
+    public float MinY => -_height / 2f + _tickness;
     public float MaxY => _height / 2f - _tickness;
 
     private void Awake()
@@ -91,11 +91,14 @@ public class GameZone : MonoBehaviour
 
     public Vector3 GetNearestSide(Vector3 position)
     {
-        // Compute distances between each side and the position
-        float dLeft   = Mathf.Abs(position.x - MinX);
-        float dRight  = Mathf.Abs(position.x - MaxX);
-        float dBottom = Mathf.Abs(position.y - MinY);
-        float dTop    = Mathf.Abs(position.y - MaxY);
+        // Convert world position to local position to correctly compare with MinX/MaxX/etc.
+        Vector3 localPos = transform.InverseTransformPoint(position);
+
+        // Compute distances between each side and the local position
+        float dLeft = Mathf.Abs(localPos.x - MinX);
+        float dRight = Mathf.Abs(localPos.x - MaxX);
+        float dBottom = Mathf.Abs(localPos.y - MinY);
+        float dTop = Mathf.Abs(localPos.y - MaxY);
 
         // search the minimal value between those 4 distances
         float min = Mathf.Min(Mathf.Min(dLeft, dRight), Mathf.Min(dBottom, dTop));
@@ -108,30 +111,5 @@ public class GameZone : MonoBehaviour
             _ => new Vector3(0f, 1f, 1f) // Top
         };
     }
-
-
-    //public void OnCollisionEnter2D(Collision2D collision)
-    //{
-    //    // We only care about collisions with balls
-    //    if (!collision.gameObject.TryGetComponent(out BallEntity ball))
-    //    {
-    //        return;
-    //    }
-
-    //    // Read the post-collision velocity magnitude
-    //    float currentSpeed = ball.Rb.linearVelocity.magnitude;
-
-    //    // If the ball is moving too slowly (or is stopped by a behavior), we enforce the minimum speed.
-    //    if (currentSpeed < _minBounceVelocity)
-    //    {
-    //        // The bounce direction is already calculated by the PhysicsMaterial2D.
-    //        // If the velocity is extremely low (near 0), we use the contact normal to push it away.
-    //        Vector2 direction = currentSpeed > 0.1f
-    //            ? ball.Rb.linearVelocity.normalized
-    //            : collision.contacts[0].normal;
-
-    //        ball.Rb.linearVelocity = direction * _minBounceVelocity;
-    //    }
-    //}
 
 }

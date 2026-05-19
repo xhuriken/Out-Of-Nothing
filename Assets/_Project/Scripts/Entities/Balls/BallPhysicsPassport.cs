@@ -35,8 +35,10 @@ public class BallPhysicsPassport : MonoBehaviour
 
     private Vector2 _nextVelocity;
     private bool _hasOverrideThisFrame;
+    private Vector2 _trueVelocity;
 
     public Rigidbody2D Rb => _rb;
+    public Vector2 TrueVelocity => _trueVelocity;
 
     private void Awake()
     {
@@ -89,6 +91,9 @@ public class BallPhysicsPassport : MonoBehaviour
         // Reset for next frame
         _hasOverrideThisFrame = false;
         _currentMaxPriority = PhysicsPriority.Default;
+
+        // Store the actual physics velocity so other scripts can read it during collisions
+        _trueVelocity = _rb.linearVelocity;
     }
 
     /// <summary>
