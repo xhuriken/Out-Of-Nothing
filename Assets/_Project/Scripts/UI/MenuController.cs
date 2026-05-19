@@ -19,9 +19,18 @@ public class MenuController : MonoBehaviour
     public List<RectTransform> settingsElements;
     public float elementDelay = 0.08f;
 
-    [Header("Journal Panel")]
+    [Header("Journal Panel 1 (Du Bas)")]
     public RectTransform journalPanel;
     public List<RectTransform> journalElements;
+    public float gapBetweenMenus = 40f;
+
+    [Header("Journal Panel 2 (Du Haut)")]
+    public RectTransform journalPanel2;
+    public List<RectTransform> journal2Elements;
+
+    [Header("Journal Layout")]
+    [Tooltip("Hauteur d'arrivée du Journal 1 en pourcentage de l'écran (0.55 = 55% de la hauteur)")]
+    public float journal1TargetHeightPercent = 0.55f;
 
     private bool isOpen = false;
     private bool isSettingsOpen = false;
@@ -32,23 +41,28 @@ public class MenuController : MonoBehaviour
     private bool isAnimatingSettings = false;
     private bool isAnimatingJournal = false;
 
-    // Positions des panneaux
+    // Positions calculées pour les transitions X
     private float mainMenuClosedX;
     private float mainMenuOpenX;
     private float settingsClosedX;
     private float settingsOpenX;
-    private float journalClosedX;
-    private float journalOpenX;
 
-    // --- SAUVEGARDE DES POSITIONS D'ORIGINE DES ÉLÉMENTS ---
+    // Positions calculées pour le Journal (Vecteurs X,Y)
+    private Vector2 journalClosedPosition;
+    private Vector2 journalOpenPosition;
+    private Vector2 journal2ClosedPosition;
+    private Vector2 journal2OpenPosition;
+
+    // Listes pour sauvegarder les positions d'origine locales de tes éléments d'UI
     private List<Vector2> originalSettingsPositions = new List<Vector2>();
     private List<Vector2> originalJournalPositions = new List<Vector2>();
+    private List<Vector2> originalJournal2Positions = new List<Vector2>();
 
     private void Start()
     {
         CalculatePositions();
 
-        // Initialisation Main Menu
+        // 1. Initialisation Main Menu
         menuPanel.anchoredPosition = new Vector2(mainMenuClosedX, 0);
         for (int i = 0; i < buttons.Count; i++)
         {
@@ -57,27 +71,43 @@ public class MenuController : MonoBehaviour
             if (buttonTexts[i] != null) buttonTexts[i].alpha = 0f;
         }
 
-        // Initialisation & Sauvegarde Settings Panel
+        // 2. Initialisation Settings
         settingsPanel.anchoredPosition = new Vector2(settingsClosedX, 0);
         foreach (var element in settingsElements)
         {
-            originalSettingsPositions.Add(element.anchoredPosition); // On stocke la vraie position
+            originalSettingsPositions.Add(element.anchoredPosition);
             CanvasGroup cg = element.GetComponent<CanvasGroup>();
             if (cg != null) cg.alpha = 0f;
         }
 
-        // Initialisation & Sauvegarde Journal Panel
-        journalPanel.anchoredPosition = new Vector2(journalClosedX, 0);
-        foreach (var element in journalElements)
+        // 3. Initialisation Journal 1 (Bas)
+        if (journalPanel != null)
         {
-            originalJournalPositions.Add(element.anchoredPosition); // On stocke la vraie position
-            CanvasGroup cg = element.GetComponent<CanvasGroup>();
-            if (cg != null) cg.alpha = 0f;
+            journalPanel.anchoredPosition = journalClosedPosition;
+            foreach (var element in journalElements)
+            {
+                originalJournalPositions.Add(element.anchoredPosition);
+                CanvasGroup cg = element.GetComponent<CanvasGroup>();
+                if (cg != null) cg.alpha = 0f;
+            }
+        }
+
+        // 4. Initialisation Journal 2 (Haut)
+        if (journalPanel2 != null)
+        {
+            journalPanel2.anchoredPosition = journal2ClosedPosition;
+            foreach (var element in journal2Elements)
+            {
+                originalJournal2Positions.Add(element.anchoredPosition);
+                CanvasGroup cg = element.GetComponent<CanvasGroup>();
+                if (cg != null) cg.alpha = 0f;
+            }
         }
     }
 
     private void Update()
     {
+        // Raccourci Clavier TAB avec vérification des verrous d'animation
         if (Keyboard.current.tabKey.wasPressedThisFrame && !isAnimatingMain && !isAnimatingSettings && !isAnimatingJournal)
         {
             if (!isOpen)
@@ -86,7 +116,7 @@ public class MenuController : MonoBehaviour
             }
             else
             {
-                // Fermeture propre en chaîne si un sous-menu est ouvert
+                // Fermeture en chaîne logique si un panneau est ouvert
                 if (isSettingsOpen)
                 {
                     CloseSettings(() => CloseMenu());
@@ -107,23 +137,56 @@ public class MenuController : MonoBehaviour
     {
         RectTransform canvasRect = menuPanel.parent as RectTransform;
         float canvasWidth = canvasRect != null ? canvasRect.rect.width : Screen.width;
+        float canvasHeight = canvasRect != null ? canvasRect.rect.height : Screen.height;
         float halfCanvasWidth = canvasWidth / 2f;
 
-        // --- MAIN MENU (Ancre à gauche, glisse vers la droite) ---
+        // --- MAIN MENU ---
         mainMenuClosedX = 0f;
         mainMenuOpenX = halfCanvasWidth;
 
-        // --- SETTINGS (Ancre à droite, glisse vers la gauche) ---
+        // --- SETTINGS ---
         settingsClosedX = 0f;
-        settingsOpenX = -halfCanvasWidth; // S'arrête au milieu
+        settingsOpenX = -halfCanvasWidth;
 
-        // --- JOURNAL (Ancre à droite, glisse AUSSI vers la gauche) ---
-        journalClosedX = 0f; // Caché à droite de l'écran
+        // --- JOURNAL RESPONSIVE (Ton code d'origine) ---
+        // 1. Calcul de la hauteur du Journal 1
+        float targetY = canvasHeight * 0.02f;
 
-        // Comme il est plus grand, il doit s'avancer plus loin vers la gauche.
-        // On lui dit de glisser de la valeur de sa propre largeur !
-        journalOpenX = -journalPanel.rect.width;
+        // 2. Calcul de la largeur/position horizontale :
+        float menuPrincipalDroit = halfCanvasWidth + menuPanel.rect.width;
+        float journalDemiLargeur = journalPanel.rect.width / 2f;
+
+        // Position X idéale pour que le Journal se cale juste à droite du menu principal
+        float targetX = menuPrincipalDroit + gapBetweenMenus + journalDemiLargeur;
+
+        // Sécurité anti-débordement écran à droite :
+        if (targetX + journalDemiLargeur > canvasWidth)
+        {
+            // S'il n'y a pas assez de place à l'écran (ex: petit écran), on force le journal à coller au bord droit de l'écran
+            targetX = canvasWidth - journalDemiLargeur - 15f;
+        }
+
+        // Définition des vecteurs de position pour le JOURNAL 1 (Bas)
+        journalClosedPosition = new Vector2(targetX, -journalPanel.rect.height - 100f); // Caché sous l'écran
+        journalOpenPosition = new Vector2(targetX, targetY); // Position ouverte parfaite
+
+        // --- AJOUT AUTOMATIQUE DU JOURNAL 2 (Haut) ---
+        if (journalPanel2 != null)
+        {
+            // Il prend le même X pour être aligné au poil.
+            // Sa hauteur d'arrivée (Y) = la hauteur du Journal 1 + la hauteur du Journal 2 pour qu'ils se collent.
+            float targetY2 = targetY + journalPanel2.rect.height;
+
+            // Position cachée (au-dessus de l'écran)
+            journal2ClosedPosition = new Vector2(targetX, canvasHeight + 100f);
+            // Position ouverte parfaite
+            journal2OpenPosition = new Vector2(targetX, targetY2);
+        }
     }
+
+    // --- GESTION DU MENU PRINCIPAL ---
+
+    // --- GESTION DU MENU PRINCIPAL SIMPLIFIÉE ET RAPIDE ---
 
     void OpenMenu()
     {
@@ -132,15 +195,21 @@ public class MenuController : MonoBehaviour
         menuPanel.DOKill();
         CalculatePositions();
 
-        Sequence openSequence = DOTween.Sequence();
-        openSequence.Append(menuPanel.DOAnchorPosX(mainMenuOpenX, animationDuration).SetEase(Ease.OutBack));
+        // On réduit la durée globale (ex: 0.25s au lieu de 0.5s)
+        float fastDuration = 0.25f;
 
+        Sequence openSequence = DOTween.Sequence();
+
+        // Le panneau glisse instantanément
+        openSequence.Append(menuPanel.DOAnchorPosX(mainMenuOpenX, fastDuration).SetEase(Ease.OutCubic));
+
+        // On anime TOUS les boutons en même temps (Join) pour gagner du temps
         for (int i = 0; i < buttons.Count; i++)
         {
-            int index = i;
-            openSequence.Append(buttons[index].DORotate(Vector3.zero, 0.4f).SetEase(Ease.OutCubic));
-            openSequence.Join(buttons[index].DOScale(1f, 0.4f).SetEase(Ease.OutBack));
-            openSequence.Join(buttonTexts[index].DOFade(1f, 0.3f));
+            buttons[i].DOKill();
+            openSequence.Join(buttons[i].DORotate(Vector3.zero, fastDuration).SetEase(Ease.OutCubic));
+            openSequence.Join(buttons[i].DOScale(1f, fastDuration).SetEase(Ease.OutCubic));
+            if (buttonTexts[i] != null) openSequence.Join(buttonTexts[i].DOFade(1f, fastDuration));
         }
 
         openSequence.OnComplete(() => isAnimatingMain = false);
@@ -151,20 +220,26 @@ public class MenuController : MonoBehaviour
         isOpen = false;
         isAnimatingMain = true;
         menuPanel.DOKill();
+
+        float fastDuration = 0.2f; // Encore plus rapide pour la fermeture
         Sequence closeSequence = DOTween.Sequence();
 
+        // On cache tout d'un coup
         for (int i = 0; i < buttons.Count; i++)
         {
-            closeSequence.Join(buttonTexts[i].DOFade(0f, 0.2f));
-            closeSequence.Join(buttons[i].DORotate(new Vector3(0, 0, -90f), 0.2f));
-            closeSequence.Join(buttons[i].DOScale(pointScale, 0.2f));
+            buttons[i].DOKill();
+            closeSequence.Join(buttonTexts[i].DOFade(0f, fastDuration));
+            closeSequence.Join(buttons[i].DORotate(new Vector3(0, 0, -90f), fastDuration));
+            closeSequence.Join(buttons[i].DOScale(pointScale, fastDuration));
         }
 
-        closeSequence.Append(menuPanel.DOAnchorPosX(mainMenuClosedX, animationDuration).SetEase(Ease.InBack));
+        // Le panneau se retire juste après
+        closeSequence.Append(menuPanel.DOAnchorPosX(mainMenuClosedX, fastDuration).SetEase(Ease.InCubic));
+
         closeSequence.OnComplete(() => isAnimatingMain = false);
     }
 
-    // --- PANNEAU PARAMÈTRES (SETTINGS) ---
+    // --- GESTION DES PARAMÈTRES (SETTINGS) ---
 
     public void ToggleSettings()
     {
@@ -172,7 +247,6 @@ public class MenuController : MonoBehaviour
 
         if (isJournalOpen)
         {
-            // Si le journal est ouvert, on le ferme d'abord, puis on ouvre les settings
             CloseJournal(() => OpenSettings());
         }
         else
@@ -199,7 +273,6 @@ public class MenuController : MonoBehaviour
 
             if (cg != null)
             {
-                // On repart de la position de départ décalée proprement
                 element.anchoredPosition = originalSettingsPositions[i] + new Vector2(30f, -10f);
                 cg.alpha = 0f;
 
@@ -242,7 +315,7 @@ public class MenuController : MonoBehaviour
         });
     }
 
-    // --- PANNEAU JOURNAL (CORRIGÉ) ---
+    // --- GESTION DU JOURNAL (MÂCHOIRE SYNCHRONISÉE) ---
 
     public void ToggleJournal()
     {
@@ -250,7 +323,6 @@ public class MenuController : MonoBehaviour
 
         if (isSettingsOpen)
         {
-            // Si les paramètres sont ouverts, on les ferme d'abord, puis on ouvre le journal
             CloseSettings(() => OpenJournal());
         }
         else
@@ -264,14 +336,21 @@ public class MenuController : MonoBehaviour
     {
         isJournalOpen = true;
         isAnimatingJournal = true;
+
         journalPanel.DOKill();
+        if (journalPanel2 != null) journalPanel2.DOKill();
         CalculatePositions();
 
         Sequence journalSeq = DOTween.Sequence();
-        // Glissement vers la GAUCHE (valeur négative)
-        journalSeq.Append(journalPanel.DOAnchorPosX(journalOpenX, animationDuration).SetEase(Ease.OutBack));
 
-        // Cascade des éléments internes
+        // Les deux panneaux s'ouvrent au même moment (Join) avec effet de ressort lourd (OutBack)
+        journalSeq.Append(journalPanel.DOAnchorPos(journalOpenPosition, animationDuration).SetEase(Ease.OutBack));
+        if (journalPanel2 != null)
+        {
+            journalSeq.Join(journalPanel2.DOAnchorPos(journal2OpenPosition, animationDuration).SetEase(Ease.OutBack));
+        }
+
+        // Cascade - Éléments du Journal 1 (Viennent du bas)
         for (int i = 0; i < journalElements.Count; i++)
         {
             RectTransform element = journalElements[i];
@@ -279,19 +358,29 @@ public class MenuController : MonoBehaviour
 
             if (cg != null)
             {
-                // Comme le panneau vient de la droite, on fait venir les éléments depuis la droite aussi (+50f)
-                element.anchoredPosition = originalJournalPositions[i] + new Vector2(50f, -10f);
+                element.anchoredPosition = originalJournalPositions[i] + new Vector2(0f, -40f);
                 element.localScale = Vector3.one * 0.8f;
                 cg.alpha = 0f;
 
-                journalSeq.Insert(animationDuration * 0.4f + (i * 0.1f),
-                    element.DOAnchorPos(originalJournalPositions[i], 0.4f).SetEase(Ease.OutCubic));
+                journalSeq.Insert(animationDuration * 0.4f + (i * 0.1f), element.DOAnchorPos(originalJournalPositions[i], 0.4f).SetEase(Ease.OutCubic));
+                journalSeq.Insert(animationDuration * 0.4f + (i * 0.1f), element.DOScale(Vector3.one, 0.4f).SetEase(Ease.OutBack));
+                journalSeq.Insert(animationDuration * 0.4f + (i * 0.1f), cg.DOFade(1f, 0.3f));
+            }
+        }
 
-                journalSeq.Insert(animationDuration * 0.4f + (i * 0.1f),
-                    element.DOScale(Vector3.one, 0.4f).SetEase(Ease.OutBack));
+        // Cascade - Éléments du Journal 2 (Viennent du haut)
+        for (int i = 0; i < journal2Elements.Count; i++)
+        {
+            RectTransform element = journal2Elements[i];
+            CanvasGroup cg = element.GetComponent<CanvasGroup>();
 
-                journalSeq.Insert(animationDuration * 0.4f + (i * 0.1f),
-                    cg.DOFade(1f, 0.3f));
+            if (cg != null)
+            {
+                element.anchoredPosition = originalJournal2Positions[i] + new Vector2(0f, 40f);
+                cg.alpha = 0f;
+
+                journalSeq.Insert(animationDuration * 0.4f + (i * 0.1f), element.DOAnchorPos(originalJournal2Positions[i], 0.4f).SetEase(Ease.OutCubic));
+                journalSeq.Insert(animationDuration * 0.4f + (i * 0.1f), cg.DOFade(1f, 0.3f));
             }
         }
 
@@ -302,27 +391,35 @@ public class MenuController : MonoBehaviour
     {
         isJournalOpen = false;
         isAnimatingJournal = true;
+
         journalPanel.DOKill();
+        if (journalPanel2 != null) journalPanel2.DOKill();
 
         Sequence journalSeq = DOTween.Sequence();
 
-        // On range les éléments vers la droite
+        // Rangement des sous-éléments du bas
         for (int i = journalElements.Count - 1; i >= 0; i--)
         {
-            RectTransform element = journalElements[i];
-            CanvasGroup cg = element.GetComponent<CanvasGroup>();
-
-            if (cg != null)
-            {
-                Vector2 targetPos = originalJournalPositions[i] + new Vector2(50f, -10f);
-                journalSeq.Join(cg.DOFade(0f, 0.15f));
-                journalSeq.Join(element.DOAnchorPos(targetPos, 0.15f));
-                journalSeq.Join(element.DOScale(0.8f, 0.15f));
-            }
+            Vector2 targetPos = originalJournalPositions[i] + new Vector2(0f, -40f);
+            journalSeq.Join(journalElements[i].GetComponent<CanvasGroup>().DOFade(0f, 0.15f));
+            journalSeq.Join(journalElements[i].DOAnchorPos(targetPos, 0.15f));
+            journalSeq.Join(journalElements[i].DOScale(0.8f, 0.15f));
         }
 
-        // Le panneau repart vers la DROITE pour se cacher (retour à 0)
-        journalSeq.Append(journalPanel.DOAnchorPosX(journalClosedX, animationDuration).SetEase(Ease.InBack));
+        // Rangement des sous-éléments du haut
+        for (int i = journal2Elements.Count - 1; i >= 0; i--)
+        {
+            Vector2 targetPos = originalJournal2Positions[i] + new Vector2(0f, 40f);
+            journalSeq.Join(journal2Elements[i].GetComponent<CanvasGroup>().DOFade(0f, 0.15f));
+            journalSeq.Join(journal2Elements[i].DOAnchorPos(targetPos, 0.15f));
+        }
+
+        // Fermeture physique simultanée des deux blocs de la mâchoire
+        journalSeq.Append(journalPanel.DOAnchorPos(journalClosedPosition, animationDuration).SetEase(Ease.InBack));
+        if (journalPanel2 != null)
+        {
+            journalSeq.Join(journalPanel2.DOAnchorPos(journal2ClosedPosition, animationDuration).SetEase(Ease.InBack));
+        }
 
         journalSeq.OnComplete(() => {
             isAnimatingJournal = false;
@@ -330,7 +427,7 @@ public class MenuController : MonoBehaviour
         });
     }
 
-    // --- BOUTONS ACTIONS ---
+    // --- BOUTONS ACTIONS STANDARDS ---
 
     public void PlayGame()
     {

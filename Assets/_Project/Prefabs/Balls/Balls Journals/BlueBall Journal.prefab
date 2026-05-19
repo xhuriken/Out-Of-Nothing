@@ -9,17 +9,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6113248793361582860}
-  - component: {fileID: 6514994737505783898}
-  - component: {fileID: 7494575677880220153}
-  - component: {fileID: 3994086967771890052}
-  - component: {fileID: 7224402592017347342}
   - component: {fileID: 6339655241896321448}
   - component: {fileID: 1592348570759576207}
   - component: {fileID: 2780313785667435763}
-  - component: {fileID: 3025895420957861471}
-  - component: {fileID: 6578492761034194774}
   m_Layer: 8
-  m_Name: BlueBall
+  m_Name: BlueBall Journal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34,113 +28,14 @@ Transform:
   m_GameObject: {fileID: 8102840107874242056}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.24, y: 4.03, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -1}
+  m_LocalScale: {x: 80, y: 80, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8031069235279043167}
   - {fileID: 8649893443802705622}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6514994737505783898
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8102840107874242056}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8048c4b60bf58044d99c2be259e2bd9d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BallEntity
-  _data: {fileID: 11400000, guid: 8d01071631ac25e4fa82dc5636359ba7, type: 2}
-  _renderer: {fileID: 6339655241896321448}
-  _particlesClick: {fileID: 7368551313527734449}
-  _particlesDuplicate: {fileID: 8159630582120723512}
-  _isProcessing: 0
-  _dragForceMultiplier: 15
-  _maxDragSpeed: 30
---- !u!114 &7494575677880220153
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8102840107874242056}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9517bfea72f5c5549a16a535cb16bdca, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BlueBallBehavior
-  _pauseDuration: 2
-  _amplitude: 5
-  _speed: 2
-  _shrinkScale: 0.9
-  _tweenDuration: 0.4
---- !u!50 &3994086967771890052
-Rigidbody2D:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8102840107874242056}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDamping: 3
-  m_AngularDamping: 0.05
-  m_GravityScale: 0
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_Interpolate: 1
-  m_SleepingMode: 1
-  m_CollisionDetection: 1
-  m_Constraints: 4
---- !u!58 &7224402592017347342
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8102840107874242056}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_CompositeOperation: 0
-  m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_Radius: 0.36
 --- !u!114 &6339655241896321448
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -153,7 +48,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8dd51d29965c9d04599a2fdc8a833c6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ShapesRuntime::Shapes.Disc
-  blendMode: 1
+  blendMode: 0
   scaleMode: 0
   color: {r: 0, g: 0.3269514, b: 0.7, a: 0.7}
   detailLevel: 2
@@ -195,7 +90,7 @@ MonoBehaviour:
     shapeModifier: 1
 --- !u!33 &1592348570759576207
 MeshFilter:
-  m_ObjectHideFlags: 2
+  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -203,7 +98,7 @@ MeshFilter:
   m_Mesh: {fileID: 43100795730674332, guid: a3d1f56cebf202c448b6fb479f61a9dc, type: 2}
 --- !u!23 &2780313785667435763
 MeshRenderer:
-  m_ObjectHideFlags: 2
+  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -226,7 +121,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 3d50166ab25f08441aae86be0b23a8d8, type: 2}
+  - {fileID: 2100000, guid: f1152319638614c47882e3b5d0aedbb8, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -250,39 +145,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &3025895420957861471
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8102840107874242056}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 179eb4d45355a77409073a30e76da408, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BallPhysicsPassport
---- !u!114 &6578492761034194774
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8102840107874242056}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e88f7a0626332c419f919d8ca4f7f9e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BallJellyBounce
-  _minCollisionVelocity: 0.1
-  _maxCollisionVelocity: 15
-  _minJellyPunch: 0.001
-  _maxJellyPunch: 0.25
-  _minJellyDuration: 0.05
-  _maxJellyDuration: 1
-  _jellyVibrato: 6
-  _jellyElasticity: 2
-  _collisionCooldown: 0.05
 --- !u!1001 &5750942548291262442
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -352,11 +214,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9b9e5d14bba85694f8f299d41a7458b7, type: 3}
---- !u!198 &7368551313527734449 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 2994095120256309083, guid: 9b9e5d14bba85694f8f299d41a7458b7, type: 3}
-  m_PrefabInstance: {fileID: 5750942548291262442}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8031069235279043167 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2358590071222078901, guid: 9b9e5d14bba85694f8f299d41a7458b7, type: 3}
@@ -431,11 +288,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5d798610b1b1fec41b7567fcfe2efe21, type: 3}
---- !u!198 &8159630582120723512 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 2994095120256309083, guid: 5d798610b1b1fec41b7567fcfe2efe21, type: 3}
-  m_PrefabInstance: {fileID: 6391167996901172067}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8649893443802705622 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2358590071222078901, guid: 5d798610b1b1fec41b7567fcfe2efe21, type: 3}
