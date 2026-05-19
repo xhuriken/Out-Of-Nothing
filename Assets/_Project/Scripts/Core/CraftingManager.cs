@@ -73,6 +73,13 @@ public class CraftingManager : MonoBehaviour
     {
         if (_isCrafting) return;
         _isCrafting = true;
+        
+        // Safety: unlock any balls that might be left over (e.g. from an interrupted FailCraft tween)
+        foreach (var ball in _selectedBalls)
+        {
+            if (ball != null) ball.IsProcessing = false;
+        }
+        
         _selectedBalls.Clear();
         _currentMatchingRecipe = null;
         GameCursor.Instance?.SetMode(CursorMode.Craft);
@@ -143,6 +150,7 @@ public class CraftingManager : MonoBehaviour
         if (ball != null)
         {
             ball.transform.DOPunchScale(Vector3.one * -0.1f, 0.2f);
+            ball.IsProcessing = false;
         }
         _selectedBalls.Remove(ball);
         CheckRecipes();

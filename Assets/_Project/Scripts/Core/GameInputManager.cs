@@ -29,6 +29,11 @@ public class GameInputManager : MonoBehaviour
     {
         if (_currentDraggedObject != null)
         {
+            if (_currentDraggedObject as UnityEngine.Object == null)
+            {
+                ForceDrop();
+                return;
+            }
             _currentDraggedObject.OnDragUpdate(GetMouseWorldPosition());
         }
     }
@@ -40,11 +45,12 @@ public class GameInputManager : MonoBehaviour
             // If crafting is active, route the click ONLY to the crafting system
             if (CraftingManager.Instance != null && CraftingManager.Instance.IsCrafting)
             {
+                GameCursor.Instance?.PlayClickAnimation();
                 CraftingManager.Instance.OnClickSelection();
                 return;
             }
 
-            if (_currentDraggedObject == null)
+            if (_currentDraggedObject == null || _currentDraggedObject as UnityEngine.Object == null)
             {
                 GameCursor.Instance?.PlayClickAnimation();
                 HandleClick();
@@ -89,6 +95,12 @@ public class GameInputManager : MonoBehaviour
     {
         if (_currentDraggedObject != null && context.performed)
         {
+            if (_currentDraggedObject as UnityEngine.Object == null)
+            {
+                ForceDrop();
+                return;
+            }
+            
             // The scroll wheel is the Y axis
             float scrollValue = context.ReadValue<float>();
 
@@ -152,7 +164,11 @@ public class GameInputManager : MonoBehaviour
     {
         if (_currentDraggedObject != null)
         {
-            _currentDraggedObject.OnDragEnd();
+            if (_currentDraggedObject as UnityEngine.Object != null)
+            {
+                _currentDraggedObject.OnDragEnd();
+            }
+            
             _currentDraggedObject = null;
             GameCursor.Instance?.SetDragAnimation(false);
         }

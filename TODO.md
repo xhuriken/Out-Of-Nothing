@@ -28,3 +28,9 @@
 - [x] Enable `editor.formatOnSave` for C#.
 - [x] Enable EditorConfig support in Settings.
 - [x] Document in `DEVELOPMENT_LOG.md`.
+
+## 5. Bug Fixes (Input & Crafting)
+- [x] Fix missing click animation in crafting mode.
+- [x] Prevent click animation when clicking while dragging an object.
+- [x] Fix dragged object missing reference exception causing game input lockup.
+- [x] Fix balls remaining locked (IsProcessing) when deselected from crafting circle.
