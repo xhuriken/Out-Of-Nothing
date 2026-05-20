@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: Yellow Ball
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Yellow Ball
+  description: 'The yellow ball is a ball that transmits energy in a chain from point
+    A to B, like a cable; they have an energy of 1 '
   previewPrefab: {fileID: 5276091440895640841, guid: ddebafd694e195b47bd454a74d95e9ba, type: 3}
-  isUnlocked: 0
+  isUnlocked: 1
   type: 0
+  craftRecipe: []

@@ -13,6 +13,12 @@ MonoBehaviour:
   m_Name: Press Machine
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Press Machine
+  description: 'The press is capable of compacting balls. '
   previewPrefab: {fileID: 29052955468199588, guid: f73f5a9fd39b4824bbb057737a90415b, type: 3}
   isUnlocked: 1
   type: 1
+  craftRecipe:
+  - {fileID: 11400000, guid: fa34bfc01394a4241b60a8e7597e4c16, type: 2}
+  - {fileID: 11400000, guid: fa34bfc01394a4241b60a8e7597e4c16, type: 2}
+  - {fileID: 11400000, guid: fa34bfc01394a4241b60a8e7597e4c16, type: 2}
+  - {fileID: 11400000, guid: fa34bfc01394a4241b60a8e7597e4c16, type: 2}

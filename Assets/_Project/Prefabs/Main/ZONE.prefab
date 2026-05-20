@@ -110,7 +110,6 @@ MonoBehaviour:
   _height: 20
   _rendering: {fileID: 750939741934925205}
   _tickness: 0.1
-  _minBounceVelocity: 3
   _enableDebugLogs: 1
 --- !u!114 &8671214652506943910
 MonoBehaviour:
@@ -124,7 +123,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 073382ba083efda409dce95970433eae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ConstantBounceSurface
-  _constantBounceSpeed: 10
+  _thresholdSpeed: 5
+  _boostSpeed: 15
   _priority: 20
 --- !u!114 &750939741934925205
 MonoBehaviour:

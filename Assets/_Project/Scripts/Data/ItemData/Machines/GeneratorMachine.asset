@@ -13,6 +13,12 @@ MonoBehaviour:
   m_Name: GeneratorMachine
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Generator Machine
+  description: The generator collects balls and converts them into electricity
   previewPrefab: {fileID: 746673261679251023, guid: cf8d3af90a04d074d80f691d9a68417c, type: 3}
   isUnlocked: 1
   type: 1
+  craftRecipe:
+  - {fileID: 11400000, guid: 41ffac2d752dda047a1e41d1fe4f68f2, type: 2}
+  - {fileID: 11400000, guid: 41ffac2d752dda047a1e41d1fe4f68f2, type: 2}
+  - {fileID: 11400000, guid: 41ffac2d752dda047a1e41d1fe4f68f2, type: 2}
+  - {fileID: 11400000, guid: 41ffac2d752dda047a1e41d1fe4f68f2, type: 2}

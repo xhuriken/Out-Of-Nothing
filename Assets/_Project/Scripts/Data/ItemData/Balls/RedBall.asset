@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: RedBall
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Red Ball
+  description: 'The red ball is a simple and basic ball; they have an energy of 1. '
   previewPrefab: {fileID: 8758211866433413932, guid: 816549f75a141e34980f0b812e1655f1, type: 3}
   isUnlocked: 1
   type: 0
+  craftRecipe: []
