@@ -30,11 +30,11 @@ This document provides a comprehensive technical audit of the "Out-Of-Nothing" p
 #### **BallEntity.cs** (Core Controller)
 | Feature | Details |
 | :--- | :--- |
-| **Purpose** | Manages physical representation and delegates logic to `BallBehavior`. |
-| **Logic & Algorithms** | Uses `DOTween` for scaling animations. Synchronizes `Shapes.Disc` visuals with `BallDataSO`. |
-| **Exposed Members** | `_data` (BallDataSO), `_renderer` (Disc), `_dragForceMultiplier` (float). |
-| **Dependencies** | `Rigidbody2D`, `CircleCollider2D`, `BallDataSO`. |
-| **Debug Logs** | `Duplicating {id}`, `Trying to drag ball {id}`. |
+| **Purpose** | Manages physical representation, handles interactions, and delegates logic to `BallBehavior`. |
+| **Logic & Algorithms** | Uses `DOTween` for scaling, click punch animations, and advanced mitosis-style cell duplication animations. Aligns transforms along a randomized split direction, triggers vibratory shakes, disables collision between duplicating halves using `Physics2D.IgnoreCollision`, moves kinematic rigidbodies via `DOMove` (pushing dynamic entities aside), and recovers shape with dynamic elastic overshoots. |
+| **Exposed Members** | `_data` (BallDataSO), `_renderer` (Disc), `_dragForceMultiplier` (float), `_prepDuration` (float), `_splitDuration` (float), `_splitDistance` (float), `_vibrationIntensity` (float), `_maxStretch` (float), `_minSquash` (float), `_partingImpulse` (float), `_splitEase` (Ease), `_scaleEase` (Ease). |
+| **Dependencies** | `Rigidbody2D`, `CircleCollider2D`, `BallPhysicsPassport`, `BallDataSO`, `BallPoolManager`, `DOTween`. |
+| **Debug Logs** | N/A |
 
 #### **BallPoolManager.cs** (Utility)
 | Feature | Details |

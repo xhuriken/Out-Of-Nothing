@@ -1,3 +1,4 @@
+using DG.Tweening;
 using Shapes;
 using UnityEngine;
 
@@ -38,7 +39,7 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
         set { base.CurrentEnergy = value; }
     }
 
-    public float InputTransferSpeed 
+    public float InputTransferSpeed
     {
         get
         {
@@ -50,7 +51,7 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
             return _inputTransferSpeed;
         }
     }
-    
+
     public float ConsumptionPerAction => _consumptionPerAction;
     public override bool IsDemanding => !IsWaiting();
 
@@ -106,13 +107,13 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
         }
 
         long currentTick = PowerTickManager.Instance.CurrentTickCount;
-        
+
         if (currentTick % _actionCadenceTicks == _tickOffset)
         {
             if (CurrentEnergy >= _consumptionPerAction - 0.001f)
             {
                 if (_enableLogs) Debug.Log($"[RedLogic] EXECUTING SPAWN at tick {currentTick}. Buffer was {CurrentEnergy}");
-                
+
                 CurrentEnergy = EnergyNetwork.Quantize(Mathf.Max(0, CurrentEnergy - _consumptionPerAction));
                 SpawnBall();
             }
@@ -166,18 +167,18 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
 
         long currentTick = PowerTickManager.Instance.CurrentTickCount;
         float missingEnergy = Mathf.Max(0, _consumptionPerAction - CurrentEnergy);
-        
+
         int ticksRequiredToFill = Mathf.CeilToInt(missingEnergy / _inputTransferSpeed);
 
         long targetTick = currentTick;
         int distance = 0;
-        
+
         while (targetTick % _actionCadenceTicks != _tickOffset)
         {
             targetTick++;
             distance++;
         }
-        
+
         // If we missed this exact tick, target the next cycle
         if (distance == 0) distance = _actionCadenceTicks;
 
@@ -206,12 +207,33 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
             return;
         }
 
+        // Spawn to the right relative to the machine's rotation
+        Vector3 spawnPosition = transform.position + transform.right * (PhysicalRadius * 1.5f);
+
         // Logic handled through the pool manager
-        BallEntity newBall = BallPoolManager.Instance.SpawnBall(_redBallData, transform.position);
+        BallEntity newBall = BallPoolManager.Instance.SpawnBall(_redBallData, spawnPosition);
 
         if (newBall != null)
         {
-            newBall.GetComponent<Rigidbody2D>()?.AddForce(transform.right * _ejectionForce, ForceMode2D.Impulse);
+            if (PhysicsCollider != null && newBall.Collider != null)
+            {
+                // Ignore collision so the ball doesn't get stuck inside the machine
+                Physics2D.IgnoreCollision(PhysicsCollider, newBall.Collider, true);
+
+                // Re-enable collisions after a short delay (time to exit)
+                DOVirtual.DelayedCall(0.2f, () =>
+                {
+                    if (this != null && newBall != null && PhysicsCollider != null && newBall.Collider != null)
+                    {
+                        Physics2D.IgnoreCollision(PhysicsCollider, newBall.Collider, false);
+                    }
+                });
+            }
+
+            // Temporarily increase mass to easily push other balls out of the way during ejection
+            float massMultiplier = newBall.SetTemporaryHeavyMass(0.4f, 50f);
+
+            newBall.Rb?.AddForce(transform.right * (_ejectionForce * massMultiplier), ForceMode2D.Impulse);
         }
     }
 }

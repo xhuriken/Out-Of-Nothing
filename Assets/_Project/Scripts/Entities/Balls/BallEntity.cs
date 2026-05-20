@@ -21,6 +21,37 @@ public class BallEntity : MonoBehaviour, IDraggable
     [SerializeField] private float _dragForceMultiplier = 15f;
     [SerializeField] private float _maxDragSpeed = 30f;
 
+    [Header("Duplication Feel Settings (Mitosis)")]
+    [SerializeField, FoldoutGroup("Duplication Settings")]
+    [Tooltip("The duration of the initial preparation/elongation phase.")]
+    private float _prepDuration = 0.35f;
+
+    [SerializeField, FoldoutGroup("Duplication Settings")]
+    [Tooltip("The duration of the actual split/separation phase.")]
+    private float _splitDuration = 0.45f;
+
+
+    [SerializeField, FoldoutGroup("Duplication Settings")]
+    [Tooltip("The intensity of the preparatory vibration/shake effect before splitting.")]
+    private float _vibrationIntensity = 0.08f;
+
+    [SerializeField, FoldoutGroup("Duplication Settings")]
+    [Tooltip("The maximum visual stretch applied to the balls along the split axis.")]
+    private float _maxStretch = 1.4f;
+
+    [SerializeField, FoldoutGroup("Duplication Settings")]
+    [Tooltip("The minimum visual squash applied to the balls perpendicular to the split axis.")]
+    private float _minSquash = 0.6f;
+
+    [SerializeField, FoldoutGroup("Duplication Settings")]
+    [Tooltip("The parting impulse force applied immediately after the split concludes to restore natural momentum.")]
+    private float _partingImpulse = 4f;
+
+
+    [SerializeField, FoldoutGroup("Duplication Settings")]
+    [Tooltip("The ease function used for the scale recovery.")]
+    private Ease _scaleEase = Ease.OutElastic;
+
     private float _lastClickTime;
     private int _currentClickCount;
     private Rigidbody2D _rb;
@@ -72,10 +103,18 @@ public class BallEntity : MonoBehaviour, IDraggable
     public void Initialize(BallDataSO newData)
     {
         transform.localScale = Vector3.one;
+        transform.rotation = Quaternion.identity;
         _data = newData;
         _currentClickCount = 0;
         _lastClickTime = 0f;
         _isProcessing = false;
+
+        if (_rb != null)
+        {
+            _rb.bodyType = RigidbodyType2D.Dynamic;
+            _rb.linearVelocity = Vector2.zero;
+            _rb.angularVelocity = 0f;
+        }
 
         UpdateVisualsAndPhysics();
         _behavior?.Initialize(this);
@@ -155,25 +194,175 @@ public class BallEntity : MonoBehaviour, IDraggable
         if (_rb != null) _rb.gravityScale = 0f;
     }
 
-    private void OnEnable() => _behavior?.OnEnableBehavior(this);
-    private void OnDisable() => _behavior?.OnDisableBehavior(this);
-    private void OnDrawGizmos() => _behavior?.OnDrawGizmosBehavior(this);
-    private void OnValidate() => UpdateVisualsAndPhysics();
+    private void OnEnable()
+    {
+        _behavior?.OnEnableBehavior(this);
+    }
+
+    private void OnDisable()
+    {
+        DOTween.Kill(this);
+        transform.rotation = Quaternion.identity;
+        transform.localScale = Vector3.one;
+        if (_rb != null)
+        {
+            _rb.bodyType = RigidbodyType2D.Dynamic;
+            _rb.linearVelocity = Vector2.zero;
+            _rb.angularVelocity = 0f;
+        }
+        _isProcessing = false;
+
+        _behavior?.OnDisableBehavior(this);
+    }
+
+    private void OnDrawGizmos()
+    {
+        _behavior?.OnDrawGizmosBehavior(this);
+    }
+
+    private void OnValidate()
+    {
+        UpdateVisualsAndPhysics();
+    }
+
+    #endregion
+
+    #region Physics Modifiers
+
+    /// <summary>
+    /// Temporarily makes the ball heavier for a duration, so it pushes other balls easily.
+    /// Returns the mass multiplier applied, so callers can scale their impulses accordingly.
+    /// </summary>
+    public float SetTemporaryHeavyMass(float duration, float massMultiplier = 50f)
+    {
+        if (_rb == null) return 1f;
+        
+        float originalMass = _rb.mass;
+        _rb.mass = originalMass * massMultiplier;
+        
+        DOVirtual.DelayedCall(duration, () => 
+        {
+            if (this != null && _rb != null) _rb.mass = originalMass;
+        });
+
+        return massMultiplier;
+    }
 
     #endregion
 
     #region Default Performers
 
+    /// <summary>
+    /// Performs a high-fidelity mitosis-style duplication animation using DOTween.
+    /// During the division, the parent and child balls ignore collision between each other
+    /// but continue to interact physically with other dynamic objects.
+    /// </summary>
     public void PerformDefaultDuplicate()
     {
-        if (_isProcessing) return;
+        if (_isProcessing)
+        {
+            return;
+        }
+
+        // Kill active tweens on this object to prevent overlap conflicts
         DOTween.Kill(this);
         transform.localScale = Vector3.one;
-        _particlesDuplicate.Play();
-        BallEntity newBall = BallPoolManager.Instance.SpawnBall(_data, transform.position);
 
-        Vector2 ejectionDirection = Random.insideUnitCircle.normalized;
-        newBall.Rb.AddForce(ejectionDirection * 5f, ForceMode2D.Impulse);
+        // Choose a random split direction
+        Vector2 splitDirection = Random.insideUnitCircle.normalized;
+        float angle = Mathf.Atan2(splitDirection.y, splitDirection.x) * Mathf.Rad2Deg;
+
+        // Lock the parent's physics state and make it Kinematic so we can control its path
+        _isProcessing = true;
+        _rb.bodyType = RigidbodyType2D.Kinematic;
+        _rb.linearVelocity = Vector2.zero;
+        _rb.angularVelocity = 0f;
+
+        // Visual orientation: Align local X axis with split direction
+        transform.rotation = Quaternion.Euler(0f, 0f, angle);
+
+        // Define target squashed/stretched scales
+        Vector3 stretchedScale = new Vector3(_maxStretch, _minSquash, 1f);
+
+        // Sequence 1: Preparation (Elongate and shake/vibrate like a high-tension cell)
+        Sequence prepSeq = DOTween.Sequence();
+        prepSeq.SetTarget(this);
+
+        prepSeq.Append(transform.DOScale(stretchedScale, _prepDuration).SetEase(Ease.InQuad));
+        prepSeq.Join(transform.DOShakePosition(_prepDuration, _vibrationIntensity, 30, 90f, false, false));
+
+        prepSeq.OnComplete(() =>
+        {
+            // Spawn the child ball from the pool
+            BallEntity newBall = BallPoolManager.Instance.SpawnBall(_data, transform.position);
+            if (newBall == null)
+            {
+                // Fallback cleanup if spawn failed
+                ResetAfterDuplicate();
+                return;
+            }
+
+            // Play particles at the split point for juicy feedback
+            if (_particlesDuplicate != null)
+            {
+                _particlesDuplicate.Play();
+            }
+
+            // Set parent back to dynamic & active physics immediately
+            _isProcessing = false;
+            _rb.bodyType = RigidbodyType2D.Dynamic;
+            transform.rotation = Quaternion.identity;
+
+            // Set up child ball's initial duplicate state (Dynamic immediately, same scale as parent)
+            newBall.IsProcessing = false;
+            newBall.Rb.bodyType = RigidbodyType2D.Dynamic;
+            newBall.transform.rotation = Quaternion.identity;
+            newBall.transform.localScale = transform.localScale;
+
+            // Trigger child's particles too for symmetry
+            if (newBall._particlesDuplicate != null)
+            {
+                newBall._particlesDuplicate.Play();
+            }
+
+            // IGNORE collision only between specifically these two balls during the split flyout!
+            Physics2D.IgnoreCollision(_collider, newBall.Collider, true);
+
+            // Temporarily increase mass so they push other balls away easily during the split animation
+            float parentMassMult = this.SetTemporaryHeavyMass(_splitDuration, 50f);
+            float childMassMult = newBall.SetTemporaryHeavyMass(_splitDuration, 50f);
+
+            // Apply a single powerful parting impulse immediately to fly them apart naturally!
+            _passport.ApplyImpulse(splitDirection * (_partingImpulse * parentMassMult), PhysicsPriority.Behavior);
+            newBall.Passport.ApplyImpulse(-splitDirection * (_partingImpulse * childMassMult), PhysicsPriority.Behavior);
+
+            // Visual separation wobble: Tween their scale back to normal (1,1,1) with an elastic wobble
+            transform.DOScale(Vector3.one, _splitDuration).SetEase(_scaleEase);
+            newBall.transform.DOScale(Vector3.one, _splitDuration).SetEase(_scaleEase);
+
+            // Re-enable collisions between them after the split duration has elapsed
+            DOVirtual.DelayedCall(_splitDuration, () =>
+            {
+                if (this != null && newBall != null && _collider != null && newBall.Collider != null)
+                {
+                    Physics2D.IgnoreCollision(_collider, newBall.Collider, false);
+                }
+            });
+        });
+    }
+
+    /// <summary>
+    /// Safe fallback cleanup method to restore the ball state if duplication gets interrupted.
+    /// </summary>
+    private void ResetAfterDuplicate()
+    {
+        transform.rotation = Quaternion.identity;
+        transform.localScale = Vector3.one;
+        if (_rb != null)
+        {
+            _rb.bodyType = RigidbodyType2D.Dynamic;
+        }
+        _isProcessing = false;
     }
 
     public void PerformDefaultClick()

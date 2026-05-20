@@ -8,6 +8,25 @@
 5. **VÃ©rification Anti-Oubli** : Pas de rÃ©ponse finale sans log/todo.
 6. **LOGIQUE DE COMMIT** : NE JAMAIS commiter/pusher sans demande explicite de l'utilisateur.
 
+## [2026-05-20] - Mitosis Duplication Animation (High-Fidelity Feel)
+**Date** : 2026-05-20
+**Auteur** : Antigravity (AI)
+
+### 1. Mitosis-style Visuals & Physics Flow
+- **Problem**: The manual kinematic translation `DOMove` and complete stop at the end of the split path felt mechanical ("va pas", "sortie pas fluide") and caused a sudden stutter before the parting impulse.
+- **Solution**: Streamlined the mitosis animation flow to rely purely on natural physics for the separation phase:
+  - **Preparation Phase**: The parent ball locks its physics (`IsProcessing = true`, body type to kinematic) and rotates towards a random split direction. It then elongates along the split direction (`_maxStretch` / `_minSquash`) and vibrates (`DOShakePosition`) to convey high tension before splitting.
+  - **Cytokinesis/Split Phase**: A child ball is spawned from the pool, immediately inheriting the parent's scale and kinematic states.
+  - **Selective Collision Ignore**: Configured `Physics2D.IgnoreCollision` between the parent and child balls during the split flyout, preventing collision glitches during initial overlapping.
+  - **Natural Separation**: Both parent and child rigidbodies are restored to `Dynamic` immediately upon division. We apply a single powerful parting physical impulse (`_partingImpulse`) that shoots them apart seamlessly and pushes other dynamic balls away organically.
+  - **Organic Visual Wobble**: Standard DOTween scale tweens are applied to recover their scales back to circular `(1, 1, 1)` with a springy `Ease.OutElastic` overshoot, running in parallel with the natural physics flyout.
+  - **Delayed Pairwise Collision Restore**: Utilizing a `DOVirtual.DelayedCall(_splitDuration, ...)`, collisions between the parent and child are seamlessly re-enabled once they are safely separated.
+
+### 2. Inspector Tuning & Safety
+- **Tuning & Cleanliness**: Removed unused `_splitDistance` and `_splitEase` fields to maintain an elegant and warning-free codebase. Grouped the remaining 7 parameters inside a Sirenix Odin `FoldoutGroup` in `BallEntity.cs`.
+- **Pooling Resilience**: Overhauled `Initialize()` and `OnDisable()` in `BallEntity.cs` to fully reset scales, rotations, processing flags, and Rigidbody body types to ensure error-free recycled behavior in the object pools.
+- **Priority Collision Override**: Implemented a `SetTemporaryHeavyMass` logic in `BallEntity.cs`. During the mitosis splitting and materialisator spawning phases, balls temporarily increase their mass by a factor of 50. Their ejection impulses are scaled proportionally to preserve exact travel distances, allowing them to effortlessly push aside static or normal balls during animations without breaking intended physics behaviors.
+
 ---
 
 ## [Phase 4.B] - Hybridation Flux/Tick (FluiditÃ©)

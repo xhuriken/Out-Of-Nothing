@@ -61,6 +61,13 @@ MonoBehaviour:
   _isProcessing: 0
   _dragForceMultiplier: 15
   _maxDragSpeed: 30
+  _prepDuration: 0.35
+  _splitDuration: 0.45
+  _vibrationIntensity: 0.08
+  _maxStretch: 1.4
+  _minSquash: 0.6
+  _partingImpulse: 4
+  _scaleEase: 24
 --- !u!114 &8764687544595933431
 MonoBehaviour:
   m_ObjectHideFlags: 0
