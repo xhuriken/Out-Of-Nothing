@@ -162,7 +162,16 @@ public class BallEntity : MonoBehaviour, IDraggable
 
     public bool OnDragStart()
     {
-        if (_isProcessing || _isDuplicating) return false;
+        if (_isDuplicating) return false;
+
+        if (_isProcessing)
+        {
+            if (CraftingManager.Instance == null || !CraftingManager.Instance.IsCrafting || !CraftingManager.Instance.IsBallSelected(this))
+            {
+                return false;
+            }
+        }
+
         _isBeingDragged = true;
         //_rb.linearVelocity = Vector2.zero;
         _behavior?.OnDragStart(this);

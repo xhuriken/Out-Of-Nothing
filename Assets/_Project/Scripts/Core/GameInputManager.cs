@@ -137,7 +137,10 @@ public class GameInputManager : MonoBehaviour
     /// </summary>
     private void HandleClick()
     {
-        Vector2 mousePosition = _mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+        Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
+        if (float.IsNaN(mouseScreenPos.x) || float.IsNaN(mouseScreenPos.y)) return;
+
+        Vector2 mousePosition = _mainCamera.ScreenToWorldPoint(mouseScreenPos);
 
         // Single Raycast optimized by LayerMask
         RaycastHit2D hit = Physics2D.Raycast(mousePosition, Vector2.zero, 0f, _ballLayerMask);
@@ -154,7 +157,10 @@ public class GameInputManager : MonoBehaviour
     /// </summary>
     private Vector2 GetMouseWorldPosition()
     {
-        return _mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+        Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
+        if (float.IsNaN(mouseScreenPos.x) || float.IsNaN(mouseScreenPos.y)) return Vector2.zero;
+
+        return _mainCamera.ScreenToWorldPoint(mouseScreenPos);
     }
     #endregion
 

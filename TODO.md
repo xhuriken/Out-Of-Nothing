@@ -1,19 +1,17 @@
-# TODO - Ball Duplication Feeling Improvement (Mitosis Animation)
+# TODO - Crafting System Polish & Interaction Fixes
 
 ## 1. Feature Implementation
-- [x] Add customizable parameters for the mitosis animation in `BallEntity.cs` (grouped with Odin FoldoutGroup).
-- [x] Update `PerformDefaultDuplicate()` inside `BallEntity.cs` to execute the full high-fidelity mitosis animation.
-    - [x] Align parent to random split direction.
-    - [x] Play preparatory elongation and high-tension shake/vibration.
-    - [x] Spawn child ball with matching kinematic/rotation state.
-    - [x] Configure `Physics2D.IgnoreCollision` between the parent and child specifically.
-    - [x] Animate splitting separation path using Rigidbody2D DOMove (to push other balls aside).
-    - [x] Animate scale recovery back to standard with a juicy elastic ease.
-    - [x] Restore normal Dynamic physics, clear `IsProcessing`, reset rotation, and re-enable collisions.
-    - [x] Apply parting velocity impulse to restore organic drift.
-- [x] Add robust cleanup on `OnDisable()` and `Initialize()` in `BallEntity.cs` to prevent object pool recycling issues.
+- [x] Allow Drag & Drop on currently selected craft balls by relaxing the `_isProcessing` restriction in `BallEntity.OnDragStart`.
+- [x] Integrate `_additionalPreviewObject` support in `CraftingManager.cs` to mirror the appearance/disappearance lifecycle of the shadow preview.
+- [x] Fix determinism bug in cellular duplication by storing and restoring `Random.state` around the `NetworkServer` Gizmos inside `EnergyManager.cs`.
 
-## 2. Verification & Safety
+## 2. Bug Fixes
+- [x] Implement rigorous NaN checking on `Mouse.current.position.ReadValue()` across input/cursor scripts to prevent `ScreenToWorldPoint` frustum errors caused by the new Input System.
+- [x] Prevent `DOTween` sequence errors in `GameCursor.cs` by decoupling infinite vibration loops from sequenced tweens.
+- [x] Prevent `DOPunchScale` infinite growth bug when spam-clicking objects in `CraftingManager.cs` by safely executing `DOKill()` and reverting the scale before animation.
+- [x] Ensure `_additionalPreviewObject` prefabs are properly instantiated in `CraftingManager.Awake()` rather than directly altering asset data.
+
+## 3. Verification & Safety
 - [x] Compile the C# project using `dotnet build` to ensure 0 errors.
 - [x] Verify that all comments are in English.
 - [x] Update `DEVELOPMENT_LOG.md` with detailed records of the implemented feature and technical rationale.

@@ -198,6 +198,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 08965d79a10b3284eb2a5194734dac61, type: 2}
   _selectionDisc: {fileID: 2821934906754542836}
   _craftArcPrefab: {fileID: 6004525545580290278, guid: 6d8b757d0060c5243b5e805f23af1ff1, type: 3}
+  _additionalPreviewObject: {fileID: 2029357628371971576, guid: 8a8488248566b3142867ba51ae88bd13, type: 3}
   _craftAnimationDuration: 0.5
   _craftEase: 30
   _shadowAnimationDuration: 0.3

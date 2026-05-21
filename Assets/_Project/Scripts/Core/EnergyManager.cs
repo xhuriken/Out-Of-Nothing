@@ -375,6 +375,8 @@ public class EnergyManager : MonoBehaviour
     {
         if (_networks == null || _networks.Count == 0) return;
 
+        Random.State oldState = Random.state;
+
         foreach (EnergyNetwork network in _networks)
         {
             Random.InitState(network.GetHashCode());
@@ -395,6 +397,8 @@ public class EnergyManager : MonoBehaviour
                 }
             }
         }
+
+        Random.state = oldState;
     }
 
     private IEnergyNode GetDraggedNode()

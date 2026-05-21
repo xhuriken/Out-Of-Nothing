@@ -52,6 +52,7 @@ public class GameCursor : MonoBehaviour
     private Sequence _dragSequence;
     private Sequence _modeSwitchSequence;
     private Tween _rotationTween;
+    private Tween _craftShakeTween;
 
     private void Awake()
     {
@@ -98,6 +99,8 @@ public class GameCursor : MonoBehaviour
 
         // Get target world position based on mouse screen position
         Vector2 mouseScreenPosition = Mouse.current.position.ReadValue();
+        if (float.IsNaN(mouseScreenPosition.x) || float.IsNaN(mouseScreenPosition.y)) return;
+        
         Vector3 targetWorldPosition = _mainCamera.ScreenToWorldPoint(mouseScreenPosition);
         targetWorldPosition.z = 0f; // Keep it on the 2D plane
 
@@ -217,10 +220,13 @@ public class GameCursor : MonoBehaviour
                 if (isDragging)
                 {
                     _dragSequence.Join(_craftRoot.transform.DOLocalRotate(new Vector3(0, 0, 20f), 0.2f).SetEase(Ease.OutQuad));
-                    _dragSequence.Join(_craftRoot.transform.DOShakePosition(1000f, 0.03f, 20, 90, false, false).SetLoops(-1));
+                    _craftShakeTween?.Kill();
+                    _craftShakeTween = _craftRoot.transform.DOShakePosition(1f, 0.03f, 20, 90, false, false).SetLoops(-1);
                 }
                 else
                 {
+                    _craftShakeTween?.Kill();
+                    _craftRoot.transform.localPosition = Vector3.zero;
                     _dragSequence.Join(_craftRoot.transform.DOLocalRotate(Vector3.zero, 0.2f).SetEase(Ease.OutBack));
                 }
             }

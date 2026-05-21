@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using UnityEngine;
+using System.Linq;
 using DG.Tweening;
 using Shapes;
 using Sirenix.OdinInspector;
-using System.Linq;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>
@@ -23,6 +23,7 @@ public class CraftingManager : MonoBehaviour
     [Header("Visuals")]
     [SerializeField] private Disc _selectionDisc;
     [SerializeField] private CraftArc _craftArcPrefab;
+    [SerializeField] private GameObject _additionalPreviewObject;
 
     [Header("Animations")]
     [SerializeField] private float _craftAnimationDuration = 0.8f;
@@ -43,8 +44,10 @@ public class CraftingManager : MonoBehaviour
     private CraftRecipeSO _currentMatchingRecipe;
     private Color _initialDiscColor;
     private Camera _mainCamera;
+    private GameObject _additionalPreviewInstance;
 
     public bool IsCrafting => _isCrafting;
+    public bool IsBallSelected(BallEntity ball) => _selectedBalls.Contains(ball);
 
     private void Awake()
     {
@@ -54,10 +57,17 @@ public class CraftingManager : MonoBehaviour
             return;
         }
         Instance = this;
-        
+
         _mainCamera = Camera.main;
         _initialDiscColor = _selectionDisc.Color;
         _selectionDisc.gameObject.SetActive(false);
+
+        if (_additionalPreviewObject != null)
+        {
+            // If it's a prefab, instantiate it. If it's a scene object, this will duplicate it, which is usually fine if it's meant to be a template.
+            _additionalPreviewInstance = Instantiate(_additionalPreviewObject, transform);
+            _additionalPreviewInstance.SetActive(false);
+        }
     }
 
     /// <summary>
@@ -73,13 +83,13 @@ public class CraftingManager : MonoBehaviour
     {
         if (_isCrafting) return;
         _isCrafting = true;
-        
+
         // Safety: unlock any balls that might be left over (e.g. from an interrupted FailCraft tween)
         foreach (var ball in _selectedBalls)
         {
             if (ball != null) ball.IsProcessing = false;
         }
-        
+
         _selectedBalls.Clear();
         _currentMatchingRecipe = null;
         GameCursor.Instance?.SetMode(CursorMode.Craft);
@@ -149,12 +159,14 @@ public class CraftingManager : MonoBehaviour
     {
         if (ball != null)
         {
+            ball.transform.DOKill();
+            ball.transform.localScale = Vector3.one;
             ball.transform.DOPunchScale(Vector3.one * -0.1f, 0.2f);
             ball.IsProcessing = false;
         }
         _selectedBalls.Remove(ball);
         CheckRecipes();
-        
+
         if (_selectedBalls.Count == 0)
         {
             ResetVisuals(false);
@@ -189,7 +201,7 @@ public class CraftingManager : MonoBehaviour
             _selectionDisc.gameObject.SetActive(true);
             _selectionDisc.Radius = 0;
             _selectionDisc.Color = _initialDiscColor;
-            
+
             DOTween.To(() => _selectionDisc.Radius, x => _selectionDisc.Radius = x, _maxRadius, _radiusGrowthDuration).SetEase(Ease.OutBack);
         }
         else
@@ -205,7 +217,9 @@ public class CraftingManager : MonoBehaviour
 
         _selectedBalls.Add(ball);
         ball.IsProcessing = true; // Prevents behaviors/clicks during craft
-        
+
+        ball.transform.DOKill();
+        ball.transform.localScale = Vector3.one;
         ball.transform.DOPunchScale(Vector3.one * 0.2f, 0.2f);
         CheckRecipes();
     }
@@ -229,7 +243,10 @@ public class CraftingManager : MonoBehaviour
 
     private BallEntity RaycastBall()
     {
-        Vector2 mousePos = _mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+        Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
+        if (float.IsNaN(mouseScreenPos.x) || float.IsNaN(mouseScreenPos.y)) return null;
+
+        Vector2 mousePos = _mainCamera.ScreenToWorldPoint(mouseScreenPos);
         RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero, 0f, _ballLayerMask);
         if (hit.collider != null)
         {
@@ -251,22 +268,35 @@ public class CraftingManager : MonoBehaviour
             if (_currentPreview == null || _currentPreview.name != _currentMatchingRecipe.shadowPrefab.name + "(Preview)")
             {
                 if (_currentPreview != null) DestroyPreview();
-                
+
                 _currentPreview = Instantiate(_currentMatchingRecipe.shadowPrefab);
                 _currentPreview.name = _currentMatchingRecipe.shadowPrefab.name + "(Preview)";
-                
+
                 // Appear animation
-                _currentPreview.transform.localScale = Vector3.zero;
-                _currentPreview.transform.DOScale(1.0f, _shadowAnimationDuration).SetEase(Ease.OutBack).OnComplete(() => {
+                _currentPreview.transform.DOScale(1.0f, _shadowAnimationDuration).SetEase(Ease.OutBack).OnComplete(() =>
+                {
                     if (_currentPreview != null)
                     {
                         // Subtle hover animation for the preview after appearing
                         _currentPreview.transform.DOScale(1.05f, 0.8f).SetLoops(-1, LoopType.Yoyo).SetEase(Ease.InOutSine);
                     }
                 });
+
+                if (_additionalPreviewInstance != null)
+                {
+                    _additionalPreviewInstance.SetActive(true);
+                    _additionalPreviewInstance.transform.DOKill();
+                    var temp = _additionalPreviewInstance.transform.localScale;
+                    _additionalPreviewInstance.transform.localScale = Vector3.zero;
+                    _additionalPreviewInstance.transform.DOScale(temp, _shadowAnimationDuration).SetEase(Ease.OutBack);
+                }
             }
             // Follow the selection disc (which is at the centroid)
             _currentPreview.transform.position = _selectionDisc.transform.position;
+            if (_additionalPreviewInstance != null)
+            {
+                _additionalPreviewInstance.transform.position = _selectionDisc.transform.position;
+            }
         }
         else
         {
@@ -282,9 +312,19 @@ public class CraftingManager : MonoBehaviour
         _currentPreview = null;
 
         previewToDestroy.transform.DOKill();
-        previewToDestroy.transform.DOScale(0, _shadowAnimationDuration).SetEase(Ease.InBack).OnComplete(() => {
+        previewToDestroy.transform.DOScale(0, _shadowAnimationDuration).SetEase(Ease.InBack).OnComplete(() =>
+        {
             if (previewToDestroy != null) Destroy(previewToDestroy);
         });
+
+        if (_additionalPreviewInstance != null)
+        {
+            _additionalPreviewInstance.transform.DOKill();
+            _additionalPreviewInstance.transform.DOScale(0, _shadowAnimationDuration).SetEase(Ease.InBack).OnComplete(() =>
+            {
+                _additionalPreviewInstance.SetActive(false);
+            });
+        }
     }
 
     private void UpdateLine()
@@ -303,7 +343,7 @@ public class CraftingManager : MonoBehaviour
         {
             bool isActive = i < neededLines;
             _activeLines[i].gameObject.SetActive(isActive);
-            
+
             if (isActive)
             {
                 BallEntity b1 = _selectedBalls[i];
@@ -325,7 +365,7 @@ public class CraftingManager : MonoBehaviour
 
         // Synchronized shrink animation
         DOTween.To(() => _selectionDisc.Radius, x => _selectionDisc.Radius = x, 0, _craftAnimationDuration).SetEase(_craftEase);
-        
+
         foreach (var ball in _selectedBalls)
         {
             ball.transform.DOMove(center, _craftAnimationDuration).SetEase(_craftEase);
@@ -333,9 +373,10 @@ public class CraftingManager : MonoBehaviour
         }
 
         // Final result spawn
-        DOVirtual.DelayedCall(_craftAnimationDuration, () => {
+        DOVirtual.DelayedCall(_craftAnimationDuration, () =>
+        {
             GameObject result = Instantiate(recipe.resultPrefab, center, Quaternion.identity);
-            
+
             // Bouncy spawn animation
             result.transform.localScale = Vector3.zero;
             result.transform.DOScale(1f, _resultSpawnDuration).SetEase(_resultSpawnEase);
@@ -354,7 +395,8 @@ public class CraftingManager : MonoBehaviour
         // Failure: Flash red and unlock balls
         DOTween.To(() => _selectionDisc.Color, x => _selectionDisc.Color = x, _failColor, 0.1f)
             .SetLoops(4, LoopType.Yoyo)
-            .OnComplete(() => {
+            .OnComplete(() =>
+            {
                 foreach (var ball in _selectedBalls) ball.IsProcessing = false;
                 ResetVisuals(false);
             });
@@ -374,7 +416,7 @@ public class CraftingManager : MonoBehaviour
                 .SetEase(Ease.InSine)
                 .OnComplete(() => _selectionDisc.gameObject.SetActive(false));
         }
-        
+
         // Safety: Ensure all balls are unlocked
         foreach (var ball in _selectedBalls)
         {
@@ -383,7 +425,7 @@ public class CraftingManager : MonoBehaviour
 
         ClearLines();
         DestroyPreview();
-        
+
         _selectedBalls.Clear();
         _currentMatchingRecipe = null;
     }

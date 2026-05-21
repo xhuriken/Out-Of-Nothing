@@ -32,19 +32,51 @@ public class BallJellyBounce : MonoBehaviour
     // Tracks the total intensity of all running additive sequences
     private float _activeIntensitySum = 0f;
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private Rigidbody2D _rb;
+    private Vector2 _lastVelocity;
+
+    private void Awake()
     {
-        if (Time.time - _lastCollisionTime < _collisionCooldown) return;
+        _rb = GetComponent<Rigidbody2D>();
+    }
 
-        float impact = collision.relativeVelocity.magnitude;
-        if (impact >= _minCollisionVelocity)
+    private void OnEnable()
+    {
+        if (_rb == null) _rb = GetComponent<Rigidbody2D>();
+        
+        // Reset last velocity to prevent false-positive impacts upon spawning from object pools
+        _lastVelocity = _rb.linearVelocity;
+    }
+
+    private void FixedUpdate()
+    {
+        // Calculate the change in velocity (delta V) to detect impacts and sudden forces
+        Vector2 currentVelocity = _rb.linearVelocity;
+        Vector2 velocityChange = currentVelocity - _lastVelocity;
+        
+        // Fast square magnitude comparison to avoid unnecessary square root operations
+        float impactSqr = velocityChange.sqrMagnitude;
+        float minSqrVelocity = _minCollisionVelocity * _minCollisionVelocity;
+
+        if (impactSqr >= minSqrVelocity)
         {
-            _lastCollisionTime = Time.time;
-
-            // TEST : Change this call to compare the Additive version and the Simple version
-            ApplyJellyBounceAdditive(impact, collision.GetContact(0).normal);
-            // ApplyJellyBounceSimple(impact, collision.GetContact(0).normal);
+            if (Time.time - _lastCollisionTime >= _collisionCooldown)
+            {
+                _lastCollisionTime = Time.time;
+                
+                float impact = Mathf.Sqrt(impactSqr);
+                
+                // The direction of the velocity change perfectly aligns with the force vector applied to the ball.
+                // We use this to correctly orient the squash animation.
+                Vector2 normal = velocityChange.normalized;
+                
+                // TEST : Change this call to compare the Additive version and the Simple version
+                ApplyJellyBounceAdditive(impact, normal);
+                // ApplyJellyBounceSimple(impact, normal);
+            }
         }
+
+        _lastVelocity = currentVelocity;
     }
 
     /// <summary>
