@@ -21,6 +21,7 @@ public class ElectricArc : MonoBehaviour
     private IEnergyNode _endNode;
     private float _nextUpdateTime;
     private bool _isPreview;
+    private bool _isActive;
 
     private void Awake()
     {
@@ -49,14 +50,22 @@ public class ElectricArc : MonoBehaviour
     {
         if (_startNode == null || _endNode == null) return;
 
-        // Update jittery geometry at a fixed visual rate
-        if (Time.time >= _nextUpdateTime)
+        UpdateVisualState();
+
+        // If the arc is active, update jittery geometry at a fixed visual rate.
+        // If the arc is inactive (flat), update every frame so the straight line tracks moving nodes smoothly without any jitter movement.
+        if (_isActive)
+        {
+            if (Time.time >= _nextUpdateTime)
+            {
+                UpdateArcGeometry();
+                _nextUpdateTime = Time.time + _updateFrequency;
+            }
+        }
+        else
         {
             UpdateArcGeometry();
-            _nextUpdateTime = Time.time + _updateFrequency;
         }
-
-        UpdateVisualState();
     }
 
     private void UpdateVisualState()
@@ -73,7 +82,8 @@ public class ElectricArc : MonoBehaviour
         // An arc is Active (Yellow) if it's part of a powered path and both ends are ready.
         // We removed !_isPreview to allow yellow balls to show active connections during drag.
         bool isActive = startPowered && endPowered && startReady && endReady;
-        
+        _isActive = isActive;
+
         Color targetColor = isActive ? _activeColor : _waitingColor;
 
         if (EnergyManager.Instance.EnableLogs && isActive)
@@ -92,11 +102,11 @@ public class ElectricArc : MonoBehaviour
 
         // 4. Apply final color with alpha
         targetColor.a *= alpha;
-        
+
         // Force update the LineRenderer properties
         _lineRenderer.startColor = targetColor;
         _lineRenderer.endColor = targetColor;
-        
+
         Gradient g = new Gradient();
         g.SetKeys(
             new GradientColorKey[] { new GradientColorKey(targetColor, 0.0f), new GradientColorKey(targetColor, 1.0f) },
@@ -110,7 +120,7 @@ public class ElectricArc : MonoBehaviour
         {
             // We use .material (not .sharedMaterial) to get a unique instance for this arc
             _lineRenderer.material.color = targetColor;
-            
+
             // Some particle shaders use _TintColor instead of _Color
             if (_lineRenderer.material.HasProperty("_TintColor"))
             {
@@ -127,7 +137,7 @@ public class ElectricArc : MonoBehaviour
         // Use the utility to find the anchor points on the visual edge (circle)
         Vector3 arcStart = EnergyCollisionUtility.GetAnchorPoint(_startNode, _endNode.Position);
         Vector3 arcEnd = EnergyCollisionUtility.GetAnchorPoint(_endNode, _startNode.Position);
-        
+
         float dist = Vector2.Distance(arcStart, arcEnd);
 
         for (int i = 0; i < _segmentCount; i++)
@@ -135,8 +145,8 @@ public class ElectricArc : MonoBehaviour
             float t = i / (float)(_segmentCount - 1);
             Vector3 targetPoint = Vector3.Lerp(arcStart, arcEnd, t);
 
-            // Keep endpoints locked to the hulls, jitter the middle
-            if (i > 0 && i < _segmentCount - 1)
+            // Keep endpoints locked to the hulls, jitter the middle only if the arc is active (carrying energy)
+            if (_isActive && i > 0 && i < _segmentCount - 1)
             {
                 Vector2 jitter = Random.insideUnitCircle * _jitterMagnitude;
                 targetPoint += (Vector3)jitter;

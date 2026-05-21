@@ -301,3 +301,18 @@
 - **Solution**: Updated the modulo wrap value to be a constant `1.0f`.
 - **Verification**: Solution compiled successfully via `dotnet build` with 0 errors, resulting in a perfectly smooth, seamless rotation.
 
+
+
+---
+
+## [2026-05-21] - Flat Motionless Inactive Energy Arcs
+**Date** : 2026-05-21
+**Author** : Antigravity (AI)
+
+### 1. Flat and Static Inactive Energy Arcs
+- **Problem**: When energy connections (`ElectricArc`) are inactive (grey), they continue to jitter and move, which makes them look alive/active and adds unnecessary visual noise and computation.
+- **Solution**: Refactored `ElectricArc.cs` to add a private state tracker `_isActive`.
+  - **Jitter Control**: Inside `UpdateArcGeometry()`, random offset jitter is only added to the segments when `_isActive` is true.
+  - **Dynamic Tracking & Optimization**: Inside `LateUpdate()`, when active, the jitter geometry updates at a fixed `_updateFrequency` rate to maintain the electricity effect. When inactive, it updates on every frame so the completely flat, straight grey line tracks moving nodes/balls smoothly without any stutter or lag, but since there is no jitter, the line remains visually motionless relative to the nodes.
+- **Verification**: Solution compiled successfully via `dotnet build` with 0 errors.
+
