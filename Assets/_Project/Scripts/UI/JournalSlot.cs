@@ -1,52 +1,59 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
+using UnityEngine.EventSystems; // INDISPENSABLE pour le clic et le survol
 using DG.Tweening;
 
-public class JournalSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class JournalSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     [Header("Structure")]
     public Transform previewContainer;
     public Image questionMarkImage;
 
-    [Header("Animations Survol (Hover) du SLOT")]
+    [Header("Animations Survol (Hover)")]
     public float hoverScale = 1.15f;
     public float hoverDuration = 0.2f;
     public Ease hoverEase = Ease.OutBack;
 
     private GameObject currentPreview;
     private Vector3 originalSlotScale;
-
-    // --- CORRECTION : ÉCHELLE DE PRÉVISUALISATION ---
-    // On force l'échelle cible de la prévisualisation à (1,1,1) au repos.
     private readonly Vector3 targetPreviewScale = Vector3.one;
+
+    // Sauvegarde locale des données de ce slot
+    private ItemData itemData;
+    private JournalManager manager;
 
     private void Awake()
     {
-        // On sauvegarde l'échelle d'origine de ton SLOT parent (habituellement 1,1,1)
         originalSlotScale = transform.localScale;
     }
 
-    public void Setup(ItemData data)
+    // On passe maintenant le manager en paramètre pour pouvoir l'avertir du clic
+    public void Setup(ItemData data, JournalManager journalManager)
     {
-        // Nettoyage avant réutilisation
+        itemData = data;
+        manager = journalManager;
+
         if (currentPreview != null) Destroy(currentPreview);
 
         if (data.previewPrefab != null)
         {
-            currentPreview = Instantiate(data.previewPrefab, previewContainer);
+            // On utilise ", false" ici aussi pour que l'instanciation respecte le prefab
+            currentPreview = Instantiate(data.previewPrefab, previewContainer, false);
             RectTransform previewRt = currentPreview.GetComponent<RectTransform>();
             if (previewRt != null)
             {
                 previewRt.anchoredPosition = Vector2.zero;
-                // --- CORRECTION ---
-                // On force l'échelle initiale à 1 pour être sûr que la prévisualisation
-                // est visible dès l'instanciation.
-                previewRt.localScale = targetPreviewScale;
+
+                // --- LA CORRECTION EST ICI ---
+                // Au lieu d'imposer Vector3.one, on va lire l'échelle configurée sur ton PREFAB visuel
+                Vector3 originalPrefabScale = data.previewPrefab.transform.localScale;
+
+                // On applique cette échelle d'origine pour que le visuel garde sa vraie taille dans le slot
+                previewRt.localScale = originalPrefabScale;
             }
         }
 
-        // --- GESTION DES ÉTATS ---
+        // Gestion des états (Débloqué / Bloqué)
         if (data.isUnlocked)
         {
             if (currentPreview != null) currentPreview.SetActive(true);
@@ -58,8 +65,7 @@ public class JournalSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
             questionMarkImage.gameObject.SetActive(true);
         }
 
-        // --- ANIMATION D'APPARITION (Pop-in) DU SLOT ---
-        // Le slot parent grandit, la prévisualisation reste fixe à sa taille cible
+        // Animation d'apparition du slot
         transform.localScale = Vector3.zero;
         transform.DOKill();
         transform.DOScale(originalSlotScale, 0.4f)
@@ -67,28 +73,43 @@ public class JournalSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
             .SetDelay(Random.Range(0f, 0.15f));
     }
 
-    // --- DETECTION SOURIS : ENTRÉE ---
-    public void OnPointerEnter(PointerEventData eventData)
+    // --- DETECTION DU CLIC ---
+    public void OnPointerClick(PointerEventData eventData)
     {
-        transform.DOKill();
-        // Grossissement du SLOT (pas de la prévisualisation)
-        transform.DOScale(originalSlotScale * hoverScale, hoverDuration).SetEase(hoverEase);
+        // On n'autorise le clic que si l'objet est débloqué !
+        if (itemData != null && itemData.isUnlocked && manager != null)
+        {
+            // Petit effet visuel de "pression" au clic
+            transform.DOScale(originalSlotScale * 0.9f, 0.1f).OnComplete(() =>
+            {
+                transform.DOScale(originalSlotScale * hoverScale, 0.1f);
+            });
 
-     
+            // On envoie les données de cet objet au manager du journal
+            manager.SelectItem(itemData);
+        }
     }
 
-    // --- DETECTION SOURIS : SORTIE ---
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (itemData != null && !itemData.isUnlocked) return; // Pas de survol si bloqué
+
+        transform.DOKill();
+        transform.DOScale(originalSlotScale * hoverScale, hoverDuration).SetEase(hoverEase);
+
+       
+    }
+
     public void OnPointerExit(PointerEventData eventData)
     {
         transform.DOKill();
-        // Le SLOT reprend sa taille d'origine
         transform.DOScale(originalSlotScale, hoverDuration).SetEase(Ease.OutCubic);
 
+       
     }
 
     private void OnDisable()
     {
-        // Sécurité DOTween
         transform.DOKill();
         if (currentPreview != null) currentPreview.transform.DOKill();
     }

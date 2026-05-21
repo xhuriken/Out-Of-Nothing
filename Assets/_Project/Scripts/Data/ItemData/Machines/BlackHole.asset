@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: BlackHole
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Black Hole
+  description: 'The black hole sucks energy from the balls it eats to convert them
+    into Score, Nothing is hungry and must be fed. '
   previewPrefab: {fileID: 9221366279253860388, guid: 5e83e3ddc5a452043b6e9c2d4c4e486f, type: 3}
   isUnlocked: 1
   type: 1
+  craftRecipe: []

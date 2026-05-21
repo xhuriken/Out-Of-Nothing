@@ -53,6 +53,22 @@ public class MenuController : MonoBehaviour
     private Vector2 journal2ClosedPosition;
     private Vector2 journal2OpenPosition;
 
+    [Header("Animations Détails Clic")]
+    [Tooltip("La hauteur (Height) du Journal 2 quand il affiche uniquement le titre")]
+    public float journal2NormalHeight = 150f;
+    [Tooltip("La hauteur (Height) du Journal 2 quand il s'agrandit pour afficher les détails")]
+    public float journal2ExpandedHeight = 450f;
+    [Tooltip("Vitesse de la transition d'écrasement")]
+    public float detailAnimationDuration = 0.35f;
+
+    [Header("Slider Sync")]
+    [Tooltip("Le RectTransform de TOUT ton bloc slider (le trait + la boule)")]
+    public RectTransform journalSliderContainer;
+    [Tooltip("La position Y locale du slider quand le journal est normal")]
+    public float sliderNormalY = 300f;
+    [Tooltip("La position Y locale du slider quand le journal est écrasé (détails ouverts)")]
+    public float sliderExpandedY = 400f; // Ajuste cette valeur pour le faire remonter par rapport au panneau
+
     // Listes pour sauvegarder les positions d'origine locales de tes éléments d'UI
     private List<Vector2> originalSettingsPositions = new List<Vector2>();
     private List<Vector2> originalJournalPositions = new List<Vector2>();
@@ -103,6 +119,12 @@ public class MenuController : MonoBehaviour
                 if (cg != null) cg.alpha = 0f;
             }
         }
+
+        // Slider bg
+        if (journalSliderContainer != null)
+        {
+            journalSliderContainer.anchoredPosition = new Vector2(journalSliderContainer.anchoredPosition.x, sliderNormalY);
+        }
     }
 
     private void Update()
@@ -140,46 +162,38 @@ public class MenuController : MonoBehaviour
         float canvasHeight = canvasRect != null ? canvasRect.rect.height : Screen.height;
         float halfCanvasWidth = canvasWidth / 2f;
 
-        // --- MAIN MENU ---
+        // --- MAIN MENU & SETTINGS ---
         mainMenuClosedX = 0f;
         mainMenuOpenX = halfCanvasWidth;
-
-        // --- SETTINGS ---
         settingsClosedX = 0f;
         settingsOpenX = -halfCanvasWidth;
 
-        // --- JOURNAL RESPONSIVE (Ton code d'origine) ---
-        // 1. Calcul de la hauteur du Journal 1
-        float targetY = canvasHeight * 0.02f;
-
-        // 2. Calcul de la largeur/position horizontale :
+        // --- JOURNAL RESPONSIVE ---
         float menuPrincipalDroit = halfCanvasWidth + menuPanel.rect.width;
-        float journalDemiLargeur = journalPanel.rect.width / 2f;
+        float targetX = menuPrincipalDroit;
+        float largeurSurMesure = canvasWidth - targetX;
 
-        // Position X idéale pour que le Journal se cale juste à droite du menu principal
-        float targetX = menuPrincipalDroit + gapBetweenMenus + journalDemiLargeur;
+        // Application de la largeur
+        if (journalPanel != null) journalPanel.sizeDelta = new Vector2(largeurSurMesure, journalPanel.sizeDelta.y);
 
-        // Sécurité anti-débordement écran à droite :
-        if (targetX + journalDemiLargeur > canvasWidth)
-        {
-            // S'il n'y a pas assez de place à l'écran (ex: petit écran), on force le journal à coller au bord droit de l'écran
-            targetX = canvasWidth - journalDemiLargeur - 15f;
-        }
-
-        // Définition des vecteurs de position pour le JOURNAL 1 (Bas)
-        journalClosedPosition = new Vector2(targetX, -journalPanel.rect.height - 100f); // Caché sous l'écran
-        journalOpenPosition = new Vector2(targetX, targetY); // Position ouverte parfaite
-
-        // --- AJOUT AUTOMATIQUE DU JOURNAL 2 (Haut) ---
         if (journalPanel2 != null)
         {
-            // Il prend le même X pour être aligné au poil.
-            // Sa hauteur d'arrivée (Y) = la hauteur du Journal 1 + la hauteur du Journal 2 pour qu'ils se collent.
-            float targetY2 = targetY + journalPanel2.rect.height;
+            // Au départ, on force le Journal 2 à sa hauteur normale de titre
+            journalPanel2.sizeDelta = new Vector2(largeurSurMesure, journal2NormalHeight);
+        }
 
-            // Position cachée (au-dessus de l'écran)
+        // Positions cibles initiales (Quand aucun objet n'est cliqué)
+        float targetY1 = canvasHeight * journal1TargetHeightPercent;
+
+        journalClosedPosition = new Vector2(targetX, -journalPanel.rect.height - 100f);
+        journalOpenPosition = new Vector2(targetX, targetY1);
+
+        if (journalPanel2 != null)
+        {
+            // Le bas du Journal 2 touche le haut du Journal 1
+            float targetY2 = targetY1 + journal2NormalHeight;
+
             journal2ClosedPosition = new Vector2(targetX, canvasHeight + 100f);
-            // Position ouverte parfaite
             journal2OpenPosition = new Vector2(targetX, targetY2);
         }
     }
@@ -425,6 +439,59 @@ public class MenuController : MonoBehaviour
             isAnimatingJournal = false;
             onCompleteCallback?.Invoke();
         });
+    }
+
+    // Appelé quand on clique sur un item valide : le panneau du haut écrase celui du bas
+    public void AnimateJournalDetailsOpen()
+    {
+        if (journalPanel == null || journalPanel2 == null) return;
+
+        journalPanel.DOKill();
+        journalPanel2.DOKill();
+
+        RectTransform canvasRect = menuPanel.parent as RectTransform;
+        float canvasHeight = canvasRect != null ? canvasRect.rect.height : Screen.height;
+
+        // 1. Le Journal 1 (Bas) descend pour laisser de la place (on réduit sa hauteur d'arrivée)
+        float newY1 = canvasHeight * (journal1TargetHeightPercent - 0.28f);
+
+        // 2. Nouvelle taille élargie pour le Journal 2
+        Vector2 expandedSize = new Vector2(journalPanel2.sizeDelta.x, journal2ExpandedHeight);
+
+        float newY2 = journal2OpenPosition.y - (journal2ExpandedHeight - journal2NormalHeight);
+
+        // ANIMATION
+        Sequence crashSeq = DOTween.Sequence();
+        crashSeq.Append(journalPanel2.DOSizeDelta(expandedSize, detailAnimationDuration).SetEase(Ease.OutCubic));
+        crashSeq.Join(journalPanel2.DOAnchorPosY(newY2, detailAnimationDuration).SetEase(Ease.OutCubic));
+        crashSeq.Join(journalPanel.DOAnchorPosY(newY1, detailAnimationDuration).SetEase(Ease.OutCubic));
+
+        if (journalSliderContainer != null)
+        {
+            crashSeq.Join(journalSliderContainer.DOAnchorPosY(sliderExpandedY, detailAnimationDuration).SetEase(Ease.OutCubic));
+        }
+    }
+
+    // Appelé quand on change de catégorie ou reset : le panneau reprend sa taille de titre normale
+    public void AnimateJournalDetailsClose()
+    {
+        if (journalPanel == null || journalPanel2 == null) return;
+
+        journalPanel.DOKill();
+        journalPanel2.DOKill();
+
+        // On reprend les valeurs de base initiales
+        Vector2 normalSize = new Vector2(journalPanel2.sizeDelta.x, journal2NormalHeight);
+
+        Sequence resetSeq = DOTween.Sequence();
+        resetSeq.Append(journalPanel2.DOSizeDelta(normalSize, detailAnimationDuration).SetEase(Ease.OutCubic));
+        resetSeq.Join(journalPanel2.DOAnchorPosY(journal2OpenPosition.y, detailAnimationDuration).SetEase(Ease.OutCubic));
+        resetSeq.Join(journalPanel.DOAnchorPosY(journalOpenPosition.y, detailAnimationDuration).SetEase(Ease.OutCubic));
+
+        if (journalSliderContainer != null)
+        {
+            resetSeq.Join(journalSliderContainer.DOAnchorPosY(sliderNormalY, detailAnimationDuration).SetEase(Ease.OutCubic));
+        }
     }
 
     // --- BOUTONS ACTIONS STANDARDS ---

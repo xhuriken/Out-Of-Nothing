@@ -13,6 +13,11 @@ MonoBehaviour:
   m_Name: Bumper
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Bumper
+  description: The bumper makes the different balls bounce in the indicated direction.
   previewPrefab: {fileID: 8065190857723303819, guid: 10183712eb5e78346b9771ba5f803135, type: 3}
   isUnlocked: 1
   type: 1
+  craftRecipe:
+  - {fileID: 11400000, guid: 36a8a936e3ad6b544b387b6ecf0e1491, type: 2}
+  - {fileID: 11400000, guid: 36a8a936e3ad6b544b387b6ecf0e1491, type: 2}
+  - {fileID: 11400000, guid: 36a8a936e3ad6b544b387b6ecf0e1491, type: 2}

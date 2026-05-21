@@ -13,6 +13,15 @@ MonoBehaviour:
   m_Name: ClickMachine
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Click Machine
+  description: If a ball penetrates the click machine, it will be automatically clicked
+    once and returned to the opposite side.
   previewPrefab: {fileID: 4589521823684586251, guid: e6ee4d0716dfcb3469ec760734b67b13, type: 3}
   isUnlocked: 1
   type: 1
+  craftRecipe:
+  - {fileID: 11400000, guid: 36a8a936e3ad6b544b387b6ecf0e1491, type: 2}
+  - {fileID: 11400000, guid: 36a8a936e3ad6b544b387b6ecf0e1491, type: 2}
+  - {fileID: 11400000, guid: 36a8a936e3ad6b544b387b6ecf0e1491, type: 2}
+  - {fileID: 11400000, guid: fa34bfc01394a4241b60a8e7597e4c16, type: 2}
+  - {fileID: 11400000, guid: 41ffac2d752dda047a1e41d1fe4f68f2, type: 2}
+  - {fileID: 11400000, guid: 41ffac2d752dda047a1e41d1fe4f68f2, type: 2}

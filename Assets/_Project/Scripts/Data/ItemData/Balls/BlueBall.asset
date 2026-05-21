@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: BlueBall
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Blue Ball
+  description: 'The blue ball is a ball that oscillates from top to bottom; they
+    have an energy of 2. '
   previewPrefab: {fileID: 8102840107874242056, guid: 87f9064494643264a96c3bb90f3b8c11, type: 3}
   isUnlocked: 1
   type: 0
+  craftRecipe: []

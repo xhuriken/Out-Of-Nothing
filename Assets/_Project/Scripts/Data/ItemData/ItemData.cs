@@ -1,13 +1,24 @@
 using UnityEngine;
+using System.Collections.Generic;
 
-[CreateAssetMenu(fileName = "NewItem", menuName = "Journal/Item Data (Prefab)")]
+[CreateAssetMenu(fileName = "NewItem", menuName = "Journal/Item Data Complete")]
 public class ItemData : ScriptableObject
 {
-    public string itemName;
-    [Tooltip("Le prefab de prévisualisation de la boule ou machine (contenant les shapes)")]
-    public GameObject previewPrefab;  // Référence au prefab visuel
-    public bool isUnlocked;            // Est-ce que le joueur l'a débloquée ?
+    [Header("Informations de Base")]
+    public string itemName;           
+    [TextArea(3, 5)]
+    public string description;         
+
+    [Header("Visuel")]
+    [Tooltip("Le prefab de prévisualisation (contenant les shapes)")]
+    public GameObject previewPrefab;
+    public bool isUnlocked;            
 
     public enum ItemType { Ball, Machine }
-    public ItemType type;              // Permet de filtrer Boule ou Machine
+    [Header("Catégorie")]
+    public ItemType type;            
+
+    [Header("Recette de Craft (Machines Uniquement)")]
+    [Tooltip("Glisse ici les boules nécessaires pour crafter cette machine. Ex: si besoin d'1 rouge et 2 bleues, glisse la rouge 1 fois et la bleue 2 fois.")]
+    public List<ItemData> craftRecipe; 
 }

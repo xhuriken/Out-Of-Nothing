@@ -13,6 +13,15 @@ MonoBehaviour:
   m_Name: Piston Machine
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Piston Machine
+  description: 'If a ball enters the piston, and the latter is subjected to pressure,
+    the red ball will charge to become a yellow ball. '
   previewPrefab: {fileID: 1730482935677311700, guid: d4bd5ebec86478a45b765a96a0c3474f, type: 3}
   isUnlocked: 1
   type: 1
+  craftRecipe:
+  - {fileID: 11400000, guid: 36a8a936e3ad6b544b387b6ecf0e1491, type: 2}
+  - {fileID: 11400000, guid: 36a8a936e3ad6b544b387b6ecf0e1491, type: 2}
+  - {fileID: 11400000, guid: 9ae11642822e5e54e90d2714bc863be4, type: 2}
+  - {fileID: 11400000, guid: 9ae11642822e5e54e90d2714bc863be4, type: 2}
+  - {fileID: 11400000, guid: fa34bfc01394a4241b60a8e7597e4c16, type: 2}
+  - {fileID: 11400000, guid: fa34bfc01394a4241b60a8e7597e4c16, type: 2}
