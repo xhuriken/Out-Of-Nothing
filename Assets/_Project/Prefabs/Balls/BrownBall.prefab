@@ -4971,6 +4971,7 @@ MonoBehaviour:
   _particlesClick: {fileID: 5615446383186218333}
   _particlesDuplicate: {fileID: 7594083740277568431}
   _isProcessing: 0
+  _isDuplicating: 0
   _dragForceMultiplier: 15
   _maxDragSpeed: 30
   _prepDuration: 0.35

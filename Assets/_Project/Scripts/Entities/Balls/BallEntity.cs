@@ -16,6 +16,7 @@ public class BallEntity : MonoBehaviour, IDraggable
 
     [Header("States")]
     [SerializeField] private bool _isProcessing;
+    [SerializeField] private bool _isDuplicating;
 
     [Header("Settings")]
     [SerializeField] private float _dragForceMultiplier = 15f;
@@ -76,6 +77,12 @@ public class BallEntity : MonoBehaviour, IDraggable
         set => _isProcessing = value;
     }
 
+    public bool IsDuplicating
+    {
+        get => _isDuplicating;
+        set => _isDuplicating = value;
+    }
+
     public CircleCollider2D Collider => _collider;
 
     private void Awake()
@@ -108,6 +115,7 @@ public class BallEntity : MonoBehaviour, IDraggable
         _currentClickCount = 0;
         _lastClickTime = 0f;
         _isProcessing = false;
+        _isDuplicating = false;
 
         if (_rb != null)
         {
@@ -124,6 +132,7 @@ public class BallEntity : MonoBehaviour, IDraggable
 
     public void ReceiveClick()
     {
+        if (_isProcessing || _isDuplicating) return;
         if (Time.time - _lastClickTime < _data.clickCooldown) return;
 
         _lastClickTime = Time.time;
@@ -153,6 +162,7 @@ public class BallEntity : MonoBehaviour, IDraggable
 
     public bool OnDragStart()
     {
+        if (_isProcessing || _isDuplicating) return false;
         _isBeingDragged = true;
         //_rb.linearVelocity = Vector2.zero;
         _behavior?.OnDragStart(this);
@@ -211,6 +221,7 @@ public class BallEntity : MonoBehaviour, IDraggable
             _rb.angularVelocity = 0f;
         }
         _isProcessing = false;
+        _isDuplicating = false;
 
         _behavior?.OnDisableBehavior(this);
     }
@@ -236,11 +247,11 @@ public class BallEntity : MonoBehaviour, IDraggable
     public float SetTemporaryHeavyMass(float duration, float massMultiplier = 50f)
     {
         if (_rb == null) return 1f;
-        
+
         float originalMass = _rb.mass;
         _rb.mass = originalMass * massMultiplier;
-        
-        DOVirtual.DelayedCall(duration, () => 
+
+        DOVirtual.DelayedCall(duration, () =>
         {
             if (this != null && _rb != null) _rb.mass = originalMass;
         });
@@ -259,7 +270,7 @@ public class BallEntity : MonoBehaviour, IDraggable
     /// </summary>
     public void PerformDefaultDuplicate()
     {
-        if (_isProcessing)
+        if (_isProcessing || _isDuplicating)
         {
             return;
         }
@@ -274,6 +285,7 @@ public class BallEntity : MonoBehaviour, IDraggable
 
         // Lock the parent's physics state and make it Kinematic so we can control its path
         _isProcessing = true;
+        _isDuplicating = true;
         _rb.bodyType = RigidbodyType2D.Kinematic;
         _rb.linearVelocity = Vector2.zero;
         _rb.angularVelocity = 0f;
@@ -315,6 +327,7 @@ public class BallEntity : MonoBehaviour, IDraggable
 
             // Set up child ball's initial duplicate state (Dynamic immediately, same scale as parent)
             newBall.IsProcessing = false;
+            newBall.IsDuplicating = true;
             newBall.Rb.bodyType = RigidbodyType2D.Dynamic;
             newBall.transform.rotation = Quaternion.identity;
             newBall.transform.localScale = transform.localScale;
@@ -347,6 +360,9 @@ public class BallEntity : MonoBehaviour, IDraggable
                 {
                     Physics2D.IgnoreCollision(_collider, newBall.Collider, false);
                 }
+
+                if (this != null) _isDuplicating = false;
+                if (newBall != null) newBall.IsDuplicating = false;
             });
         });
     }
@@ -363,11 +379,12 @@ public class BallEntity : MonoBehaviour, IDraggable
             _rb.bodyType = RigidbodyType2D.Dynamic;
         }
         _isProcessing = false;
+        _isDuplicating = false;
     }
 
     public void PerformDefaultClick()
     {
-        if (_isProcessing) return;
+        if (_isProcessing || _isDuplicating) return;
         DOTween.Kill(this);
         transform.localScale = Vector3.one;
         this.transform.DOScale(Vector3.one * 0.90f, _data.clickCooldown)
