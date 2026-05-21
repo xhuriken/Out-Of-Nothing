@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6753528858497433259}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: PressMachine Journal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -50,7 +50,7 @@ GameObject:
   - component: {fileID: 2299777887410251630}
   - component: {fileID: 4603509525737791082}
   - component: {fileID: 4432157258994284226}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Border
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -197,7 +197,7 @@ GameObject:
   - component: {fileID: 7239452705625542250}
   - component: {fileID: 3380992758473119023}
   - component: {fileID: 9026342762344426871}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Line 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -332,7 +332,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5197827697066645666}
   - component: {fileID: 6342620919505352140}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: CENTER
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -410,7 +410,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6958810726082563325}
   - component: {fileID: 5499173072244340814}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Box
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -495,7 +495,7 @@ GameObject:
   - component: {fileID: 7452059081871332393}
   - component: {fileID: 5353270143387789043}
   - component: {fileID: 2072574819933390652}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -642,7 +642,7 @@ GameObject:
   - component: {fileID: 9195976161266707877}
   - component: {fileID: 7776625218431511192}
   - component: {fileID: 413419212009961858}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Background 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -786,7 +786,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5331771546379192988}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Piston
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -822,7 +822,7 @@ GameObject:
   - component: {fileID: 6442780735110641199}
   - component: {fileID: 7035862612849685000}
   - component: {fileID: 6698550018489375999}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Line
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -960,7 +960,7 @@ GameObject:
   - component: {fileID: 5571528580903026343}
   - component: {fileID: 5777057006533491977}
   - component: {fileID: 2075870535656120440}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Border 2 (Collide)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1150,7 +1150,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 328565692847186953}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: SpawnPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}

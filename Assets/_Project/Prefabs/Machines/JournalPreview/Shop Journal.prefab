@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7715260171487244690}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: ShopOverlay
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 132204086896923972}
   - component: {fileID: 9086938417430734900}
   - component: {fileID: 6919626776911513082}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Shop Journal
   m_TagString: Untagged
   m_Icon: {fileID: 0}

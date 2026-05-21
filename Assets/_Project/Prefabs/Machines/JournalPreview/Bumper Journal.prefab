@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6449320486052854787}
   - component: {fileID: 3037675851949336780}
   - component: {fileID: 1104273246643120935}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: GameObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -151,7 +151,7 @@ GameObject:
   - component: {fileID: 4978377436023179200}
   - component: {fileID: 7042909956045148190}
   - component: {fileID: 3727711737427000035}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Bumper Journal
   m_TagString: Bumper
   m_Icon: {fileID: 0}

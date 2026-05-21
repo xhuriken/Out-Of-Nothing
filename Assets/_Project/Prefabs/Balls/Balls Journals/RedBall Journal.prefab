@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8350127890622362483}
   - component: {fileID: 259985147718235472}
   - component: {fileID: 3992846059025626848}
-  m_Layer: 8
+  m_Layer: 5
   m_Name: RedBall Journal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -201,6 +201,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: DupliParticles
       objectReference: {fileID: 0}
+    - target: {fileID: 3232490725976299082, guid: 5d798610b1b1fec41b7567fcfe2efe21, type: 3}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -262,6 +266,10 @@ PrefabInstance:
     - target: {fileID: 3232490725976299082, guid: 9b9e5d14bba85694f8f299d41a7458b7, type: 3}
       propertyPath: m_Name
       value: ClickParticles
+      objectReference: {fileID: 0}
+    - target: {fileID: 3232490725976299082, guid: 9b9e5d14bba85694f8f299d41a7458b7, type: 3}
+      propertyPath: m_Layer
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7178735456168420508}
   - component: {fileID: 7468071347812601969}
   - component: {fileID: 6902299436051526885}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: DupliParticles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4923,7 +4923,7 @@ GameObject:
   - component: {fileID: 71177951579736577}
   - component: {fileID: 954465647110660536}
   - component: {fileID: 1206159395233903488}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: ClickParticles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9836,7 +9836,7 @@ GameObject:
   - component: {fileID: 5330374845719149733}
   - component: {fileID: 1096363715618542664}
   - component: {fileID: 1528296007120055880}
-  m_Layer: 8
+  m_Layer: 5
   m_Name: YellowBall Journal
   m_TagString: Untagged
   m_Icon: {fileID: 0}

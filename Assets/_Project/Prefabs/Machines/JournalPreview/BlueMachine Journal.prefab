@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7255923068213321961}
   - component: {fileID: 4099638551452756488}
   - component: {fileID: 6605996442971662583}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: electricPoint (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -155,7 +155,7 @@ GameObject:
   - component: {fileID: 4552546385470492001}
   - component: {fileID: 5598143228085024490}
   - component: {fileID: 6890314670773125176}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: electricPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -298,7 +298,7 @@ GameObject:
   - component: {fileID: 5834250306224800188}
   - component: {fileID: 3688662112727617130}
   - component: {fileID: 455816828168167466}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: bordure
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -447,7 +447,7 @@ GameObject:
   - component: {fileID: 4640339440903199956}
   - component: {fileID: 2913047344497123561}
   - component: {fileID: 6363514544232905378}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: electricPoint (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -590,7 +590,7 @@ GameObject:
   - component: {fileID: 6525145989143893280}
   - component: {fileID: 2492424866939613827}
   - component: {fileID: 3655844859561606501}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: electricPoint (7)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -730,7 +730,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3083872993549754853}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: EP
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -772,7 +772,7 @@ GameObject:
   - component: {fileID: 6160913635648370792}
   - component: {fileID: 3372457479193411174}
   - component: {fileID: 4110079785854549435}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: electricPoint (6)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -915,7 +915,7 @@ GameObject:
   - component: {fileID: 375235001899348443}
   - component: {fileID: 5281631180390506470}
   - component: {fileID: 7531304468370860896}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: electricPoint (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1056,7 +1056,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5525409712858445243}
   - component: {fileID: 5041967679299890306}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: CheckObjects
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1123,7 +1123,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4232308194595418205}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: BlueMachine Journal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1164,7 +1164,7 @@ GameObject:
   - component: {fileID: 862521187583810405}
   - component: {fileID: 4740880215049800167}
   - component: {fileID: 4421108567958388588}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: electricPoint (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1307,7 +1307,7 @@ GameObject:
   - component: {fileID: 2887602167888161294}
   - component: {fileID: 7912860185047892673}
   - component: {fileID: 4154057010872958647}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: electricPoint (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

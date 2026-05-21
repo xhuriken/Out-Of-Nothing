@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7035730627241614369}
   - component: {fileID: 7594083740277568431}
   - component: {fileID: 5472036897126869595}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: DupliParticles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4924,7 +4924,7 @@ GameObject:
   - component: {fileID: 1335927095737727768}
   - component: {fileID: 5889817393111906894}
   - component: {fileID: 7478001344719702401}
-  m_Layer: 8
+  m_Layer: 5
   m_Name: BrownBall Journal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5072,7 +5072,7 @@ GameObject:
   - component: {fileID: 5278018842592126923}
   - component: {fileID: 5615446383186218333}
   - component: {fileID: 9136766774489651988}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: ClickParticles
   m_TagString: Untagged
   m_Icon: {fileID: 0}

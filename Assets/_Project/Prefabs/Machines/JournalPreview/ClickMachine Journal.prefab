@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6033427864317067302}
   - component: {fileID: 2552600518749089057}
   - component: {fileID: 5648069591304651140}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Finger2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -147,7 +147,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2247716957385760170}
   - component: {fileID: 6251983059893887632}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: CheckObjects
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -227,7 +227,7 @@ GameObject:
   - component: {fileID: 193035743520962345}
   - component: {fileID: 1601403823657128666}
   - component: {fileID: 8047919800335448776}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Finger3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -364,7 +364,7 @@ GameObject:
   - component: {fileID: 7913830748751973760}
   - component: {fileID: 5917669134795829307}
   - component: {fileID: 7239443097085471456}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Clicker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -515,7 +515,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7785925946710398125}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: ClickMachine Journal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -556,7 +556,7 @@ GameObject:
   - component: {fileID: 6959296757235203745}
   - component: {fileID: 418238801207962789}
   - component: {fileID: 721409716313631879}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Finger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -695,7 +695,7 @@ GameObject:
   - component: {fileID: 3708038937449589828}
   - component: {fileID: 121682346883762771}
   - component: {fileID: 6920234380529371872}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Bordure
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -934,7 +934,7 @@ GameObject:
   - component: {fileID: 5255386585931575376}
   - component: {fileID: 4411725146547961109}
   - component: {fileID: 4712212624362050406}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Finger4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1083,7 +1083,7 @@ GameObject:
   - component: {fileID: 5514608736187077156}
   - component: {fileID: 4581324346536554053}
   - component: {fileID: 1605046278255548040}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Finger1
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8911191992119242720}
   - component: {fileID: 4798243166942148137}
   - component: {fileID: 6611597540536505817}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -159,7 +159,7 @@ GameObject:
   - component: {fileID: 4791708825255570684}
   - component: {fileID: 828865609816382323}
   - component: {fileID: 5903021295011183066}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Line 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -296,7 +296,7 @@ GameObject:
   - component: {fileID: 1654939169462969895}
   - component: {fileID: 209227765703091564}
   - component: {fileID: 8182948980985783798}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Line 4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -430,7 +430,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8156435164421495698}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: PistonMachine Journal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -468,7 +468,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6494625256538357422}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: CENTER
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -502,7 +502,7 @@ GameObject:
   - component: {fileID: 5078612228639254968}
   - component: {fileID: 2245055945601633262}
   - component: {fileID: 5389673784134202760}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Background 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -649,7 +649,7 @@ GameObject:
   - component: {fileID: 5680625984719176810}
   - component: {fileID: 1164758798818091915}
   - component: {fileID: 3981101147038785023}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Line
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -786,7 +786,7 @@ GameObject:
   - component: {fileID: 5553991782838927378}
   - component: {fileID: 3573905233636313154}
   - component: {fileID: 3998846637546555961}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Line 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -920,7 +920,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8223896438352699379}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: SpawnPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -955,7 +955,7 @@ GameObject:
   - component: {fileID: 4626934663271416539}
   - component: {fileID: 8718419949310460609}
   - component: {fileID: 69605892151487023}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Border 2 (Collide)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1148,7 +1148,7 @@ GameObject:
   - component: {fileID: 3788464383678862262}
   - component: {fileID: 5686286875952500454}
   - component: {fileID: 8791696323196614060}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Line
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1282,7 +1282,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 701731395460741503}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Piston
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1317,7 +1317,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1732898657390098713}
   - component: {fileID: 146427576839010988}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Box
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1404,7 +1404,7 @@ GameObject:
   - component: {fileID: 3853168901383354844}
   - component: {fileID: 8891039860898593243}
   - component: {fileID: 7787458035369400341}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Border
   m_TagString: Untagged
   m_Icon: {fileID: 0}
