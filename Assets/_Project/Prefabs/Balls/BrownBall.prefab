@@ -5071,7 +5071,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ShapesRuntime::Shapes.Disc
   blendMode: 1
   scaleMode: 0
-  color: {r: 0.36188677, g: 0.085007735, b: 0, a: 0.7}
+  color: {r: 0.58773583, g: 0.29574502, b: 0, a: 0.7}
   detailLevel: 2
   culling: 0
   boundsPadding: 0
@@ -5087,9 +5087,9 @@ MonoBehaviour:
   stencilWriteMask: 255
   type: 2
   colorMode: 1
-  colorOuterStart: {r: 0.5169811, g: 0.12143962, b: 0, a: 1}
-  colorInnerEnd: {r: 0.36188677, g: 0.085007735, b: 0, a: 0.7}
-  colorOuterEnd: {r: 0.5169811, g: 0.12143962, b: 0, a: 1}
+  colorOuterStart: {r: 0.8396226, g: 0.4224929, b: 0, a: 1}
+  colorInnerEnd: {r: 0.58773583, g: 0.29574502, b: 0, a: 0.7}
+  colorOuterEnd: {r: 0.8396226, g: 0.4224929, b: 0, a: 1}
   geometry: 0
   angUnitInput: 1
   angRadiansStart: 0
