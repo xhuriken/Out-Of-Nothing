@@ -468,8 +468,8 @@ MonoBehaviour:
   detailLevel: 2
   culling: 0
   boundsPadding: 0
-  renderQueue: 0
-  zTest: 4
+  renderQueue: -1
+  zTest: 6
   zOffsetFactor: 0
   zOffsetUnits: 0
   colorMask: 15
@@ -560,7 +560,7 @@ MeshRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -7
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &2280696759751902212
@@ -818,8 +818,8 @@ MonoBehaviour:
   detailLevel: 2
   culling: 0
   boundsPadding: 0
-  renderQueue: 0
-  zTest: 4
+  renderQueue: -1
+  zTest: 6
   zOffsetFactor: 0
   zOffsetUnits: 0
   colorMask: 15
@@ -910,7 +910,7 @@ MeshRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -7
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &4271392304867058712
@@ -1275,7 +1275,7 @@ MonoBehaviour:
     snap: 1
     size: 20
     spacing: 1
-    offset: 0.0043887505
+    offset: 0.0057172477
     shapeModifier: 1
   fill:
     type: 0
