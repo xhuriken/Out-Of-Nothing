@@ -233,3 +233,71 @@
  -   * * N a N   I n p u t   H a n d l e r s * * :   P a t c h e d   t h e   I n p u t   S y s t e m   M o u s e . c u r r e n t . p o s i t i o n . R e a d V a l u e ( )   y i e l d i n g   N a N   s t a t e s   i n   U n i t y   E d i t o r ,   e f f e c t i v e l y   b l o c k i n g   a l l   m a t r i x   c a l c u l a t i o n   c r a s h e s   o r i g i n a t i n g   f r o m   S c r e e n T o W o r l d P o i n t . 
  -   * * D O T w e e n   P r o t e c t i o n s * * :   E x t r a c t e d   . S e t L o o p s ( - 1 )   o u t   f r o m   S e q u e n c e   . J o i n   e x t e n s i o n s   t o   c o r r e c t   a n   i n f i n i t e   l o o p   c r a s h   i n   G a m e C u r s o r ,   a n d   s u p p l e m e n t e d   C r a f t i n g M a n a g e r   s e l e c t i o n   r o u t i n e s   w i t h   a   D O K i l l ( )   t o   p r e v e n t   a d d i t i v e   D O P u n c h S c a l e   o v e r l a p   w h e n   s p a m   c l i c k i n g .  
  
+
+---
+
+## [2026-05-21] - Infinite Rotate Dash Animation Component
+**Date** : 2026-05-21
+**Author** : Antigravity (AI)
+
+### 1. Infinite Dash Offset Animation
+- **Problem**: Needed a robust and infinite rotation/dash visual effect for Shapes Disc components that resets cleanly to prevent floating-point precision issues over long gameplay sessions.
+- **Solution**: Implemented `InfiniteRotate.cs` referencing `Shapes.Disc` (with `GetComponent<Disc>()` fallback if unassigned) to continuously shift `DashOffset` in `Update`.
+- **Wrapping Mechanism**: Calculated the exact dash period as the sum of `DashSize` and `DashSpacing`. Used the modulo operator `%` to wrap `_currentDashOffset` within this period, properly handling negative speeds to maintain a positive wrapping boundary, keeping the visual movement seamless and infinite.
+- **Verification**: Verified zero errors across the entire Unity C# solution compiling via `dotnet build`.
+
+
+
+---
+
+## [2026-05-21] - Crafting Ball Selection Visual Feedback
+**Date** : 2026-05-21
+**Author** : Antigravity (AI)
+
+### 1. Selection Visual Feedback Prefab
+- **Problem**: Needed high-fidelity visual feedback (spawning a custom visual prefab) when selecting balls in Craft mode, which follows them dynamically and vanishes cleanly with DOTween animations on deselection or cancel.
+- **Solution**: Added `_ballSelectionFeedbackPrefab` and `_selectionFeedbackAnimationDuration` settings to `CraftingManager.cs`.
+- **Life Cycle & Tracking**: Implemented a `_selectionFeedbacks` dictionary to map `BallEntity` to their visual feedback instance.
+  - **SelectBall**: Instantiates the feedback prefab at the ball's position and triggers a quick and snappy `DOScale` spawn animation (`0.15s` OutBack).
+  - **DeselectBall**: Animates the scale back to zero (`0.15s` InBack) and safely destroys the feedback instance.
+  - **Update**: Continuously updates active feedback positions to follow their respective target balls.
+  - **ExecuteCraft / ResetVisuals**: Snaps all feedback scales to zero and clears the tracking dictionary during cleanup or transitions.
+- **Verification**: Solution compiled successfully via `dotnet build` with 0 errors.
+
+
+
+---
+
+## [2026-05-21] - Snappy Spawn/Despawn CraftArc Animations
+**Date** : 2026-05-21
+**Author** : Antigravity (AI)
+
+### 1. Endpoint Growth Spawn & Despawn Animations
+- **Problem**: The crafting arcs previously enabled/disabled instantly without visual feedback, which felt mechanical. Desired a fluid animation where the line endpoints slide out from the midpoint between the two balls during spawn, and shrink back to the center on despawn.
+- **Solution**: Refactored `CraftArc.cs` to introduce `_animProgress` (0 to 1) controlled by DOTween.
+  - **Setup**: Plays a snappy `0.25s` `OutQuad` scale-up animation of `_animProgress`.
+  - **Despawn**: Plays a snappy `0.20s` `InQuad` scale-down animation of `_animProgress` and self-destructs the GameObject on complete.
+  - **UpdateGeometry**: Interpolates start and end vertices outward from the dynamic midpoint based on `_animProgress`. It also scales the `LineRenderer.widthMultiplier` and the jitter magnitude proportionally, resulting in a beautiful growing/shrinking effect.
+  - **Safety Fallback**: Stores last known positions of start/end balls, allowing the lines to continue playing their shrink-back animations cleanly even if the parent ball is released/destroyed immediately.
+
+### 2. Dynamic Line Instantiation Management
+- **Problem**: The static pooling system in `CraftingManager.cs` instantly enabled/disabled line GameObjects, preventing despawn animations from playing fully.
+- **Solution**: Overhauled `UpdateLine` and `ClearLines` to utilize dynamic instantiation and self-destructing despawns:
+  - **UpdateLine**: Compares currently active lines with desired selected ball pairs. Retains matching lines, initiates `Despawn()` on discarded lines, and instantiates/setups new lines.
+  - **ClearLines**: Triggers `Despawn()` on all active lines so they slide back and vanish organically.
+- **Verification**: Solution compiled successfully via `dotnet build` with 0 errors.
+
+
+
+---
+
+## [2026-05-21] - Fix InfiniteRotate Dash Offset Reset Seam
+**Date** : 2026-05-21
+**Author** : Antigravity (AI)
+
+### 1. Normalized Dash Offset Wrapping
+- **Problem**: In `InfiniteRotate.cs`, calculating the period as `_disc.DashSize + _disc.DashSpacing` to modulo `_currentDashOffset` created a severe visual cut or seam upon wrap.
+- **Root Cause Analysis**: In the Shapes library, `DashOffset` values are already normalized in period units where `1.0f` represents exactly one full dash period (one dash + one spacing), regardless of physical dimensions or dash space mode (meters, relative, fixed). Thus, modulo wrapping at `_disc.DashSize + _disc.DashSpacing` reset the animation mid-dash, causing visual jumps.
+- **Solution**: Updated the modulo wrap value to be a constant `1.0f`.
+- **Verification**: Solution compiled successfully via `dotnet build` with 0 errors, resulting in a perfectly smooth, seamless rotation.
+

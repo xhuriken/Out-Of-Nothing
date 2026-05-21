@@ -24,6 +24,7 @@ public class CraftingManager : MonoBehaviour
     [SerializeField] private Disc _selectionDisc;
     [SerializeField] private CraftArc _craftArcPrefab;
     [SerializeField] private GameObject _additionalPreviewObject;
+    [SerializeField] private GameObject _ballSelectionFeedbackPrefab;
 
     [Header("Animations")]
     [SerializeField] private float _craftAnimationDuration = 0.8f;
@@ -31,6 +32,7 @@ public class CraftingManager : MonoBehaviour
     [SerializeField] private float _shadowAnimationDuration = 0.3f;
     [SerializeField] private float _resultSpawnDuration = 0.5f;
     [SerializeField] private Ease _resultSpawnEase = Ease.OutBack;
+    [SerializeField] private float _selectionFeedbackAnimationDuration = 0.15f;
 
     [Header("Line Settings")]
     [SerializeField] private int _lineSegments = 8;
@@ -45,6 +47,7 @@ public class CraftingManager : MonoBehaviour
     private Color _initialDiscColor;
     private Camera _mainCamera;
     private GameObject _additionalPreviewInstance;
+    private Dictionary<BallEntity, GameObject> _selectionFeedbacks = new Dictionary<BallEntity, GameObject>();
 
     public bool IsCrafting => _isCrafting;
     public bool IsBallSelected(BallEntity ball) => _selectedBalls.Contains(ball);
@@ -124,6 +127,18 @@ public class CraftingManager : MonoBehaviour
         UpdateLine();
         UpdatePreview();
         ValidateSelectedBalls();
+        UpdateFeedbackPositions();
+    }
+
+    private void UpdateFeedbackPositions()
+    {
+        foreach (var kvp in _selectionFeedbacks)
+        {
+            if (kvp.Key != null && kvp.Value != null)
+            {
+                kvp.Value.transform.position = kvp.Key.transform.position;
+            }
+        }
     }
 
     private void UpdateDynamicCenter()
@@ -165,6 +180,21 @@ public class CraftingManager : MonoBehaviour
             ball.IsProcessing = false;
         }
         _selectedBalls.Remove(ball);
+
+        // Deselection feedback animation & destruction
+        if (ball != null && _selectionFeedbacks.TryGetValue(ball, out GameObject feedback))
+        {
+            _selectionFeedbacks.Remove(ball);
+            if (feedback != null)
+            {
+                feedback.transform.DOKill();
+                feedback.transform.DOScale(Vector3.zero, _selectionFeedbackAnimationDuration).SetEase(Ease.InBack).OnComplete(() =>
+                {
+                    if (feedback != null) Destroy(feedback);
+                });
+            }
+        }
+
         CheckRecipes();
 
         if (_selectedBalls.Count == 0)
@@ -221,6 +251,16 @@ public class CraftingManager : MonoBehaviour
         ball.transform.DOKill();
         ball.transform.localScale = Vector3.one;
         ball.transform.DOPunchScale(Vector3.one * 0.2f, 0.2f);
+
+        // Instantiate selection feedback prefab at ball position with scale animation
+        if (_ballSelectionFeedbackPrefab != null && !_selectionFeedbacks.ContainsKey(ball))
+        {
+            GameObject feedback = Instantiate(_ballSelectionFeedbackPrefab, ball.transform.position, Quaternion.identity, transform);
+            feedback.transform.localScale = Vector3.zero;
+            feedback.transform.DOScale(Vector3.one, _selectionFeedbackAnimationDuration).SetEase(Ease.OutBack);
+            _selectionFeedbacks.Add(ball, feedback);
+        }
+
         CheckRecipes();
     }
 
@@ -286,9 +326,8 @@ public class CraftingManager : MonoBehaviour
                 {
                     _additionalPreviewInstance.SetActive(true);
                     _additionalPreviewInstance.transform.DOKill();
-                    var temp = _additionalPreviewInstance.transform.localScale;
                     _additionalPreviewInstance.transform.localScale = Vector3.zero;
-                    _additionalPreviewInstance.transform.DOScale(temp, _shadowAnimationDuration).SetEase(Ease.OutBack);
+                    _additionalPreviewInstance.transform.DOScale(0.5f, _shadowAnimationDuration).SetEase(Ease.OutBack);
                 }
             }
             // Follow the selection disc (which is at the centroid)
@@ -330,27 +369,60 @@ public class CraftingManager : MonoBehaviour
     private void UpdateLine()
     {
         int count = _selectedBalls.Count;
-        int neededLines = count < 2 ? 0 : count;
+        List<(BallEntity, BallEntity)> desiredPairs = new List<(BallEntity, BallEntity)>();
 
-        // Manage line pool
-        while (_activeLines.Count < neededLines)
+        if (count >= 2)
         {
-            CraftArc arc = Instantiate(_craftArcPrefab, transform);
-            _activeLines.Add(arc);
-        }
-
-        for (int i = 0; i < _activeLines.Count; i++)
-        {
-            bool isActive = i < neededLines;
-            _activeLines[i].gameObject.SetActive(isActive);
-
-            if (isActive)
+            for (int i = 0; i < count; i++)
             {
-                BallEntity b1 = _selectedBalls[i];
-                BallEntity b2 = _selectedBalls[(i + 1) % count];
-                _activeLines[i].Setup(b1, b2, _lineSegments, _lineJitter, _lineUpdateFrequency);
+                desiredPairs.Add((_selectedBalls[i], _selectedBalls[(i + 1) % count]));
             }
         }
+
+        List<CraftArc> linesToKeep = new List<CraftArc>();
+        List<CraftArc> linesToDespawn = new List<CraftArc>();
+
+        foreach (var arc in _activeLines)
+        {
+            if (arc == null) continue;
+
+            bool stillDesired = false;
+            for (int i = desiredPairs.Count - 1; i >= 0; i--)
+            {
+                var pair = desiredPairs[i];
+                if (arc.StartBall == pair.Item1 && arc.EndBall == pair.Item2)
+                {
+                    stillDesired = true;
+                    linesToKeep.Add(arc);
+                    desiredPairs.RemoveAt(i);
+                    break;
+                }
+            }
+
+            if (!stillDesired)
+            {
+                linesToDespawn.Add(arc);
+            }
+        }
+
+        // Animate out and destroy all lines that are no longer needed
+        foreach (var arc in linesToDespawn)
+        {
+            if (arc != null)
+            {
+                arc.Despawn();
+            }
+        }
+
+        // Instantiate and spawn any new lines
+        foreach (var pair in desiredPairs)
+        {
+            CraftArc arc = Instantiate(_craftArcPrefab, transform);
+            arc.Setup(pair.Item1, pair.Item2, _lineSegments, _lineJitter, _lineUpdateFrequency);
+            linesToKeep.Add(arc);
+        }
+
+        _activeLines = linesToKeep;
     }
 
     private void ExecuteCraft()
@@ -362,6 +434,21 @@ public class CraftingManager : MonoBehaviour
         // Visual cleanup before animation
         ClearLines();
         DestroyPreview();
+
+        // Animate and destroy active selection feedback objects immediately
+        foreach (var kvp in _selectionFeedbacks)
+        {
+            GameObject feedback = kvp.Value;
+            if (feedback != null)
+            {
+                feedback.transform.DOKill();
+                feedback.transform.DOScale(Vector3.zero, _selectionFeedbackAnimationDuration).SetEase(Ease.InBack).OnComplete(() =>
+                {
+                    if (feedback != null) Destroy(feedback);
+                });
+            }
+        }
+        _selectionFeedbacks.Clear();
 
         // Synchronized shrink animation
         DOTween.To(() => _selectionDisc.Radius, x => _selectionDisc.Radius = x, 0, _craftAnimationDuration).SetEase(_craftEase);
@@ -423,6 +510,21 @@ public class CraftingManager : MonoBehaviour
             if (ball != null) ball.IsProcessing = false;
         }
 
+        // Animate and clear active selection feedback objects
+        foreach (var kvp in _selectionFeedbacks)
+        {
+            GameObject feedback = kvp.Value;
+            if (feedback != null)
+            {
+                feedback.transform.DOKill();
+                feedback.transform.DOScale(Vector3.zero, _selectionFeedbackAnimationDuration).SetEase(Ease.InBack).OnComplete(() =>
+                {
+                    if (feedback != null) Destroy(feedback);
+                });
+            }
+        }
+        _selectionFeedbacks.Clear();
+
         ClearLines();
         DestroyPreview();
 
@@ -432,9 +534,10 @@ public class CraftingManager : MonoBehaviour
 
     private void ClearLines()
     {
-        foreach (var lr in _activeLines)
+        foreach (var arc in _activeLines)
         {
-            if (lr != null) lr.gameObject.SetActive(false);
+            if (arc != null) arc.Despawn();
         }
+        _activeLines.Clear();
     }
 }

@@ -22,3 +22,9 @@
   - **Rebond Géométrique (`GameZone.GetNearestSide`) :** Plutôt que de se fier aux normales de collision d'Unity, les vecteurs normaux des murs sont calculés purement via la géométrie relative (distance au MinX/MaxX/MinY/MaxY en espace local).
   - **`ConstantBounceSurface` :** Ce script gère désormais intégralement les collisions des murs, appliquant une vélocité forcée et gérant les balles ayant une vitesse inférieure au `_thresholdSpeed`.
   - **Dépénétration Manuelle :** Lors du calcul du rebond, on déplace physiquement le `Rigidbody2D` vers l'extérieur (le long de la normale) en fonction de la pénétration `separation` pour empêcher Unity d'appliquer son impulse correctif défectueux au frame suivant.
+
+### Visual Effects & Animations (Added 2026-05-21)
+- **`InfiniteRotate.cs`**:
+  - Animates the `DashOffset` of any `Shapes.Disc` component to create a seamless rotation effect.
+  - Implements a precise modulo wrapping mechanism based on the dash period (`DashSize + DashSpacing`) to ensure that the offset resets perfectly to `0` upon completing a full cycle. This prevents floating-point precision loss and jitter that typically accumulates over long gameplay sessions.
+

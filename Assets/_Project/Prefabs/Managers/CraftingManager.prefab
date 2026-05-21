@@ -199,11 +199,13 @@ MonoBehaviour:
   _selectionDisc: {fileID: 2821934906754542836}
   _craftArcPrefab: {fileID: 6004525545580290278, guid: 6d8b757d0060c5243b5e805f23af1ff1, type: 3}
   _additionalPreviewObject: {fileID: 2029357628371971576, guid: 8a8488248566b3142867ba51ae88bd13, type: 3}
+  _ballSelectionFeedbackPrefab: {fileID: 710253815411865042, guid: dcfc2ae62eadd65458c58f6e583fecc4, type: 3}
   _craftAnimationDuration: 0.5
   _craftEase: 30
   _shadowAnimationDuration: 0.3
   _resultSpawnDuration: 0.5
   _resultSpawnEase: 27
+  _selectionFeedbackAnimationDuration: 0.15
   _lineSegments: 8
   _lineJitter: 0.03
   _lineUpdateFrequency: 0.05
