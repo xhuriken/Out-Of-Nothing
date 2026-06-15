@@ -8,6 +8,21 @@
 5. **VÃ©rification Anti-Oubli** : Pas de rÃ©ponse finale sans log/todo.
 6. **LOGIQUE DE COMMIT** : NE JAMAIS commiter/pusher sans demande explicite de l'utilisateur.
 
+## [2026-06-15] - Alignement de la branche theory avec something
+**Date** : 2026-06-15
+**Auteur** : Antigravity (AI)
+
+### 1. Résolution de blocage Git
+- **Problème** : Un fichier verrou `.git/HEAD.lock` empêchait toute opération Git (rebase abort ou reset).
+- **Solution** : Suppression manuelle du fichier verrou `.git/HEAD.lock` et annulation du rebase en cours via `git rebase --abort`.
+
+### 2. Synchronisation des branches
+- **Justification** : L'utilisateur souhaite rendre la branche `theory` identique à `something`. Un rebase aurait rejoué les commits uniques de `theory` par-dessus `something`, ce qui n'aurait pas rendu les branches identiques et aurait pu créer des conflits.
+- **Solution** : Utilisation de `git reset --hard something` pour aligner localement la branche `theory` exactement sur le même commit que `something` (`f91d021`).
+- **Remarque** : Conformément à la règle d'interdiction de push sans accord explicite, aucun `git push` n'a été effectué.
+
+---
+
 ## [2026-05-20] - Mitosis Duplication Animation (High-Fidelity Feel)
 **Date** : 2026-05-20
 **Auteur** : Antigravity (AI)
@@ -226,15 +241,6 @@
 ### Justification :
 - Permettre à VS Code d'appliquer automatiquement le style Allman (déplacement des accolades ouvrantes `{` sur une nouvelle ligne) de façon robuste et transparente lors de la saisie (via `formatOnType` lors de la fermeture d'un bloc `}`) ou dès la sauvegarde du fichier (via `formatOnSave`), imitant parfaitement le comportement de Visual Studio 2022.
 
- # #   2 0 2 6 - 0 5 - 2 1   C r a f t i n g   I n t e r a c t i o n   &   P o l i s h   F i x e s 
- -   * * D r a g   i n   C r a f t   M o d e * * :   A l l o w e d   d r a g g i n g   o f   b a l l s   t h a t   a r e   a c t i v e l y   _ i s P r o c e s s i n g   I F   t h e y   b e l o n g   t o   t h e   c u r r e n t   C r a f t i n g M a n a g e r   s e l e c t i o n . 
- -   * * A d d i t i o n a l   P r e v i e w   R e n d e r i n g * * :   I n t r o d u c e d   _ a d d i t i o n a l P r e v i e w O b j e c t   w h i c h   c a n   n o w   i n s t a n t i a t e   a   p r e f a b   p r o v i d e d   i n   t h e   i n s p e c t o r   a n d   r e p l i c a t e   t h e   s c a l i n g   l i f e c y c l e   o f   t h e   m a i n   c r a f t i n g   s h a d o w   p r e v i e w . 
- -   * * D u p l i c a t i o n   R a n d o m   S t a t e * * :   I s o l a t e d   R a n d o m . I n i t S t a t e   d u r i n g   E n e r g y M a n a g e r . O n D r a w G i z m o s   t o   p r o t e c t   t h e   g l o b a l   r a n d o m   s t r e a m ,   a l l o w i n g   c o r r e c t   o r g a n i c   m i t o s i s   d i r e c t i o n   s e p a r a t i o n . 
- -   * * N a N   I n p u t   H a n d l e r s * * :   P a t c h e d   t h e   I n p u t   S y s t e m   M o u s e . c u r r e n t . p o s i t i o n . R e a d V a l u e ( )   y i e l d i n g   N a N   s t a t e s   i n   U n i t y   E d i t o r ,   e f f e c t i v e l y   b l o c k i n g   a l l   m a t r i x   c a l c u l a t i o n   c r a s h e s   o r i g i n a t i n g   f r o m   S c r e e n T o W o r l d P o i n t . 
- -   * * D O T w e e n   P r o t e c t i o n s * * :   E x t r a c t e d   . S e t L o o p s ( - 1 )   o u t   f r o m   S e q u e n c e   . J o i n   e x t e n s i o n s   t o   c o r r e c t   a n   i n f i n i t e   l o o p   c r a s h   i n   G a m e C u r s o r ,   a n d   s u p p l e m e n t e d   C r a f t i n g M a n a g e r   s e l e c t i o n   r o u t i n e s   w i t h   a   D O K i l l ( )   t o   p r e v e n t   a d d i t i v e   D O P u n c h S c a l e   o v e r l a p   w h e n   s p a m   c l i c k i n g .  
- 
-
----
 
 ## [2026-05-21] - Infinite Rotate Dash Animation Component
 **Date** : 2026-05-21
