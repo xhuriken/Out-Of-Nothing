@@ -49,6 +49,22 @@ public class CraftingManager : MonoBehaviour
     private GameObject _additionalPreviewInstance;
     private Dictionary<BallEntity, GameObject> _selectionFeedbacks = new Dictionary<BallEntity, GameObject>();
 
+    [Header("Orbit Preview Settings")]
+    [SerializeField] private float _previewOrbitRadius = 1.2f;
+    [SerializeField] private float _previewOrbitSpeed = 150f;
+    [SerializeField] private float _previewTransitionDuration = 0.3f;
+    [SerializeField] private float _previewExitPushForce = 2f;
+
+    private class OrbitBallState
+    {
+        public Vector3 startPosition;
+        public float transitionProgress;
+        public int assignedSlotIndex;
+    }
+
+    private Dictionary<BallEntity, OrbitBallState> _orbitBallStates = new Dictionary<BallEntity, OrbitBallState>();
+    private float _currentOrbitAngle;
+
     public bool IsCrafting => _isCrafting;
     public bool IsBallSelected(BallEntity ball) => _selectedBalls.Contains(ball);
 
@@ -128,6 +144,7 @@ public class CraftingManager : MonoBehaviour
         UpdatePreview();
         ValidateSelectedBalls();
         UpdateFeedbackPositions();
+        UpdateOrbitPreview();
     }
 
     private void UpdateFeedbackPositions()
@@ -373,9 +390,38 @@ public class CraftingManager : MonoBehaviour
 
         if (count >= 2)
         {
-            for (int i = 0; i < count; i++)
+            if (_orbitBallStates.Count > 0)
             {
-                desiredPairs.Add((_selectedBalls[i], _selectedBalls[(i + 1) % count]));
+                // In orbit preview mode, draw lines based on spatial assigned slot index to prevent diagonals/crossings
+                List<BallEntity> orderedBalls = new List<BallEntity>(new BallEntity[count]);
+                foreach (var kvp in _orbitBallStates)
+                {
+                    if (kvp.Key != null && kvp.Value.assignedSlotIndex < count)
+                    {
+                        orderedBalls[kvp.Value.assignedSlotIndex] = kvp.Key;
+                    }
+                }
+
+                // Clean up any nulls in orderedBalls just in case
+                orderedBalls.RemoveAll(b => b == null);
+                int orderedCount = orderedBalls.Count;
+
+                if (orderedCount >= 2)
+                {
+                    // Circle mode: Draw adjacent slot connections around the circle
+                    for (int i = 0; i < orderedCount; i++)
+                    {
+                        desiredPairs.Add((orderedBalls[i], orderedBalls[(i + 1) % orderedCount]));
+                    }
+                }
+            }
+            else
+            {
+                // Normal crafting mode: Connect sequentially by selection order
+                for (int i = 0; i < count; i++)
+                {
+                    desiredPairs.Add((_selectedBalls[i], _selectedBalls[(i + 1) % count]));
+                }
             }
         }
 
@@ -390,7 +436,9 @@ public class CraftingManager : MonoBehaviour
             for (int i = desiredPairs.Count - 1; i >= 0; i--)
             {
                 var pair = desiredPairs[i];
-                if (arc.StartBall == pair.Item1 && arc.EndBall == pair.Item2)
+                // Match symmetrically (interchangeable start/end) to keep line visual stability
+                if ((arc.StartBall == pair.Item1 && arc.EndBall == pair.Item2) ||
+                    (arc.StartBall == pair.Item2 && arc.EndBall == pair.Item1))
                 {
                     stillDesired = true;
                     linesToKeep.Add(arc);
@@ -434,6 +482,7 @@ public class CraftingManager : MonoBehaviour
         // Visual cleanup before animation
         ClearLines();
         DestroyPreview();
+        ClearOrbitPreview(false);
 
         // Animate and destroy active selection feedback objects immediately
         foreach (var kvp in _selectionFeedbacks)
@@ -527,9 +576,47 @@ public class CraftingManager : MonoBehaviour
 
         ClearLines();
         DestroyPreview();
+        ClearOrbitPreview(true);
 
         _selectedBalls.Clear();
         _currentMatchingRecipe = null;
+    }
+
+    /// <summary>
+    /// Determines if the start ball should be treated as the anchor for the craft line animation.
+    /// </summary>
+    public bool DetermineAnchorOnStart(BallEntity startBall, BallEntity endBall)
+    {
+        if (startBall == null)
+        {
+            return false;
+        }
+        if (endBall == null)
+        {
+            return true;
+        }
+
+        bool startSelected = _selectedBalls.Contains(startBall);
+        bool endSelected = _selectedBalls.Contains(endBall);
+
+        if (startSelected && !endSelected)
+        {
+            return true;
+        }
+        if (!startSelected && endSelected)
+        {
+            return false;
+        }
+
+        int startIndex = _selectedBalls.IndexOf(startBall);
+        int endIndex = _selectedBalls.IndexOf(endBall);
+
+        if (startIndex >= 0 && endIndex >= 0)
+        {
+            return startIndex < endIndex;
+        }
+
+        return true;
     }
 
     private void ClearLines()
@@ -540,4 +627,189 @@ public class CraftingManager : MonoBehaviour
         }
         _activeLines.Clear();
     }
+
+    private void UpdateOrbitPreview()
+    {
+        bool shouldOrbit = _isCrafting && _currentMatchingRecipe != null && _selectedBalls.Count >= 2 && !_selectedBalls.Any(b => b.IsBeingDragged);
+
+        if (shouldOrbit)
+        {
+            _currentOrbitAngle += _previewOrbitSpeed * Time.deltaTime;
+
+            // Compute optimal assignments if we are initializing all orbit states
+            if (_orbitBallStates.Count == 0)
+            {
+                int[] assignments = SolveOptimalAssignments(_selectedBalls, _selectionDisc.transform.position, _currentOrbitAngle);
+                
+                for (int j = 0; j < _selectedBalls.Count; j++)
+                {
+                    BallEntity b = _selectedBalls[j];
+                    if (b != null && !_orbitBallStates.ContainsKey(b))
+                    {
+                        OrbitBallState newState = new OrbitBallState
+                        {
+                            startPosition = b.transform.position,
+                            transitionProgress = 0f,
+                            assignedSlotIndex = assignments[j]
+                        };
+                        _orbitBallStates.Add(b, newState);
+
+                        // Lock physics
+                        b.Rb.bodyType = RigidbodyType2D.Kinematic;
+                        b.Rb.linearVelocity = Vector2.zero;
+                        b.Rb.angularVelocity = 0f;
+
+                        // Snappy punch scale
+                        b.transform.DOKill();
+                        b.transform.DOPunchScale(Vector3.one * 0.15f, 0.25f);
+                    }
+                }
+            }
+
+            for (int i = 0; i < _selectedBalls.Count; i++)
+            {
+                BallEntity ball = _selectedBalls[i];
+                if (ball == null)
+                {
+                    continue;
+                }
+
+                if (_orbitBallStates.TryGetValue(ball, out OrbitBallState state))
+                {
+                    state.transitionProgress = Mathf.Min(1f, state.transitionProgress + Time.deltaTime / _previewTransitionDuration);
+
+                    // Calculate target orbit position using the assigned slot
+                    float angle = _currentOrbitAngle + (state.assignedSlotIndex * 360f / _selectedBalls.Count);
+                    Vector3 targetOrbitPos = _selectionDisc.transform.position + Quaternion.Euler(0, 0, angle) * Vector3.right * _previewOrbitRadius;
+
+                    // Move ball smoothly
+                    ball.transform.position = Vector3.Lerp(state.startPosition, targetOrbitPos, state.transitionProgress);
+                }
+            }
+        }
+        else
+        {
+            if (_orbitBallStates.Count > 0)
+            {
+                ClearOrbitPreview(true);
+            }
+        }
+    }
+
+    private void ClearOrbitPreview(bool restorePhysics)
+    {
+        Vector3 center = _selectionDisc.transform.position;
+        foreach (var kvp in _orbitBallStates)
+        {
+            BallEntity ball = kvp.Key;
+            if (ball != null)
+            {
+                ball.transform.DOKill();
+                ball.transform.localScale = Vector3.one;
+
+                if (restorePhysics)
+                {
+                    ball.Rb.bodyType = RigidbodyType2D.Dynamic;
+                    
+                    // Apply a slight outward push force
+                    Vector2 pushDir = ((Vector2)ball.transform.position - (Vector2)center).normalized;
+                    if (pushDir.sqrMagnitude < 0.001f)
+                    {
+                        pushDir = Random.insideUnitCircle.normalized;
+                    }
+                    ball.Passport.ApplyImpulse(pushDir * _previewExitPushForce, PhysicsPriority.Behavior);
+                }
+            }
+        }
+        _orbitBallStates.Clear();
+    }
+
+    /// <summary>
+    /// Finds the slot assignments that minimize the total squared distance between balls and slots.
+    /// </summary>
+    private int[] SolveOptimalAssignments(List<BallEntity> balls, Vector3 center, float startAngle)
+    {
+        int count = balls.Count;
+        int[] bestPermutation = new int[count];
+        for (int i = 0; i < count; i++)
+        {
+            bestPermutation[i] = i;
+        }
+
+        if (count <= 1)
+        {
+            return bestPermutation;
+        }
+
+        // Generate target slot positions
+        Vector3[] slots = new Vector3[count];
+        for (int k = 0; k < count; k++)
+        {
+            float angle = startAngle + (k * 360f / count);
+            slots[k] = center + Quaternion.Euler(0, 0, angle) * Vector3.right * _previewOrbitRadius;
+        }
+
+        float minTotalDistanceSq = float.MaxValue;
+        
+        // Generate permutations and find the best one
+        List<int[]> permutations = GeneratePermutations(count);
+        foreach (int[] perm in permutations)
+        {
+            float currentDistSq = 0f;
+            for (int j = 0; j < count; j++)
+            {
+                if (balls[j] != null)
+                {
+                    currentDistSq += Vector3.SqrMagnitude(balls[j].transform.position - slots[perm[j]]);
+                }
+            }
+
+            if (currentDistSq < minTotalDistanceSq)
+            {
+                minTotalDistanceSq = currentDistSq;
+                System.Array.Copy(perm, bestPermutation, count);
+            }
+        }
+
+        return bestPermutation;
+    }
+
+    private List<int[]> GeneratePermutations(int n)
+    {
+        List<int[]> results = new List<int[]>();
+        int[] current = new int[n];
+        for (int i = 0; i < n; i++)
+        {
+            current[i] = i;
+        }
+        Permute(current, 0, n - 1, results);
+        return results;
+    }
+
+    private void Permute(int[] arr, int l, int r, List<int[]> results)
+    {
+        if (l == r)
+        {
+            int[] copy = new int[arr.Length];
+            System.Array.Copy(arr, copy, arr.Length);
+            results.Add(copy);
+        }
+        else
+        {
+            for (int i = l; i <= r; i++)
+            {
+                Swap(ref arr[l], ref arr[i]);
+                Permute(arr, l + 1, r, results);
+                Swap(ref arr[l], ref arr[i]); // backtrack
+            }
+        }
+    }
+
+    private void Swap(ref int a, ref int b)
+    {
+        int temp = a;
+        a = b;
+        b = temp;
+    }
 }
+

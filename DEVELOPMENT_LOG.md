@@ -8,6 +8,60 @@
 5. **VÃ©rification Anti-Oubli** : Pas de rÃ©ponse finale sans log/todo.
 6. **LOGIQUE DE COMMIT** : NE JAMAIS commiter/pusher sans demande explicite de l'utilisateur.
 
+## [2026-06-16] - Retrait du mode Étoile et simplification (KISS)
+**Date** : 2026-06-16
+**Auteur** : Antigravity (AI)
+
+### 1. Simplification du tracé d'orbite
+- **Problème** : L'option étoile rajoutait de la complexité et des lignes de code inutiles alors que le contour circulaire propre est préféré.
+- **Solution** : Suppression de la variable sérialisée `_useStarOrbitLines` et nettoyage de `UpdateLine()` dans `CraftingManager.cs` pour ne conserver que la boucle de connexion adjacente sur le contour du cercle (en préservant le tri spatial).
+- **Résultat** : Un code plus léger, conforme au principe KISS, et un tracé circulaire stable sans diagonales.
+
+---
+
+## [2026-06-16] - Lignes Spatiales et Mode Étoile en Orbit Preview
+**Date** : 2026-06-16
+**Auteur** : Antigravity (AI)
+
+### 1. Tri spatial et suppression des diagonales croisées (Cercle parfait)
+- **Problème** : En mode preview, bien que les boules soient physiquement placées de façon optimale, les lignes reliant les boules suivaient l'ordre de sélection d'origine (historique), ce qui créait des lignes qui se croisaient (diagonales) et formaient des sabliers ou des formes biscornues au lieu d'un cercle parfait.
+- **Solution** : Modification de `UpdateLine()` dans `CraftingManager.cs` pour reconstruire l'ordre des connexions en fonction de l'index de slot spatial (`assignedSlotIndex`) plutôt que de l'ordre de sélection de la liste.
+- **Résultat** : Les connexions forment un polygone régulier parfait autour du cercle sans aucun croisement.
+
+### 2. Mode Étoile (Que des Diagonales)
+- **Solution** : Ajout d'un paramètre sérialisé `_useStarOrbitLines`. S'il est activé, `UpdateLine()` filtre et dessine UNIQUEMENT les connexions diagonales (distance de slot circulaire >= 2) entre les boules en orbite. S'il n'y a pas assez de boules pour avoir des diagonales (N=3), le système bascule automatiquement sur le triangle adjacent standard.
+- **Résultat** : Permet de former des géométries en étoile (ex: pentagrammes, hexagrammes croisés, croix) pour enrichir le feeling "sexy/mystique" du mode preview de craft.
+
+### 3. Appariement bidirectionnel des connexions
+- **Solution** : Mise à jour de la détection de persistance des lignes dans `UpdateLine()` pour être symétrique (interchangeable entre `StartBall` et `EndBall`), évitant ainsi le clignotement / la destruction/recréation de lignes lors d'un simple changement d'orientation.
+
+---
+
+## [2026-06-16] - Optimisation des chemins du Mode Preview Orbital
+**Date** : 2026-06-16
+**Auteur** : Antigravity (AI)
+
+### 1. Assignation de slots optimale par permutation
+- **Problème** : Lors de l'entrée en mode orbite de prévisualisation (preview matched), les boules s'assignaient à des emplacements basés sur l'ordre de sélection brut, ce qui provoquait des trajectoires croisées désagréables et peu fluides.
+- **Solution** : Implémentation d'un algorithme de permutation brute (`SolveOptimalAssignments`) dans `CraftingManager.cs` qui évalue toutes les configurations possibles entre les boules sélectionnées et les emplacements de l'orbite pour trouver celle qui minimise la somme des distances au carré.
+- **Ressources** : Chaque boule est désormais liée de façon optimale à l'index de slot le plus proche dans sa structure d'état `OrbitBallState`, créant un mouvement d'entrée fluide et net sans croisement de chemin.
+- **Justification** : Améliore radicalement la fluidité et le feeling "sexy/premium" du mode preview de craft.
+
+---
+
+## [2026-06-16] - Animation Minimaliste de Sélection des Lignes de Craft
+**Date** : 2026-06-16
+**Auteur** : Antigravity (AI)
+
+### 1. Interpolation depuis l'Ancre de Sélection
+- **Problème** : Les lignes de connexion (craft arcs) apparaissaient et disparaissaient en grandissant/rétrécissant symétriquement depuis/vers le milieu, ce qui manquait de précision directionnelle et visuelle.
+- **Solution** : Refonte de la logique d'interpolation de géométrie de `CraftArc.cs` et de suivi d'ancre dans `CraftingManager.cs` :
+  - **Dynamic Anchor Determination** : Ajout de `DetermineAnchorOnStart` dans `CraftingManager.cs` qui utilise la liste ordonnée `_selectedBalls` pour désigner la boule la plus ancienne (ou restante) comme l'ancre fixe (point de départ de l'animation) et la boule la plus récente (ou retirée) comme la cible (extrémité en mouvement).
+  - **Asymmetric Growing/Shrinking** : Mise à jour de `CraftArc.UpdateGeometry()` pour interpoler asymétriquement de l'ancre vers la cible en fonction de `_animProgress`, ce qui permet aux lignes de pousser naturellement depuis les boules existantes vers la nouvelle, et de se replier vers les boules restantes lors d'une désélection.
+- **Justification** : Rend l'animation plus minimaliste, logique et fluide, en connectant visuellement les actions de l'utilisateur à la chaîne de sélection existante.
+
+---
+
 ## [2026-06-15] - Alignement de la branche theory avec something
 **Date** : 2026-06-15
 **Auteur** : Antigravity (AI)
