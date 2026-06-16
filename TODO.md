@@ -1,7 +1,11 @@
-# Tâches - Retrait du mode Étoile
-
-- [x] Obtenir l'approbation du plan d'implémentation par l'utilisateur
-- [x] Supprimer _useStarOrbitLines et simplifier UpdateLine dans `CraftingManager.cs`
-- [x] Compiler le projet et s'assurer de l'absence d'erreurs
-- [x] Mettre à jour le `DEVELOPMENT_LOG.md`
-- [x] Finaliser et documenter la livraison dans `walkthrough.md`
+- [x] Analyze `BlackHole.cs`
+- [x] Refactor `BlackHole.cs` visual variables:
+  - Add `_mainDiscOffset` = -0.54f
+  - Add `_backgroundOffset` = +1.52f
+  - Add `_shaderOffset` = -0.1f
+  - Add `_attractShaderOffset` = +1.5f
+- [x] Change `UpdateVisuals` to compute each radius simply by adding the corresponding offset to `_gRadius`.
+- [x] Import `Sirenix.OdinInspector` and `DG.Tweening`.
+- [x] Add `SetRadiusAnimated` method with `[Button]` attribute.
+- [ ] Update `DEVELOPMENT_LOG.md`.
+- [ ] Check-off verification.

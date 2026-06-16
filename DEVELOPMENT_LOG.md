@@ -8,6 +8,56 @@
 5. **VÃ©rification Anti-Oubli** : Pas de rÃ©ponse finale sans log/todo.
 6. **LOGIQUE DE COMMIT** : NE JAMAIS commiter/pusher sans demande explicite de l'utilisateur.
 
+## [2026-06-16] - Refonte des Visuels du Black Hole (Offsets Dynamiques et DOTween)
+**Date** : 2026-06-16
+**Auteur** : Antigravity (AI)
+
+### 1. Refonte des Offsets Visuels (Live Sync)
+- **Problème** : Les anciens `Thickness` n'étaient pas clairs et le Shader/Background ne respectaient pas le mapping de taille exact voulu par l'utilisateur par rapport au `gRadius`.
+- **Solution** : Suppression de `_mainDiscThickness` et `_backgroundThickness`. Création d'une catégorie `[Header("Visual Offsets")]` avec des offsets clairs et mathématiques pré-calculés pour un `gRadius` de 1.0 :
+  - `_mainDiscOffset = -0.54f` (Radius = 0.46)
+  - `_backgroundOffset = +1.52f` (Radius = 2.52)
+  - `_shaderOffset = -0.1f` (Radius = 0.9)
+  - `_attractShaderOffset = +1.5f` (Radius = 2.5)
+- **Résultat** : Toutes ces valeurs s'additionnent dynamiquement à `_gRadius` dans `UpdateVisuals()` pour conserver exactement les proportions peu importe l'échelle globale.
+
+### 2. Animation Interactive (Odin + DOTween)
+- **Solution** : Ajout d'une méthode publique `SetRadiusAnimated(float targetRadius, float duration = 1f)` avec l'attribut `[Button("Set Radius Animated", ButtonSizes.Large)]` de Sirenix Odin Inspector.
+- **Résultat** : Permet au développeur de tester facilement l'animation de taille fluide du BlackHole directement depuis l'éditeur grâce à une courbe `DOTween` (EaseInOutSine) qui met à jour les visuels de tous les enfants à chaque frame de l'animation.
+
+---
+
+## [2026-06-16] - Refonte Complète du Black Hole (Visuals, Comp, Gizmos) & Proportional Scaling
+**Date** : 2026-06-16
+**Auteur** : Antigravity (AI)
+
+### 1. Hybrid Absolute & Additive System (Pro Solution)
+- **Problème** : Définir des offsets fixes manuellement dans l'éditeur était rébarbatif, et l'utilisateur souhaitait paramétrer son visuel visuellement à un radius de `1.0`, puis faire démarrer le jeu à `0.5` tout en conservant les proportions.
+- **Solution** :
+  - **Mise en cache intelligente** : Le script mémorise dans `Awake()` la taille initiale paramétrée à la main du `Disc` principal et du `BackgroundDisc` (Shapes).
+  - **Start Radius** : Ajout de la variable `_startRadius` (ex: 0.5f). Au démarrage, le `_gRadius` prend cette valeur.
+  - **Addition Pure (`deltaRadius`)** : Le script calcule le delta entre la taille actuelle et la taille d'éditeur (`_gRadius - _initialGRadius`). Ce `deltaRadius` (positif ou négatif) est ajouté de manière mathématiquement stricte à tous les Discs. Il n'y a plus aucune dérive de scale possible.
+  - **Shader Procédural** : L'Aura (Attract) et le Shader principal (bruit) conservent leurs `SpriteRenderer` (avec un scale géant fixe). Le script leur envoie `_gRadius + _attractRadiusOffset` ou `_gRadius` afin que le ShaderGraph puisse tailler le cercle mathématiquement.
+
+### 1. Refonte du Scaling KISS (Runtime-Only & Public References)
+- **Problème** : Les constantes de design en dur n'étaient pas adaptées aux différents rayons par défaut du prefab (ex: `_radius = 1f`), et la présence de `[ExecuteAlways]` avec modifications forcées de `localScale` dans `Update()` empêchait l'utilisateur d'éditer manuellement la taille des enfants dans l'éditeur (les valeurs se réinitialisaient sans arrêt).
+- **Solution** : Simplification drastique (KISS) du script :
+  - **Suppression du live-update** (`[ExecuteAlways]` et `Update()` supprimés) pour redonner le contrôle manuel total de mise en page dans l'inspecteur Unity en mode Edit.
+  - **Références publiques** : Exposition de variables publiques (`AttractTransform`, `BackgroundTransform`, `ShaderTransform`, `AttractRenderer`, `ShaderRenderer`) pour permettre à l'utilisateur de glisser-déposer lui-même ses enfants.
+  - **Calcul physique relatif de l'Attraction** : Le rayon d'attraction est maintenant calculé par rapport à la bordure externe du disque (`Radius + Thickness + _attractRadiusOffset`), garantissant que la zone d'attraction s'agrandit de manière synchrone lors de la croissance du trou noir.
+  - **Offset dynamique de Shader** : Enregistrement de l'écart initial réel au démarrage (`Awake`) entre la bordure externe du disque et le scale local du shader (`_shaderScaleOffset = GetOuterRadius() - localScale.x`). Cet écart est conservé et appliqué fidèlement lors de la mise à l'échelle au runtime.
+  - **Background** : Scale automatiquement calculé au runtime pour correspondre au diamètre externe du disque (`(Radius + Thickness) * 2f`).
+
+### 2. Correction du Bruit (Noise Distortion)
+- **Problème** : Le fait d'augmenter le scale étirait la grille de bruit (Noise) calculée par le Shader Graph, rendant le rendu flou et pixelisé.
+- **Solution** : Injection automatisée de la propriété `_NoiseTiling` connectée au slot de Tiling des `TilingAndOffsetNode`s dans `BlackHole.shadergraph` et `BH Attract.shadergraph`. Dans le C#, application dynamique de cette valeur sur les renderers `Attract` et `Shader` via `MaterialPropertyBlock` proportionnellement à l'échelle locale. Cela garde la densité physique du bruit constante.
+
+### 3. Gizmos de Zone
+- **Solution** : Implémentation d'un rendu de Gizmos filaires circulaires pour l'horizon des événements (Cyan) et la zone d'attraction (Orange), avec une surbrillance renforcée lors de la sélection dans l'inspecteur.
+- **Justification** : Permet au game designer de prévisualiser précisément la zone d'influence physique et visuelle.
+
+---
+
 ## [2026-06-16] - Retrait du mode Étoile et simplification (KISS)
 **Date** : 2026-06-16
 **Auteur** : Antigravity (AI)
