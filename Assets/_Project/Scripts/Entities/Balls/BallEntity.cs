@@ -117,6 +117,11 @@ public class BallEntity : MonoBehaviour, IDraggable
         _isProcessing = false;
         _isDuplicating = false;
 
+        if (_collider != null)
+        {
+            _collider.enabled = true;
+        }
+
         if (_rb != null)
         {
             _rb.bodyType = RigidbodyType2D.Dynamic;
