@@ -2,8 +2,8 @@ using UnityEngine;
 using TMPro;
 using System.Collections;
 
-// UNCOMMENT this line once you have imported Text Animator in your project
-// using Febucci.UI;
+
+using Febucci.UI;
 
 public class MonologueUI : MonoBehaviour
 {
@@ -12,8 +12,8 @@ public class MonologueUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI textMeshPro;
 
     [Header("Text Animator Reference (Optional)")]
-    // UNCOMMENT this field once you have imported Text Animator in your project
-    // [SerializeField] private TypewriterByCharacter typewriter;
+
+    [SerializeField] private TypewriterByCharacter typewriter;
 
     private Coroutine _displayCoroutine;
     
@@ -35,8 +35,7 @@ public class MonologueUI : MonoBehaviour
             textMeshPro = GetComponentInChildren<TextMeshProUGUI>();
         }
 
-        // UNCOMMENT this block once you have imported Text Animator in your project
-        /*
+
         if (typewriter == null)
         {
             typewriter = GetComponentInChildren<TypewriterByCharacter>();
@@ -46,18 +45,17 @@ public class MonologueUI : MonoBehaviour
         {
             typewriter.onTextShowed.AddListener(OnTypingFinished);
         }
-        */
+        
     }
 
     private void OnDestroy()
     {
-        // UNCOMMENT this block once you have imported Text Animator in your project
-        /*
+
         if (typewriter != null)
         {
             typewriter.onTextShowed.RemoveListener(OnTypingFinished);
         }
-        */
+        
     }
 
     /// <summary>
@@ -85,8 +83,6 @@ public class MonologueUI : MonoBehaviour
         monologuePanel.SetActive(true);
         _isTypingFinished = false;
 
-        // UNCOMMENT this block once you have imported Text Animator in your project
-        /*
         if (typewriter != null)
         {
             // Use Text Animator typewriter
@@ -99,7 +95,6 @@ public class MonologueUI : MonoBehaviour
             }
         }
         else
-        */
         {
             // Fallback: Show text immediately using standard TextMeshPro
             if (textMeshPro != null)
@@ -112,8 +107,29 @@ public class MonologueUI : MonoBehaviour
         // Wait for the exposure time after typing is complete
         yield return new WaitForSeconds(exposureTime);
 
+        // Disappearance phase
+        
+        if (typewriter != null)
+        {
+            typewriter.StartDisappearingText();
+
+            bool isDisappearingFinished = false;
+            UnityEngine.Events.UnityAction onDisappearedAction = null;
+            onDisappearedAction = () => { isDisappearingFinished = true; };
+            
+            typewriter.onTextDisappeared.AddListener(onDisappearedAction);
+
+            while (!isDisappearingFinished)
+            {
+                yield return null;
+            }
+
+            typewriter.onTextDisappeared.RemoveListener(onDisappearedAction);
+        }
+        
+
         // Hide panel
-        monologuePanel.SetActive(false);
+  
         _displayCoroutine = null;
     }
 

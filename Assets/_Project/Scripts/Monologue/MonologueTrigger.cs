@@ -12,7 +12,6 @@ public class MonologueTrigger : MonoBehaviour
 
     [Header("Collision Trigger")]
     [SerializeField] private bool triggerOnCollision = false;
-    [SerializeField] private string playerTag = "Player";
 
     private void Start()
     {
@@ -51,7 +50,7 @@ public class MonologueTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (triggerOnCollision && other.CompareTag(playerTag))
+        if (triggerOnCollision && other.CompareTag(""))
         {
             Trigger();
         }
@@ -59,7 +58,7 @@ public class MonologueTrigger : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (triggerOnCollision && other.CompareTag(playerTag))
+        if (triggerOnCollision && other.CompareTag(""))
         {
             Trigger();
         }

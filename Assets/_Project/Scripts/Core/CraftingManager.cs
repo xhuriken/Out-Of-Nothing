@@ -13,6 +13,11 @@ public class CraftingManager : MonoBehaviour
 {
     public static CraftingManager Instance { get; private set; }
 
+    /// <summary>
+    /// Event triggered when a craft recipe has been successfully executed.
+    /// </summary>
+    public static event System.Action<CraftRecipeSO> OnCraftExecuted;
+
     [Header("Settings")]
     [SerializeField] private float _maxRadius = 4f;
     [SerializeField] private float _radiusGrowthDuration = 0.3f;
@@ -467,6 +472,9 @@ public class CraftingManager : MonoBehaviour
             // Bouncy spawn animation
             result.transform.localScale = Vector3.zero;
             result.transform.DOScale(1f, _resultSpawnDuration).SetEase(_resultSpawnEase);
+
+            // Trigger monologue craft event
+            OnCraftExecuted?.Invoke(recipe);
 
             foreach (var ball in _selectedBalls)
             {

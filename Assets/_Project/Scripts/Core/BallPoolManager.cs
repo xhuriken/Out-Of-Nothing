@@ -33,6 +33,20 @@ public class BallPoolManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Gets the number of active (spawned) balls of a given type ID.
+    /// </summary>
+    public int GetActiveBallCount(string id)
+    {
+        if (string.IsNullOrEmpty(id)) return 0;
+        
+        if (_pools.TryGetValue(id, out ObjectPool<BallEntity> pool))
+        {
+            return pool.CountActive;
+        }
+        return 0;
+    }
+
+    /// <summary>
     /// Spawns a ball from the appropriate pool based on the provided data.
     /// </summary>
     /// <param name="data">The configuration data of the ball to spawn.</param>
