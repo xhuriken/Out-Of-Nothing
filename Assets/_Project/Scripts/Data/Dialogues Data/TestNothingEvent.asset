@@ -20,3 +20,9 @@ MonoBehaviour:
     exposureTime: 3
   - text: Le quelque chose par le rien...
     exposureTime: 3
+  conditionType: 1
+  triggerOnlyOnce: 1
+  startDelay: 2
+  ballRequirements: []
+  targetRecipe: {fileID: 0}
+  triggerChance: 0.3

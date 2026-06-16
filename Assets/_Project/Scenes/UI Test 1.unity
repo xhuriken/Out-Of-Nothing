@@ -726,7 +726,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2328976781059393891, guid: 6b9c71f39c00ffa489e7dff47f05b902, type: 3}
       propertyPath: dashStyle.offset
-      value: 0.017839853
+      value: 0.0703778
       objectReference: {fileID: 0}
     - target: {fileID: 4229921911357831447, guid: 6b9c71f39c00ffa489e7dff47f05b902, type: 3}
       propertyPath: m_Enabled
@@ -5088,8 +5088,6 @@ GameObject:
   m_Component:
   - component: {fileID: 980622706}
   - component: {fileID: 980622705}
-  - component: {fileID: 980622704}
-  - component: {fileID: 980622707}
   m_Layer: 0
   m_Name: MonologueManager
   m_TagString: Untagged
@@ -5097,22 +5095,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &980622704
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 980622703}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 09fbaef63595b79428eda29627b29204, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MonologueTrigger
-  monologueEvent: {fileID: 11400000, guid: 02aa815a12aebf642a9f19337427b8b8, type: 2}
-  triggerOnStart: 1
-  startDelay: 2
-  triggerOnCollision: 0
 --- !u!114 &980622705
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5126,6 +5108,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MonologueManager
   monologueUI: {fileID: 1128909893}
+  monologueEvents:
+  - {fileID: 11400000, guid: 02aa815a12aebf642a9f19337427b8b8, type: 2}
+  - {fileID: 11400000, guid: 13635a60c3da7ff4b92ef6940619e10d, type: 2}
+  ballCountCheckInterval: 1
+  randomCheckInterval: 15
 --- !u!4 &980622706
 Transform:
   m_ObjectHideFlags: 0
@@ -5141,28 +5128,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &980622707
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 980622703}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 02405fd756aca6a43b5d163f78e90b2f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MonologueConditionTrigger
-  monologueEvent: {fileID: 11400000, guid: 13635a60c3da7ff4b92ef6940619e10d, type: 2}
-  triggerOnlyOnce: 1
-  conditionType: 0
-  ballRequirements:
-  - ballData: {fileID: 11400000, guid: 80d61bba963ad264f8475d89dc001b50, type: 2}
-    requiredCount: 9
-  checkInterval: 1
-  targetRecipe: {fileID: 0}
-  timeInterval: 30
-  triggerChance: 0.3
 --- !u!1 &984709458
 GameObject:
   m_ObjectHideFlags: 0
@@ -8371,7 +8336,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2328976781059393891, guid: 6b9c71f39c00ffa489e7dff47f05b902, type: 3}
       propertyPath: dashStyle.offset
-      value: 0.017839853
+      value: 0.0703778
       objectReference: {fileID: 0}
     - target: {fileID: 4229921911357831447, guid: 6b9c71f39c00ffa489e7dff47f05b902, type: 3}
       propertyPath: m_Enabled

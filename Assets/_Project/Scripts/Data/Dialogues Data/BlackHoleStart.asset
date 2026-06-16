@@ -16,3 +16,11 @@ MonoBehaviour:
   lines:
   - text: "Bien, du rien , on Cr\xE9e le tout, J'ai faim. Nouris moi a present..."
     exposureTime: 3
+  conditionType: 2
+  triggerOnlyOnce: 1
+  startDelay: 2
+  ballRequirements:
+  - ballData: {fileID: 11400000, guid: 80d61bba963ad264f8475d89dc001b50, type: 2}
+    requiredCount: 9
+  targetRecipe: {fileID: 0}
+  triggerChance: 0.3
