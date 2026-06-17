@@ -8,6 +8,149 @@
 5. **VÃ©rification Anti-Oubli** : Pas de rÃ©ponse finale sans log/todo.
 6. **LOGIQUE DE COMMIT** : NE JAMAIS commiter/pusher sans demande explicite de l'utilisateur.
 
+
+## [2026-06-17] - Fix de l'Interférence des Échelles et du Reset Glitch du Black Hole (Jelly Bounce & High Velocity)
+**Date** : 2026-06-17
+**Auteur** : Antigravity (AI)
+
+### 1. Résolution des Échelles Corrompues par les Collisions (Jelly Bounce)
+- **Problème** : Les boules rapides traversant l'attraction du trou noir restaient parfois bloquées dans un scale déformé/moche. Cela se produisait car la vitesse élevée provoquait des collisions, déclenchant le comportement de rebond élastique de `BallJellyBounce` (qui utilise des tweens additifs `DOBlendableScaleBy`). Ces tweens entraient en conflit direct avec la mise à l'échelle absolue réécrite chaque frame par `BlackHoleVisualGlitch`, corrompant les calculs de DOTween et figeant la boule dans un état déformé après sa sortie.
+- **Solution** : 
+  - Ajout d'une propriété `IsAttracted` sur `BallEntity` pour indiquer si elle est dans la zone d'attraction.
+  - Dans `BlackHoleVisualGlitch.cs`, cette propriété est passée à `true` lorsque la boule entre dans la zone de glitch, et réinitialisée à `false` avec un appel de sécurité à `ResetJellyState()` pour nettoyer tout tween de rebond résiduel lors de sa sortie ou lors de la désactivation du script.
+  - Dans `BallJellyBounce.cs` (FixedUpdate), les rebonds de collision sont ignorés si `IsAttracted` est actif, évitant tout conflit de mise à l'échelle concurrent.
+  - Conservation de l'effet de glitch et de l'aspiration des boules pendant le drag de l'utilisateur (le bypass du drag a été supprimé).
+
+---
+
+## [2026-06-17] - Fix de l'Animation de Flash HDR sur le Black Hole (Outer Color Only)
+**Date** : 2026-06-17
+**Auteur** : Antigravity (AI)
+
+### 1. Ciblage de ColorOuter pour le Flash du Disque Radial
+- **Problème** : L'animation de flash (`PlayFlash`) et sa mise en cache initiale (`Awake`) modifiaient la propriété générique `Color` du `Disc` de Shapes. Comme le disque est configuré en mode couleur `Radial` avec une couleur interne distincte (`Inner` noire) et une externe (`Outer` violette), modifier la couleur globale écrasait le dégradé radial et faisait flasher le disque entier y compris le centre noir.
+- **Solution** : Modification du ciblage des couleurs dans `BlackHole.cs` pour affecter spécifiquement la propriété `ColorOuter` du `Disc`. L'intensité de la couleur externe est maintenant augmentée en HDR durant le flash avant de revenir à sa valeur initiale, sans affecter la couleur interne noire du trou noir.
+- **Code Modifié** :
+  - `Awake()` : Caches `_disc.ColorOuter` dans `_baseColor` au lieu de `_disc.Color`.
+  - `PlayFlash()` : Restauration et interpolation via DOTween sur `_disc.ColorOuter` au lieu de `_disc.Color`.
+
+---
+
+## [2026-06-17] - Refactoring Modulaire du Black Hole (Component-Based Unity)
+**Date** : 2026-06-17
+**Auteur** : Antigravity (AI)
+
+### 1. Découpage en Composants Unity Modulaires (Required Components)
+- **Problème** : Le script `BlackHole.cs` accumulait toute la logique physique, visuelle et de glitch, le rendant trop volumineux et difficile à maintenir (environ 500 lignes).
+- **Solution** : Découpage en 4 scripts indépendants :
+  - **`BlackHole.cs`** (Core) : Contient l'état du rayon (`GRadius`), l'événement d'abonnement `OnRadiusChanged`, la consommation et le bouton Odin.
+  - **`BlackHolePhysics.cs`** (Physics) : Gère la détection `OverlapCircle`, la force d'attraction hybride et expose `AttractedObjects`.
+  - **`BlackHoleVisuals.cs`** (Visuals) : Gère le redimensionnement du Shapes Disc principal, du Background Disc et la mise à jour des variables de Shader.
+  - **`BlackHoleVisualGlitch.cs`** (Glitches) : Gère le spaghettification factor et le jitter/glitch asynchrone régulé par fréquence.
+- **Ajout Automatique** : Ajout des attributs `[RequireComponent]` sur `BlackHole.cs` pour s'assurer que l'ajout du composant principal ajoute automatiquement les trois nouveaux sous-composants dans Unity.
+
+### 2. Restauration des Valeurs par Défaut d'Origine (Screenshot alignment)
+- **Solution** : Configuration stricte des valeurs par défaut dans les sérialiseurs de chaque composant pour correspondre exactement à la capture d'écran fournie par l'utilisateur :
+  - `_attractForce` = `30f` (Physics)
+  - `_attractRadiusOffset` = `2f` (Physics)
+  - `_gRadius` = `1f` (Core)
+  - `_startRadius` = `0.5f` (Core)
+  - `_growthAmount` = `0.005f` (Core)
+  - `_mainDiscOffset` = `-0.54f` (Visuals)
+  - `_backgroundOffset` = `0.09f` (Visuals)
+  - `_shaderOffset` = `-0.1f` (Visuals)
+  - `_attractShaderOffset` = `2.5f` (Visuals)
+  - `_maxGlitchIntensityBalls` = `0.5f` (Glitch)
+  - `_maxGlitchIntensityMachines` = `0.3f` (Glitch)
+  - `_glitchFrequencyBalls` = `30f` (Glitch)
+  - `_glitchFrequencyMachines` = `30f` (Glitch)
+  - `_shrinkPower` = `0.64f` (Glitch)
+
+### 3. Auto-Résolution des Références (Self-Healing references)
+- **Problème** : Déplacer les champs de rendu (`AttractRenderer`, `BackgroundDisc`, `ShaderRenderer`) vers le nouveau composant `BlackHoleVisuals` risquait de perdre les liaisons sur le prefab Unity.
+- **Solution** : Implémentation d'une fonction d'auto-détection `AutoFindReferences()` appelée dans `Awake()` et `Reset()`. Elle parcourt les enfants du GameObject pour retrouver automatiquement les rendus correspondants par leur nom (ex. "Attract", "BlackHoleShader", "Background"), rendant le script robuste et auto-configurable sans intervention manuelle de l'utilisateur.
+
+### 4. Animation de Flash HDR sur Consommation d'Entités (Satisfying feedback)
+- **Problème** : L'absorption d'une balle ou d'une machine dans le trou noir manquait d'impact visuel et de feedback satisfaisant.
+- **Solution** : 
+  - Récupération de la couleur de base du disque principal (`Disc` de Shapes) lors du démarrage (`Awake`).
+  - Lors de l'absorption validée d'une entité (balle ou machine) dans `ConsumeEntity()`, déclenchement de `PlayFlash()`.
+  - Utilisation de `DOTween.Sequence()` avec liaison au cycle de vie (`SetLink(gameObject)`) pour animer la couleur du disque vers une intensité boostée en HDR (RGB multiplié par `_hdrFlashMultiplier = 3f`) en `0.05` seconde (Ease.OutQuad), puis la ramener à sa couleur de base en `0.35` seconde (Ease.InQuad).
+
+---
+
+## [2026-06-17] - Personnalisation du Rétrécissement et du Glitch du Black Hole
+**Date** : 2026-06-17
+**Auteur** : Antigravity (AI)
+
+### 1. Personnalisation fine de la courbe de rétrécissement (Spaghettification)
+- **Problème** : L'utilisateur souhaitait que le rétrécissement des entités soit plus personnalisable (ex. que l'entité rapetisse moins vite au début, mais atteigne quand même une taille nulle à l'horizon).
+- **Solution** : 
+  - Ajout d'une plage `Range(0.05f, 5f)` sur la variable `_shrinkPower`.
+  - Explication mathématique ajoutée dans le tooltip : une puissance `_shrinkPower < 1` (ex. `0.5`) fait que l'entité reste plus grande plus longtemps et ne rétrécit fortement que près de l'horizon, tandis qu'une puissance `> 1` accélère le rétrécissement dès la limite de capture.
+  - Calcul direct en `Update()` via `Mathf.Pow(shrinkFactor, _shrinkPower)`.
+
+### 2. Paramétrage indépendant du Glitch (Intensité & Fréquence) pour Machines et Balles
+- **Problème** : L'effet de distorsion visuelle ("glitch") s'exécutait auparavant à la fréquence des frames, ce qui était trop frénétique et non configurable en termes de vitesse de jitter pour chaque type d'entité.
+- **Solution** :
+  - Introduction des variables sérialisées de fréquence de glitch : `_glitchFrequencyBalls` (10 Hz par défaut) et `_glitchFrequencyMachines` (8 Hz par défaut).
+  - Création de la structure `GlitchState` pour enregistrer l'offset actuel et le timestamp du prochain jitter (`NextGlitchTime`) pour chaque transform.
+  - Remplacement du dictionnaire `_glitchedObjects` de `<Transform, Vector3>` vers `<Transform, GlitchState>`.
+  - Dans `Update()`, régulation temporelle : le scale de glitch n'est recalculé que si `Time.time >= glitchState.NextGlitchTime` (ou à chaque frame si la fréquence est nulle/négative). Cela permet de garder le mouvement de rétrécissement fluide à chaque frame tout en ayant un jitter saccadé et rythmé très naturel.
+
+---
+
+## [2026-06-17] - Fonctionnalisation du Black Hole (Physique Hybride, Drag & Craft Protection, Reset Pool, Glitch Visuel & Fixes)
+**Date** : 2026-06-17
+**Auteur** : Antigravity (AI)
+
+### 1. Physique d'Attraction Hybride (Kinematic vs Dynamic)
+- **Problème** : Les machines sont en mode `Kinematic` lorsqu'elles ne sont pas traînées par l'utilisateur, ce qui empêchait l'attraction standard par force (`Rigidbody2D.AddForce` sans effet).
+- **Solution** : Implémentation d'une détection dans `BlackHole.AttractEntity()` :
+  - **Kinematic (Machines au repos)** : Déplacement physique direct via `Rigidbody2D.MovePosition` vers le centre avec un coefficient d'attraction.
+  - **Dynamic (Balles, et Machines en cours de drag)** : Application d'une force classique `AddForce`. Un coefficient de `1.5` est appliqué sur les balles pour les rendre plus légères et rapides à aspirer par rapport aux machines.
+- **SSOT et non-scaling** : La force physique d'attraction n'est plus multipliée par la taille du trou noir (conservation de la même zone d'influence et de la même force de base peu importe le grossissement).
+
+### 1.B Attraction par le Bord et Consommation par le Milieu (Sinking Effect)
+- **Problème** : Les objets commençaient à être détruits dès qu'un seul pixel de leur bord touchait le disque (`distanceToEdge <= _gRadius`), ce qui donnait un effet visuel de disparition instantanée peu naturel.
+- **Solution** : Hybridation des détections de distances :
+  - **Attraction** : Toujours basée sur le bord (`distanceToEdge <= _gRadius + _attractRadiusOffset`) via `col.ClosestPoint(transform.position)`.
+  - **Consommation** : Basée sur la distance au centre (`distanceToCenter <= _gRadius`), forçant l'objet à s'enfoncer de moitié dans le trou noir avant d'être englouti (effet visuel d'absorption réaliste).
+
+### 1.C Résolution des MissingReferenceExceptions (Machines & ElectricArc)
+- **Problème** :
+  - **Machines** : Lorsqu'une machine était consommée (détruite via `Destroy()`), sa référence restait active dans les réseaux d'énergie (`EnergyNetwork`) jusqu'au prochain tick logique, générant des exceptions critiques dans la boucle `ProcessFluidTransfer` exécutée chaque frame en `FixedUpdate`.
+  - **ElectricArc** : Si des arcs électriques étaient détruits de façon externe dans le jeu, la liste de cache d'arcs `_arcPool` d'`EnergyManager` contenait des références détruites (nulles), levant une exception lors du parcours de la boucle d'inactivation globale (`RebuildNetworks`).
+- **Solution** :
+  - **Désactivation Synchrone** : Avant de détruire l'objet, `ConsumeEntity` fait un `SetActive(false)`, ce qui déclenche instantanément `OnDisable()` et `EnergyManager.UnregisterNode()`.
+  - **Recalcul de Topologie Synchrone** : `UnregisterNode` exécute immédiatement `RebuildNetworks()`, purgeant instantanément les réseaux de toute référence détruite.
+  - **Sécurité Temporelle** : Ajout d'une vérification `node == null || (node as UnityEngine.Object) == null` dans la boucle de transfert de fluide d'`EnergyNetwork` pour s'assurer que si un nœud est détruit au milieu d'un cycle, il est simplement ignoré.
+  - **Nettoyage Dynamic Arc Pool** : Ajout de vérifications de nullité et de nettoyage dynamique à la volée de `_arcPool` dans `EnergyManager.cs` (notamment dans `ShowArc` et la boucle de reset de `RebuildNetworks`). Si un arc de la pool est détruit, il est retiré de la liste, prévenant toute exception.
+
+### 1.D Spaghettification & Effet de Glitch Visuel de Taille (Scale Glitch & Shrink)
+- **Solution** : Implémentation d'un effet visuel de distorsion et de rétrécissement dynamique de taille dans `BlackHole.Update()` :
+  - **Glitch Haute Fréquence Différencié** : La distorsion (squash & stretch) est calculée en haute fréquence. Nous avons séparé les intensités maximales de glitch de scale pour les balles (`_maxGlitchIntensityBalls`) et pour les machines (`_maxGlitchIntensityMachines`) afin de permettre un réglage indépendant (par ex. glitcher plus fort les balles et plus rigidement les machines).
+  - **Rétrécissement Personnalisable (Spaghettification)** : Une valeur de `shrinkFactor` est calculée. Nous avons ajouté `_shrinkPower` (exposant de courbe) pour contrôler la linéarité du rétrécissement. Un exposant inférieur à `1.0` (ex: `0.5`) fait que l'objet reste grand plus longtemps et rapetisse très vite à l'approche de l'horizon, tandis qu'un exposant supérieur à `1.0` (ex: `2.0`) le fait rapetisser plus tôt.
+  - La distorsion et le rétrécissement sont appliqués sur l'échelle via le cache de `_attractedObjectsThisFrame` à l'aide d'une structure optimisée `AttractedObjectData` qui stocke le type de l'objet (`IsBall`), évitant tout appel coûteux à `GetComponent` dans `Update()`.
+  - Si l'objet est éjecté ou s'échappe de la zone d'attraction, son échelle d'origine `Vector3.one` lui est restaurée. Une sécurité équivalente est présente dans `OnDisable()` pour nettoyer proprement tous les objets encore suivis.
+  - Compatible avec le crafting, les animations de click et les duplications (mitosis) puisque l'effet s'applique en direct.
+
+### 2. Gestion du Drag et des Boules en Orbit / Sélection de Craft
+- **Problème** : Si une boule ou une machine en cours de drag ou en cours de crafting (dans l'orbite ou sélectionnée) se faisait manger par le trou noir, cela créait des incohérences d'état (drag fantôme ou recette cassée).
+- **Solution** :
+  - **Force Drop instantané** : Dans `ConsumeEntity()`, si l'entité mangée correspond à l'objet actuellement déplacé dans `GameInputManager.Instance.CurrentDraggedObject`, un appel à `ForceDrop()` est déclenché pour libérer le curseur proprement.
+  - **Crafting Protection** : Rendue publique la méthode `DeselectBall(BallEntity ball)` de `CraftingManager.cs`. Dans `ConsumeEntity()`, si la boule est présente dans la sélection de craft, elle est désélectionnée proprement (ce qui met à jour l'orbite, les lignes de connexion et vérifie les recettes) avant d'être renvoyée dans la pool.
+
+### 3. Nettoyage Rigoureux des États de la Pool (Anti-Bug de Recyclage)
+- **Problème** : Lorsque des balles revenaient dans la pool et étaient réutilisées, des variables d'état résiduelles n'étaient pas réinitialisées, générant des comportements parasites (par ex. voisins persistants, drag hérité).
+- **Solution** :
+  - **BallEntity** : Réinitialisation forcée de `_isBeingDragged = false` dans `OnDisable()`.
+  - **BallPhysicsPassport** : Implémentation de `OnDisable()` pour réinitialiser la priorité physique max (`Default`), les flags d'override et les vitesses résiduelles.
+  - **YellowBallBehavior** : Nettoyage de `_currentNeighbors` dans `OnDisableBehavior()` pour éviter les faux positifs topologiques à la ré-activation.
+  - **BlueBallBehavior** : Ajout de `DOTween.Kill(this)` dans `OnDisableBehavior()` pour arrêter les tweens asynchrones de mise à l'échelle sur le collider/renderer.
+
+---
+
 ## [2026-06-16] - Refonte des Visuels du Black Hole (Offsets Dynamiques et DOTween)
 **Date** : 2026-06-16
 **Auteur** : Antigravity (AI)

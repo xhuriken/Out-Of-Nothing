@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5821639764540655096}
   - component: {fileID: 4772811704896801894}
   - component: {fileID: 5659279889623515903}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Piston 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -159,7 +159,7 @@ GameObject:
   - component: {fileID: 3234642229928662590}
   - component: {fileID: 4858028946153736753}
   - component: {fileID: 6796470915101279835}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Border
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -306,7 +306,7 @@ GameObject:
   - component: {fileID: 1545005092116520557}
   - component: {fileID: 5862357218301686799}
   - component: {fileID: 7321727585376800666}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Border 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -453,7 +453,7 @@ GameObject:
   - component: {fileID: 428645572505770329}
   - component: {fileID: 4483424488792379799}
   - component: {fileID: 7815752329024956243}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Piston
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -600,7 +600,7 @@ GameObject:
   - component: {fileID: 1088451177946880862}
   - component: {fileID: 9089209472064100971}
   - component: {fileID: 211486126333204396}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: RedMaterialisorMachine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -746,7 +746,7 @@ GameObject:
   - component: {fileID: 7779867155555367018}
   - component: {fileID: 2474055371955538987}
   - component: {fileID: 7399548140844438784}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Background 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -893,7 +893,7 @@ GameObject:
   - component: {fileID: 1674172465985025308}
   - component: {fileID: 4766753220814539655}
   - component: {fileID: 4880859739093876588}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1040,7 +1040,7 @@ GameObject:
   - component: {fileID: 4782254245562662314}
   - component: {fileID: 7747767753719149006}
   - component: {fileID: 6305231577823705345}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: ENERGY STORAGE
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1185,7 +1185,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5649333172785839375}
   - component: {fileID: 659597795580732167}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Pistons
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1243,7 +1243,7 @@ GameObject:
   - component: {fileID: 6136512458700939312}
   - component: {fileID: 6397298483483225588}
   - component: {fileID: 1239462334395164443}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: ball
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1383,7 +1383,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3823496636508246315}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: SpawnPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -130,4 +130,12 @@ public class BallPhysicsPassport : MonoBehaviour
 
         _rb.AddForce(force, mode);
     }
+
+    private void OnDisable()
+    {
+        _currentMaxPriority = PhysicsPriority.Default;
+        _hasOverrideThisFrame = false;
+        _trueVelocity = Vector2.zero;
+        _nextVelocity = Vector2.zero;
+    }
 }

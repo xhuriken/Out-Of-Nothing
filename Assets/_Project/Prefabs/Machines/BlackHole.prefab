@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8107701301953502593
 Transform:
   m_ObjectHideFlags: 0
@@ -751,7 +751,7 @@ ParticleSystem:
     sphericalDirectionAmount: 0
     randomPositionAmount: 0
     radius:
-      value: 3
+      value: 0.2
       mode: 0
       spread: 0
       speed:
@@ -2210,8 +2210,8 @@ ParticleSystem:
     enabled: 0
     x:
       serializedVersion: 2
-      minMaxState: 0
-      scalar: 0
+      minMaxState: 3
+      scalar: 0.12
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -2263,8 +2263,8 @@ ParticleSystem:
         m_RotationOrder: 4
     y:
       serializedVersion: 2
-      minMaxState: 0
-      scalar: 0
+      minMaxState: 3
+      scalar: 1
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -2316,8 +2316,8 @@ ParticleSystem:
         m_RotationOrder: 4
     z:
       serializedVersion: 2
-      minMaxState: 0
-      scalar: 0
+      minMaxState: 3
+      scalar: 1
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -2707,7 +2707,7 @@ ParticleSystem:
     strength:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.8
+      scalar: 0.2
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -2813,7 +2813,7 @@ ParticleSystem:
     strengthZ:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1
+      scalar: 2
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -2864,12 +2864,12 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     separateAxes: 0
-    frequency: 0.3
-    damping: 1
+    frequency: 10
+    damping: 0
     octaves: 1
-    octaveMultiplier: 0.5
-    octaveScale: 2
-    quality: 1
+    octaveMultiplier: 1
+    octaveScale: 1
+    quality: 2
     scrollSpeed:
       serializedVersion: 2
       minMaxState: 0
@@ -2880,7 +2880,7 @@ ParticleSystem:
         m_Curve:
         - serializedVersion: 3
           time: 0
-          value: 0
+          value: -0.43077087
           inSlope: 0
           outSlope: 0
           tangentMode: 0
@@ -2889,7 +2889,7 @@ ParticleSystem:
           outWeight: 0.33333334
         - serializedVersion: 3
           time: 1
-          value: 0
+          value: -0.30769348
           inSlope: 0
           outSlope: 0
           tangentMode: 0
@@ -3082,11 +3082,11 @@ ParticleSystem:
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
-    remapEnabled: 0
+    remapEnabled: 1
     positionAmount:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1
+      scalar: 0.2
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -3139,7 +3139,7 @@ ParticleSystem:
     rotationAmount:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0
+      scalar: 1
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -5193,6 +5193,9 @@ GameObject:
   - component: {fileID: 1632092885795652499}
   - component: {fileID: 247429699215612749}
   - component: {fileID: 359254975943432488}
+  - component: {fileID: 7522070442842743966}
+  - component: {fileID: 5088892304724699252}
+  - component: {fileID: 4618933418700326718}
   m_Layer: 0
   m_Name: BlackHole
   m_TagString: Untagged
@@ -5231,21 +5234,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3a2bbccb53a3de438684cec3a28bd4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BlackHole
-  _attractForce: 25
-  _attractRadiusOffset: 1
-  _gRadius: 1
-  _targetLayerMask:
-    serializedVersion: 2
-    m_Bits: 0
   _startRadius: 0.5
-  _growthAmount: 0.03
-  AttractRenderer: {fileID: 2155286987386469062}
-  BackgroundDisc: {fileID: 5601481684700951540}
-  ShaderRenderer: {fileID: 1916275433111465097}
-  _mainDiscOffset: -0.54
-  _backgroundOffset: 0.09
-  _shaderOffset: -0.1
-  _attractShaderOffset: 1.5
+  _growthAmount: 0.005
+  _gRadius: 1
+  _hdrFlashMultiplier: 3
+  _flashInDuration: 0.05
+  _flashOutDuration: 0.35
 --- !u!114 &5816716308862006155
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5391,3 +5385,56 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.98
+--- !u!114 &7522070442842743966
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9221366279253860388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6016e3ed761d7b4288e1a111789b159, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BlackHolePhysics
+  _attractForce: 30
+  _attractRadiusOffset: 2
+  _targetLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+--- !u!114 &5088892304724699252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9221366279253860388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7285fa41fd7acd948acd4a738db57f4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BlackHoleVisuals
+  AttractRenderer: {fileID: 2155286987386469062}
+  BackgroundDisc: {fileID: 5601481684700951540}
+  ShaderRenderer: {fileID: 1916275433111465097}
+  _mainDiscOffset: -0.54
+  _backgroundOffset: 0.09
+  _shaderOffset: -0.1
+  _attractShaderOffset: 2.5
+--- !u!114 &4618933418700326718
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9221366279253860388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c140ddc18e90ef74b96a7102d5ed510b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BlackHoleVisualGlitch
+  _maxGlitchIntensityBalls: 0.5
+  _maxGlitchIntensityMachines: 0.3
+  _glitchFrequencyBalls: 30
+  _glitchFrequencyMachines: 30
+  _shrinkPower: 0.64

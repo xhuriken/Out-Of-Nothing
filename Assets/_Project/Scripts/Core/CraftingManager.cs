@@ -187,7 +187,7 @@ public class CraftingManager : MonoBehaviour
         }
     }
 
-    private void DeselectBall(BallEntity ball)
+    public void DeselectBall(BallEntity ball)
     {
         if (ball != null)
         {

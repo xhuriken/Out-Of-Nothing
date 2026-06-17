@@ -1,11 +1,6 @@
-- [x] Analyze `BlackHole.cs`
-- [x] Refactor `BlackHole.cs` visual variables:
-  - Add `_mainDiscOffset` = -0.54f
-  - Add `_backgroundOffset` = +1.52f
-  - Add `_shaderOffset` = -0.1f
-  - Add `_attractShaderOffset` = +1.5f
-- [x] Change `UpdateVisuals` to compute each radius simply by adding the corresponding offset to `_gRadius`.
-- [x] Import `Sirenix.OdinInspector` and `DG.Tweening`.
-- [x] Add `SetRadiusAnimated` method with `[Button]` attribute.
-- [ ] Update `DEVELOPMENT_LOG.md`.
-- [ ] Check-off verification.
+- [x] Update `AttractedObjectData` struct in `BlackHolePhysics.cs` to store `BallEntity` and `MachineEntity` references
+- [x] Update `BlackHolePhysics.cs` to retrieve and store `BallEntity` and `MachineEntity` in `AttractedObjectData`
+- [x] Update `BlackHoleVisualGlitch.cs` to skip applying glitch and reset scale if object is dragged, processing, or duplicating
+- [x] Update `DEVELOPMENT_LOG.md`
+- [x] Verify compilation with `dotnet build Out-Of-Nothing.sln`
+- [x] Verify member visibility (Validation of Signature)

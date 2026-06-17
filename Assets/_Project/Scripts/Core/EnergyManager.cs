@@ -76,6 +76,7 @@ public class EnergyManager : MonoBehaviour
         {
             Debug.Log($"[EnergyManager] Unregistered node. Total nodes: {_allNodes.Count}");
             MarkTopologyDirty();
+            RebuildNetworks(); // Rebuild synchronously to avoid MissingReferenceException in fluid processing
         }
     }
     /// <summary>
@@ -142,6 +143,7 @@ public class EnergyManager : MonoBehaviour
             // Just hide any remaining arcs in the pool beyond the active ones
             for (int i = _activeArcCount; i < _arcPool.Count; i++)
             {
+                if (_arcPool[i] == null) continue;
                 if (_arcPool[i].gameObject.activeSelf)
                     _arcPool[i].gameObject.SetActive(false);
             }
@@ -156,6 +158,7 @@ public class EnergyManager : MonoBehaviour
         {
             for (int i = 0; i < _activeArcCount; i++)
             {
+                if (_arcPool[i] == null) continue;
                 if (_arcPool[i].IsConnectedTo(draggedNode))
                 {
                     _arcPool[i].gameObject.SetActive(false);
@@ -193,6 +196,7 @@ public class EnergyManager : MonoBehaviour
         // 4. Deactivate remaining arcs in the pool
         for (int i = currentPreviewIndex; i < _arcPool.Count; i++)
         {
+            if (_arcPool[i] == null) continue;
             if (_arcPool[i].gameObject.activeSelf)
                 _arcPool[i].gameObject.SetActive(false);
         }
@@ -220,8 +224,14 @@ public class EnergyManager : MonoBehaviour
         _edgeBuffer.Clear();
 
         // reset all arcs before rebuilding
-        foreach (ElectricArc arc in _arcPool)
+        for (int i = _arcPool.Count - 1; i >= 0; i--)
         {
+            ElectricArc arc = _arcPool[i];
+            if (arc == null)
+            {
+                _arcPool.RemoveAt(i);
+                continue;
+            }
             arc.gameObject.SetActive(false);
         }
         int currentArcIndex = 0;
@@ -352,12 +362,15 @@ public class EnergyManager : MonoBehaviour
     /// </summary>
     private void ShowArc(IEnergyNode a, IEnergyNode b, ref int index, bool isPreview = false)
     {
-        ElectricArc arc;
-        if (index < _arcPool.Count)
+        ElectricArc arc = null;
+        while (index < _arcPool.Count)
         {
             arc = _arcPool[index];
+            if (arc != null) break;
+            _arcPool.RemoveAt(index);
         }
-        else
+
+        if (arc == null)
         {
             arc = Instantiate(_arcPrefab, transform);
             _arcPool.Add(arc);

@@ -177,6 +177,8 @@ public class EnergyNetwork
     {
         foreach (IEnergyNode node in _nodes)
         {
+            if (node == null || (node as UnityEngine.Object) == null) continue;
+
             if (Mathf.Abs(node.EnergyAllocationRate) > 0.0001f)
             {
                 float deltaEnergy = node.EnergyAllocationRate * deltaTime;
