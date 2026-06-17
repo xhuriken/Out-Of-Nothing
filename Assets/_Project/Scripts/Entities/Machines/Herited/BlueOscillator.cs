@@ -21,8 +21,16 @@ public class BlueOscillator : MachineEntity, IEnergyConsumer
     private BallCaptureHandler _captureHandler;
     private bool _isTransforming;
 
-    public float InputTransferSpeed => _inputTransferSpeed;
+    public float InputTransferSpeed
+    {
+        get
+        {
+            if (CurrentEnergy >= _consumptionPerAction - 0.0001f) return 0f;
+            return _inputTransferSpeed;
+        }
+    }
     public float ConsumptionPerAction => _consumptionPerAction;
+    public override bool IsDemanding => CurrentEnergy < _consumptionPerAction - 0.0001f;
 
     protected override void Start()
     {
@@ -42,24 +50,6 @@ public class BlueOscillator : MachineEntity, IEnergyConsumer
             return false;
         }
         return base.OnDragStart();
-    }
-
-    private void FixedUpdate()
-    {
-        if (IsBeingDragged || !_isRunning) return;
-
-        // If we have a captured ball, check if we can start the transformation
-        if (_captureHandler != null && _captureHandler.CapturedBall != null && !_isTransforming)
-        {
-            // Verify if the captured ball is indeed a red ball
-            if (_captureHandler.CapturedBall.Data == _redBallData)
-            {
-                if (CurrentEnergy >= _consumptionPerAction)
-                {
-                    StartTransformation();
-                }
-            }
-        }
     }
 
     private void StartTransformation()
@@ -137,6 +127,18 @@ public class BlueOscillator : MachineEntity, IEnergyConsumer
 
     protected override void OnTickExecuted()
     {
-        // Synchronized tick callback if needed
+        if (IsBeingDragged || !_isRunning) return;
+
+        // Synchronized action check on global tick
+        if (_captureHandler != null && _captureHandler.CapturedBall != null && !_isTransforming)
+        {
+            if (_captureHandler.CapturedBall.Data == _redBallData)
+            {
+                if (CurrentEnergy >= _consumptionPerAction - 0.001f)
+                {
+                    StartTransformation();
+                }
+            }
+        }
     }
 }
