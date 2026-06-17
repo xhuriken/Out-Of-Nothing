@@ -48,7 +48,13 @@ public class ElectricArc : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (_startNode == null || _endNode == null) return;
+        // Safe check for Unity destroyed objects via interface cast
+        if (_startNode == null || (_startNode is UnityEngine.Object objStart && objStart == null) ||
+            _endNode == null || (_endNode is UnityEngine.Object objEnd && objEnd == null))
+        {
+            gameObject.SetActive(false);
+            return;
+        }
 
         UpdateVisualState();
 
@@ -70,6 +76,14 @@ public class ElectricArc : MonoBehaviour
 
     private void UpdateVisualState()
     {
+        // Safe check for Unity destroyed objects via interface cast
+        if (_startNode == null || (_startNode is UnityEngine.Object objStart && objStart == null) ||
+            _endNode == null || (_endNode is UnityEngine.Object objEnd && objEnd == null))
+        {
+            gameObject.SetActive(false);
+            return;
+        }
+
         // 1. Calculate base color based on state
         // A node is "Powerable" if it belongs to a network with producers.
         bool startPowered = _startNode.CurrentNetwork != null && _startNode.CurrentNetwork.HasProducers;
@@ -134,6 +148,14 @@ public class ElectricArc : MonoBehaviour
     /// </summary>
     private void UpdateArcGeometry()
     {
+        // Safe check for Unity destroyed objects via interface cast
+        if (_startNode == null || (_startNode is UnityEngine.Object objStart && objStart == null) ||
+            _endNode == null || (_endNode is UnityEngine.Object objEnd && objEnd == null))
+        {
+            gameObject.SetActive(false);
+            return;
+        }
+
         // Use the utility to find the anchor points on the visual edge (circle)
         Vector3 arcStart = EnergyCollisionUtility.GetAnchorPoint(_startNode, _endNode.Position);
         Vector3 arcEnd = EnergyCollisionUtility.GetAnchorPoint(_endNode, _startNode.Position);

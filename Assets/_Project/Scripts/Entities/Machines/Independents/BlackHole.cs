@@ -100,6 +100,12 @@ public class BlackHole : MonoBehaviour
                 CraftingManager.Instance.DeselectBall(ball);
             }
 
+            // Award points based on the consumed ball's SO configuration
+            if (ball.Data != null && IncrementManager.Instance != null)
+            {
+                IncrementManager.Instance.AddPoints(ball.Data.pointValue);
+            }
+
             if (BallPoolManager.Instance != null)
             {
                 BallPoolManager.Instance.ReleaseBall(ball);

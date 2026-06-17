@@ -9,17 +9,71 @@
 6. **LOGIQUE DE COMMIT** : NE JAMAIS commiter/pusher sans demande explicite de l'utilisateur.
 
 
-## [2026-06-17] - Fix de l'Interférence des Échelles et du Reset Glitch du Black Hole (Jelly Bounce & High Velocity)
+## [2026-06-17] - Typewriter-based Score Animation (Only last character)
 **Date** : 2026-06-17
 **Auteur** : Antigravity (AI)
 
-### 1. Résolution des Échelles Corrompues par les Collisions (Jelly Bounce)
-- **Problème** : Les boules rapides traversant l'attraction du trou noir restaient parfois bloquées dans un scale déformé/moche. Cela se produisait car la vitesse élevée provoquait des collisions, déclenchant le comportement de rebond élastique de `BallJellyBounce` (qui utilise des tweens additifs `DOBlendableScaleBy`). Ces tweens entraient en conflit direct avec la mise à l'échelle absolue réécrite chaque frame par `BlackHoleVisualGlitch`, corrompant les calculs de DOTween et figeant la boule dans un état déformé après sa sortie.
-- **Solution** : 
-  - Ajout d'une propriété `IsAttracted` sur `BallEntity` pour indiquer si elle est dans la zone d'attraction.
-  - Dans `BlackHoleVisualGlitch.cs`, cette propriété est passée à `true` lorsque la boule entre dans la zone de glitch, et réinitialisée à `false` avec un appel de sécurité à `ResetJellyState()` pour nettoyer tout tween de rebond résiduel lors de sa sortie ou lors de la désactivation du script.
-  - Dans `BallJellyBounce.cs` (FixedUpdate), les rebonds de collision sont ignorés si `IsAttracted` est actif, évitant tout conflit de mise à l'échelle concurrent.
-  - Conservation de l'effet de glitch et de l'aspiration des boules pendant le drag de l'utilisateur (le bypass du drag a été supprimé).
+### 1. Animation par Typewriter sur le Dernier Caractère du Score
+- **Problème** : L'utilisateur souhaite animer l'incrémentation du score en utilisant le typewriter de Febucci Text Animator, de sorte que l'animation d'apparition (appearance offset par caractère) ne se joue que sur le dernier caractère (dernier chiffre) ajouté/modifié, sans faire clignoter ou réapparaître tout le texte précédent.
+- **Solution** :
+  - Modification de `IncrementManager.UpdatePointsUI()` :
+    - Découpage de la chaîne de caractères du score `scoreStr` en deux parties : `precedingText` (tous les caractères sauf le dernier) et `lastChar` (le dernier caractère).
+    - Application instantanée de `precedingText` via `_textAnimator.SetText(precedingText, false)`. Le paramètre `false` indique de ne pas cacher le texte (affichage instantané sans animation d'apparition).
+    - Ajout/Apposition du dernier caractère via `_textAnimator.AppendText(lastChar, true)`. Le paramètre `true` indique d'apposer ce caractère en le masquant initialement.
+    - Lancement du typewriter via `_typewriter.StartShowingText(false)`. Comme le typewriter commence sa routine, il saute les caractères déjà marqués comme visibles (`precedingText`) et déroule uniquement la révélation du dernier caractère (`lastChar`), ce qui déclenche son effet d'apparition (l'offset configuré).
+- **Code Modifié/Ajouté** :
+  - **`IncrementManager.cs`** :
+    ```csharp
+    // Split the score string into the preceding text and the last character
+    string precedingText = scoreStr.Substring(0, scoreStr.Length - 1);
+    string lastChar = scoreStr.Substring(scoreStr.Length - 1);
+
+    // Set the preceding text instantly (without playing appearance animations)
+    _textAnimator.SetText(precedingText, false);
+
+    // Append the last character, keeping it hidden initially for the typewriter
+    _textAnimator.AppendText(lastChar, true);
+
+    // Start the typewriter to reveal and animate the last character
+    _typewriter.StartShowingText(false);
+    ```
+
+### 2. Correction du NullReferenceException dans OnValidate() lors de l'initialisation du Play Mode
+- **Problème** : Lors du lancement du mode Play ou du rechargement de domaine, Unity appelle `OnValidate()` sur l'inspecteur alors que TextMeshPro (ou TextMeshProUGUI) n'est pas encore totalement initialisé en interne, ce qui génère une `NullReferenceException` fatale dans `TextMeshProUGUI.ClearMesh()`.
+- **Solution** :
+  - Ajout d'une variable d'état privée `_isInitialized` initialisée à `false`.
+  - Dans la méthode `Start()`, `_isInitialized` est passé à `true` et `UpdatePointsUI()` est appelé pour initialiser proprement l'affichage du score à la reprise du jeu.
+  - Mise à jour du garde-fou dans `OnValidate()` : `if (Application.isPlaying && _isInitialized) { UpdatePointsUI(); }`. Cela empêche la mise à jour immédiate avant que TextMeshPro soit éveillé, tout en conservant la mise à jour en direct lors des modifications interactives dans l'Inspecteur au cours du jeu.
+
+---
+
+## [2026-06-17] - Fix Exceptions ElectricArc, Score & Intégration IncrementManager au Black Hole
+**Date** : 2026-06-17
+**Auteur** : Antigravity (AI)
+
+### 1. Résolution Robuste des MissingReferenceExceptions sur les Arcs Électriques (Nodes Détruits)
+- **Problème** : Lorsque des machines ou boules connectées à des arcs électriques étaient détruites par le trou noir, des `MissingReferenceException` apparaissaient car les références d'interface C# (`IEnergyNode`) vers des objets Unity détruits ne sont pas détectées par les vérifications `== null` classiques de C#.
+- **Solution** :
+  - Utilisation systématique du pattern-matching C# (`node is UnityEngine.Object obj && obj == null`) pour détecter la destruction des objets Unity sous-jacents aux interfaces.
+  - Sécurisation des méthodes de calcul de géométrie et d'état dans `ElectricArc.cs` (`LateUpdate()`, `UpdateVisualState()`, `UpdateArcGeometry()`) et `EnergyCollisionUtility.cs` (`AreConnected()`, `IsConnectionMaintained()`, `GetAnchorPoint()`).
+  - Prunage automatique et synchrone de `_allNodes` dans `EnergyManager.cs` (`RebuildNetworks()`) pour retirer les nœuds détruits avant toute construction ou calcul de topologie.
+  - Sécurisation de `EnergyManager.GetDraggedNode()`, `EnergyManager.CanConnectInternal()` et `EnergyNetwork.CalculateAllocation()`.
+
+### 2. Intégration de l'IncrementManager et Animation Individuelle du Dernier Chiffre
+- **Problème** : L'IncrementManager n'était pas branché au trou noir, et la mise à jour des points faisait réapparaître tout le texte d'un coup.
+- **Solution** :
+  - **BallDataSO.cs** : Ajout du champ public `pointValue` pour définir les points par type de boule (Rouge = 1, Bleu = 2, Jaune = 3, Marron = 4).
+  - **BlackHole.cs** : Appel synchrone à `IncrementManager.Instance.AddPoints(ball.Data.pointValue)` dans `ConsumeEntity` lors de l'absorption d'une boule.
+  - **IncrementManager.cs** :
+    - Exposition de la variable `_points` (score) dans l'Inspecteur avec `[SerializeField]` pour permettre la visualisation et l'édition directe, avec mise à jour de l'UI en temps réel à l'exécution via `OnValidate()`.
+    - Passage de `_textPoints` au type générique `TMP_Text` (compatible 3D et UI).
+    - Mise à jour directe du score en texte brut sans balises d'effets pour éviter tout comportement d'apparition clignotant ou répétitif lors des incrémentations.
+
+### 3. Résolution des Échelles Corrompues par les Collisions (Jelly Bounce)
+- **Problème** : Les boules rapides traversant l'attraction du trou noir restaient parfois bloquées dans un scale déformé.
+- **Solution** :
+  - Ajout d'une propriété `IsAttracted` sur `BallEntity` passée à `true` par `BlackHoleVisualGlitch` lors de l'attraction.
+  - `BallJellyBounce.cs` ignore les rebonds physiques si `IsAttracted` est actif, et `ResetJellyState()` est appelé lors de la sortie pour nettoyer tout tween de rebond résiduel.
 
 ---
 

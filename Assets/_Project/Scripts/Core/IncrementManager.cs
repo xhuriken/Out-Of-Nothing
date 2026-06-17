@@ -1,13 +1,41 @@
 using TMPro;
 using UnityEngine;
+using Febucci.UI;
+using Febucci.UI.Core;
 
+/// <summary>
+/// Manages global points/scoring system, updates UI text, and handles individual digit animations.
+/// </summary>
 public class IncrementManager : MonoBehaviour
 {
     public static IncrementManager Instance { get; private set; }
 
-    [SerializeField] private TextMeshPro _textPoints;
+    /// <summary>
+    /// The TextMeshPro text component displaying the score.
+    /// Supports both 3D text and UI text.
+    /// </summary>
+    [SerializeField] private TMP_Text _textPoints;
 
+    /// <summary>
+    /// The TextAnimator component linked to the points text.
+    /// </summary>
+    [SerializeField] private TextAnimator_TMP _textAnimator;
+
+    /// <summary>
+    /// The TextAnimator Typewriter component linked to the score text.
+    /// </summary>
+    [SerializeField] private TypewriterCore _typewriter;
+
+    [Header("Score Data")]
+    [SerializeField]
+    [Tooltip("The current points score.")]
     private double _points = 0;
+    
+    private bool _isInitialized = false;
+    
+    /// <summary>
+    /// Gets or sets the current points value.
+    /// </summary>
     public double Points
     {
         get => _points;
@@ -21,7 +49,6 @@ public class IncrementManager : MonoBehaviour
     public void AddPoints(double points)
     {
         _points += points;
-        // update Ui ?
         UpdatePointsUI();
     }
 
@@ -32,7 +59,6 @@ public class IncrementManager : MonoBehaviour
     public void RemovePoints(double points)
     {
         _points -= points;
-        // update UI ?
         UpdatePointsUI();
     }
 
@@ -43,17 +69,47 @@ public class IncrementManager : MonoBehaviour
     public void SetPoints(double points)
     {
         _points = points;
-        // update UI ?
         UpdatePointsUI();
     }
 
     /// <summary>
-    /// Update the score text in UI
+    /// Update the score text in UI.
     /// </summary>
     private void UpdatePointsUI()
     {
-        // here update the textmeshpro with animation like TextAnimator
-        if(_textPoints) _textPoints.text = _points.ToString(); // temps
+        string scoreStr = _points.ToString("F0");
+
+        if (_typewriter != null && _textAnimator != null)
+        {
+            if (scoreStr.Length > 0)
+            {
+                //il est devenu fou, mais la j'ai la flemme de l'arreter
+                // Split the score string into the preceding text and the last character
+                string precedingText = scoreStr.Substring(0, scoreStr.Length - 1);
+                string lastChar = scoreStr.Substring(scoreStr.Length - 1);
+
+                // Set the preceding text instantly (without playing appearance animations)
+                _textAnimator.SetText(precedingText, false);
+
+                // Append the last character, keeping it hidden initially for the typewriter
+                _textAnimator.AppendText(lastChar, true);
+
+                // Start the typewriter to reveal and animate the last character
+                _typewriter.StartShowingText(false);
+            }
+            else
+            {
+                _textAnimator.SetText(string.Empty, false);
+            }
+        }
+        else if (_textAnimator != null)
+        {
+            _textAnimator.SetText(scoreStr);
+        }
+        else if (_textPoints != null)
+        {
+            _textPoints.text = scoreStr;
+        }
     }
 
     /// <summary>
@@ -70,4 +126,23 @@ public class IncrementManager : MonoBehaviour
         Instance = this;
     }
 
+    /// <summary>
+    /// Initializes the score UI once the game starts.
+    /// </summary>
+    private void Start()
+    {
+        _isInitialized = true;
+        UpdatePointsUI();
+    }
+
+    /// <summary>
+    /// Updates the UI when values are modified in the Inspector.
+    /// </summary>
+    private void OnValidate()
+    {
+        if (Application.isPlaying && _isInitialized)
+        {
+            UpdatePointsUI();
+        }
+    }
 }

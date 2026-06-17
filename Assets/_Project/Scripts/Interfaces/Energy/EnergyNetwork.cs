@@ -83,13 +83,18 @@ public class EnergyNetwork
     public void CalculateAllocation(float tickRate)
     {
         // 1. Reset allocations
-        foreach (var node in _nodes) node.EnergyAllocationRate = 0f;
+        foreach (var node in _nodes)
+        {
+            if (node == null || (node is UnityEngine.Object obj && obj == null)) continue;
+            node.EnergyAllocationRate = 0f;
+        }
 
         // 2. Identify "Source" Producers (Generators) vs Consumers (Machines)
         float sourceSupply = 0f;
         List<IEnergyProducer> generators = new List<IEnergyProducer>();
         foreach (var prod in _producers)
         {
+            if (prod == null || (prod is UnityEngine.Object obj && obj == null)) continue;
             if (prod is YellowBallBehavior) continue; // Cables are processed separately
             generators.Add(prod);
             sourceSupply += Quantize(Mathf.Min(prod.OutputTransferSpeed, prod.CurrentEnergy));
@@ -99,6 +104,7 @@ public class EnergyNetwork
         List<IEnergyConsumer> machines = new List<IEnergyConsumer>();
         foreach (var cons in _consumers)
         {
+            if (cons == null || (cons is UnityEngine.Object obj && obj == null)) continue;
             if (cons is YellowBallBehavior) continue; // Cables are processed separately
             float missing = cons.MaxStorage - cons.CurrentEnergy;
             if (missing > 0f)
@@ -113,6 +119,7 @@ public class EnergyNetwork
         float remainingSource = sourceSupply;
         foreach (var cable in _cables)
         {
+            if (cable == null || (cable is UnityEngine.Object obj && obj == null)) continue;
             float missing = cable.MaxStorage - cable.CurrentEnergy;
             if (missing > 0f && remainingSource > 0f)
             {
@@ -135,6 +142,7 @@ public class EnergyNetwork
             for (int i = _cables.Count - 1; i >= 0; i--)
             {
                 var cable = _cables[i];
+                if (cable == null || (cable is UnityEngine.Object obj && obj == null)) continue;
                 float available = Mathf.Min(cable.OutputTransferSpeed, cable.CurrentEnergy);
                 if (available > 0f)
                 {
@@ -152,6 +160,7 @@ public class EnergyNetwork
         float machineRatio = machineDemand > 0 ? totalProvidedToMachines / machineDemand : 0f;
         foreach (var machine in machines)
         {
+            if (machine == null || (machine is UnityEngine.Object obj && obj == null)) continue;
             float missing = machine.MaxStorage - machine.CurrentEnergy;
             float pull = Mathf.Min(machine.InputTransferSpeed, missing);
             machine.EnergyAllocationRate += (pull * machineRatio) / tickRate;
@@ -162,6 +171,7 @@ public class EnergyNetwork
         float generatorRatio = sourceSupply > 0 ? totalSourceConsumed / sourceSupply : 0f;
         foreach (var gen in generators)
         {
+            if (gen == null || (gen is UnityEngine.Object obj && obj == null)) continue;
             float pushable = Mathf.Min(gen.OutputTransferSpeed, gen.CurrentEnergy);
             gen.EnergyAllocationRate -= (pushable * generatorRatio) / tickRate;
         }

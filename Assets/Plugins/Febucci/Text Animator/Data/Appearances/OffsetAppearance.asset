@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: OffsetAppearance
   m_EditorClassIdentifier: Febucci.TextAnimator.Runtime::Febucci.UI.Effects.OffsetAppearance
   tagID: offset
-  baseDuration: 0.5
-  baseAmount: 10
-  baseDirection: {x: 1, y: 1}
+  baseDuration: 0.1
+  baseAmount: 2
+  baseDirection: {x: 0, y: 1}

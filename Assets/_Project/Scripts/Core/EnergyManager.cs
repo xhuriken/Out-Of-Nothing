@@ -218,6 +218,15 @@ public class EnergyManager : MonoBehaviour
     /// </summary>
     private void RebuildNetworks()
     {
+        // Prune any null/destroyed nodes from the list before starting the rebuild
+        for (int i = _allNodes.Count - 1; i >= 0; i--)
+        {
+            if (_allNodes[i] == null || (_allNodes[i] is UnityEngine.Object obj && obj == null))
+            {
+                _allNodes.RemoveAt(i);
+            }
+        }
+
         _isDirty = false;
         _networks.Clear();
         _currentEdges.Clear();
@@ -352,8 +361,16 @@ public class EnergyManager : MonoBehaviour
     /// </summary>
     private IEnergyNode GetNodeFromCollider(Collider2D col)
     {
-        if (col.TryGetComponent(out MachineEntity machine)) return machine;
-        if (col.TryGetComponent(out BallEntity ball)) return ball.Behavior as IEnergyNode;
+        if (col.TryGetComponent(out MachineEntity machine))
+        {
+            if (machine == null) return null;
+            return machine;
+        }
+        if (col.TryGetComponent(out BallEntity ball))
+        {
+            if (ball == null || ball.Behavior == null) return null;
+            return ball.Behavior as IEnergyNode;
+        }
         return null;
     }
 
@@ -418,6 +435,7 @@ public class EnergyManager : MonoBehaviour
     {
         foreach (var node in _allNodes)
         {
+            if (node == null || (node is UnityEngine.Object obj && obj == null)) continue;
             if (node.IsBeingDragged) return node;
         }
         return null;
@@ -428,6 +446,12 @@ public class EnergyManager : MonoBehaviour
     /// </summary>
     private bool CanConnectInternal(IEnergyNode a, IEnergyNode b, bool ignoreDrag = false)
     {
+        if (a == null || (a is UnityEngine.Object objA && objA == null) ||
+            b == null || (b is UnityEngine.Object objB && objB == null))
+        {
+            return false;
+        }
+
         // 1. Isolate dragged nodes (unless we are in preview mode)
         // EXCEPTION: Yellow balls stay connected even during drag.
         if (!ignoreDrag)

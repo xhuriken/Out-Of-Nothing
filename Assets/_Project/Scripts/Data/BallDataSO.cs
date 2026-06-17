@@ -33,6 +33,12 @@ public class BallDataSO : ScriptableObject
     public float radius = 0.3f;
 
     /// <summary>
+    /// Points awarded when this ball is consumed by the black hole.
+    /// </summary>
+    [Tooltip("Points awarded when this ball is consumed by the black hole.")]
+    public int pointValue = 1;
+
+    /// <summary>
     /// The specific prefab containing the visual components (ParticleSystem, Shaders, etc.) for this ball.
     /// Must contain a BallEntity component.
     /// </summary>

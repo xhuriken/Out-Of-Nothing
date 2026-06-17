@@ -1,6 +1,4 @@
-- [x] Update `AttractedObjectData` struct in `BlackHolePhysics.cs` to store `BallEntity` and `MachineEntity` references
-- [x] Update `BlackHolePhysics.cs` to retrieve and store `BallEntity` and `MachineEntity` in `AttractedObjectData`
-- [x] Update `BlackHoleVisualGlitch.cs` to skip applying glitch and reset scale if object is dragged, processing, or duplicating
-- [x] Update `DEVELOPMENT_LOG.md`
-- [x] Verify compilation with `dotnet build Out-Of-Nothing.sln`
-- [x] Verify member visibility (Validation of Signature)
+- [x] Add `_isInitialized` check to `OnValidate` to prevent `NullReferenceException` from TextMeshPro during play mode initialization
+- [x] Verify clean compilation using `dotnet build Out-Of-Nothing.sln`
+- [ ] Update `DEVELOPMENT_LOG.md`
+- [ ] Verify member visibility (Validation of Signature)
