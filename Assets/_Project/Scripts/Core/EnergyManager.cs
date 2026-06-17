@@ -76,6 +76,7 @@ public class EnergyManager : MonoBehaviour
         {
             Debug.Log($"[EnergyManager] Unregistered node. Total nodes: {_allNodes.Count}");
             MarkTopologyDirty();
+            RebuildNetworks(); // Rebuild synchronously to avoid MissingReferenceException in fluid processing
         }
     }
     /// <summary>
@@ -142,6 +143,7 @@ public class EnergyManager : MonoBehaviour
             // Just hide any remaining arcs in the pool beyond the active ones
             for (int i = _activeArcCount; i < _arcPool.Count; i++)
             {
+                if (_arcPool[i] == null) continue;
                 if (_arcPool[i].gameObject.activeSelf)
                     _arcPool[i].gameObject.SetActive(false);
             }
@@ -156,6 +158,7 @@ public class EnergyManager : MonoBehaviour
         {
             for (int i = 0; i < _activeArcCount; i++)
             {
+                if (_arcPool[i] == null) continue;
                 if (_arcPool[i].IsConnectedTo(draggedNode))
                 {
                     _arcPool[i].gameObject.SetActive(false);
@@ -193,6 +196,7 @@ public class EnergyManager : MonoBehaviour
         // 4. Deactivate remaining arcs in the pool
         for (int i = currentPreviewIndex; i < _arcPool.Count; i++)
         {
+            if (_arcPool[i] == null) continue;
             if (_arcPool[i].gameObject.activeSelf)
                 _arcPool[i].gameObject.SetActive(false);
         }
@@ -214,14 +218,29 @@ public class EnergyManager : MonoBehaviour
     /// </summary>
     private void RebuildNetworks()
     {
+        // Prune any null/destroyed nodes from the list before starting the rebuild
+        for (int i = _allNodes.Count - 1; i >= 0; i--)
+        {
+            if (_allNodes[i] == null || (_allNodes[i] is UnityEngine.Object obj && obj == null))
+            {
+                _allNodes.RemoveAt(i);
+            }
+        }
+
         _isDirty = false;
         _networks.Clear();
         _currentEdges.Clear();
         _edgeBuffer.Clear();
 
         // reset all arcs before rebuilding
-        foreach (ElectricArc arc in _arcPool)
+        for (int i = _arcPool.Count - 1; i >= 0; i--)
         {
+            ElectricArc arc = _arcPool[i];
+            if (arc == null)
+            {
+                _arcPool.RemoveAt(i);
+                continue;
+            }
             arc.gameObject.SetActive(false);
         }
         int currentArcIndex = 0;
@@ -342,8 +361,16 @@ public class EnergyManager : MonoBehaviour
     /// </summary>
     private IEnergyNode GetNodeFromCollider(Collider2D col)
     {
-        if (col.TryGetComponent(out MachineEntity machine)) return machine;
-        if (col.TryGetComponent(out BallEntity ball)) return ball.Behavior as IEnergyNode;
+        if (col.TryGetComponent(out MachineEntity machine))
+        {
+            if (machine == null) return null;
+            return machine;
+        }
+        if (col.TryGetComponent(out BallEntity ball))
+        {
+            if (ball == null || ball.Behavior == null) return null;
+            return ball.Behavior as IEnergyNode;
+        }
         return null;
     }
 
@@ -352,12 +379,15 @@ public class EnergyManager : MonoBehaviour
     /// </summary>
     private void ShowArc(IEnergyNode a, IEnergyNode b, ref int index, bool isPreview = false)
     {
-        ElectricArc arc;
-        if (index < _arcPool.Count)
+        ElectricArc arc = null;
+        while (index < _arcPool.Count)
         {
             arc = _arcPool[index];
+            if (arc != null) break;
+            _arcPool.RemoveAt(index);
         }
-        else
+
+        if (arc == null)
         {
             arc = Instantiate(_arcPrefab, transform);
             _arcPool.Add(arc);
@@ -405,6 +435,7 @@ public class EnergyManager : MonoBehaviour
     {
         foreach (var node in _allNodes)
         {
+            if (node == null || (node is UnityEngine.Object obj && obj == null)) continue;
             if (node.IsBeingDragged) return node;
         }
         return null;
@@ -415,6 +446,12 @@ public class EnergyManager : MonoBehaviour
     /// </summary>
     private bool CanConnectInternal(IEnergyNode a, IEnergyNode b, bool ignoreDrag = false)
     {
+        if (a == null || (a is UnityEngine.Object objA && objA == null) ||
+            b == null || (b is UnityEngine.Object objB && objB == null))
+        {
+            return false;
+        }
+
         // 1. Isolate dragged nodes (unless we are in preview mode)
         // EXCEPTION: Yellow balls stay connected even during drag.
         if (!ignoreDrag)

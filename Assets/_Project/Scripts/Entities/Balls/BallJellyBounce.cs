@@ -50,6 +50,14 @@ public class BallJellyBounce : MonoBehaviour
 
     private void FixedUpdate()
     {
+        // Skip jelly bounce calculation if the ball is currently attracted by a black hole
+        var ball = GetComponent<BallEntity>();
+        if (ball != null && ball.IsAttracted)
+        {
+            _lastVelocity = _rb.linearVelocity;
+            return;
+        }
+
         // Calculate the change in velocity (delta V) to detect impacts and sudden forces
         Vector2 currentVelocity = _rb.linearVelocity;
         Vector2 velocityChange = currentVelocity - _lastVelocity;

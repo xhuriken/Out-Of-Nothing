@@ -12,7 +12,11 @@ public static class EnergyCollisionUtility
     /// </summary>
     public static bool AreConnected(IEnergyNode a, IEnergyNode b)
     {
-        if (a == null || b == null) return false;
+        if (a == null || (a is UnityEngine.Object objA && objA == null) ||
+            b == null || (b is UnityEngine.Object objB && objB == null))
+        {
+            return false;
+        }
 
         float dist = Vector2.Distance(a.Position, b.Position);
         
@@ -30,7 +34,12 @@ public static class EnergyCollisionUtility
     /// </summary>
     public static bool IsConnectionMaintained(IEnergyNode a, IEnergyNode b)
     {
-        if (a == null || b == null || a.PhysicsCollider == null || b.PhysicsCollider == null) return false;
+        if (a == null || (a is UnityEngine.Object objA && objA == null) ||
+            b == null || (b is UnityEngine.Object objB && objB == null))
+        {
+            return false;
+        }
+        if (a.PhysicsCollider == null || b.PhysicsCollider == null) return false;
 
         bool aTouchesB = IsPointNearCollider(a.Position, a.ConnectionRadius, b.PhysicsCollider);
         bool bTouchesA = IsPointNearCollider(b.Position, b.ConnectionRadius, a.PhysicsCollider);
@@ -54,7 +63,7 @@ public static class EnergyCollisionUtility
     /// </summary>
     public static Vector2 GetAnchorPoint(IEnergyNode node, Vector2 targetPosition)
     {
-        if (node == null) return targetPosition;
+        if (node == null || (node is UnityEngine.Object obj && obj == null)) return targetPosition;
         Vector2 direction = (targetPosition - node.Position).normalized;
         return node.Position + direction * node.PhysicalRadius;
     }

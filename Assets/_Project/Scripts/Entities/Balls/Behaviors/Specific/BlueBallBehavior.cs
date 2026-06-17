@@ -133,4 +133,9 @@ public class BlueBallBehavior : BallBehavior
     {
         //_isPaused = false;
     }
+
+    public override void OnDisableBehavior(BallEntity ball)
+    {
+        DOTween.Kill(this);
+    }
 }

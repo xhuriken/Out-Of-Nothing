@@ -83,6 +83,11 @@ public class BallEntity : MonoBehaviour, IDraggable
         set => _isDuplicating = value;
     }
 
+    /// <summary>
+    /// Gets or sets whether the ball is currently attracted by a black hole.
+    /// </summary>
+    public bool IsAttracted { get; set; }
+
     public CircleCollider2D Collider => _collider;
 
     private void Awake()
@@ -116,6 +121,7 @@ public class BallEntity : MonoBehaviour, IDraggable
         _lastClickTime = 0f;
         _isProcessing = false;
         _isDuplicating = false;
+        IsAttracted = false;
 
         if (_collider != null)
         {
@@ -236,6 +242,8 @@ public class BallEntity : MonoBehaviour, IDraggable
         }
         _isProcessing = false;
         _isDuplicating = false;
+        _isBeingDragged = false;
+        IsAttracted = false;
 
         _behavior?.OnDisableBehavior(this);
     }

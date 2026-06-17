@@ -1,144 +1,196 @@
+using DG.Tweening;
+using Sirenix.OdinInspector;
 using Shapes;
 using UnityEngine;
 using System;
 
 /// <summary>
-/// Represents a gravitational anomaly that attracts and consumes dynamic entities.
+/// Core component for the gravitational anomaly, acting as the state coordinator.
 /// </summary>
 [RequireComponent(typeof(Disc))]
+[RequireComponent(typeof(BlackHolePhysics))]
+[RequireComponent(typeof(BlackHoleVisuals))]
+[RequireComponent(typeof(BlackHoleVisualGlitch))]
 public class BlackHole : MonoBehaviour
 {
-    [Header("Physics Settings")]
-    [SerializeField]
-    private float _attractForce = 25f;
-
-    [SerializeField]
-    private float _attractRadius = 2f;
-
-    [SerializeField]
-    private float _radius = 1f;
-
-    [SerializeField]
-    [Tooltip("Defines which layers the black hole can interact with (e.g., Balls, Machines).")]
-    private LayerMask _targetLayerMask;
-
     [Header("Growth Settings")]
     [SerializeField]
-    private float _growthAmount = 0.03f;
+    [Tooltip("The radius of the black hole when the game starts.")]
+    private float _startRadius = 0.5f;
 
-    private readonly Collider2D[] _collidersBuffer = new Collider2D[64];
-    private Disc _renderer;
+    [SerializeField]
+    [Tooltip("The amount by which the radius grows upon consuming an entity.")]
+    private float _growthAmount = 0.005f;
 
-    private void Awake()
+    [SerializeField]
+    [Tooltip("The event horizon radius where entities are consumed.")]
+    private float _gRadius = 1f;
+
+    [Header("Visual Effects")]
+    [SerializeField]
+    [Tooltip("Color HDR multiplier during the consume flash effect.")]
+    private float _hdrFlashMultiplier = 3f;
+
+    [SerializeField]
+    [Tooltip("Duration of the flash build-up phase.")]
+    private float _flashInDuration = 0.05f;
+
+    [SerializeField]
+    [Tooltip("Duration of the flash decay phase.")]
+    private float _flashOutDuration = 0.35f;
+
+    private Disc _disc;
+    private Color _baseColor;
+
+    /// <summary>
+    /// Event fired whenever the event horizon radius changes.
+    /// </summary>
+    public event Action<float> OnRadiusChanged;
+
+    /// <summary>
+    /// Gets or sets the event horizon radius. Fires the OnRadiusChanged event.
+    /// </summary>
+    public float GRadius
     {
-        _renderer = GetComponent<Disc>();
-        UpdateVisuals();
-    }
-
-    private void FixedUpdate()
-    {
-        int count = Physics2D.OverlapCircleNonAlloc(transform.position, _attractRadius, _collidersBuffer, _targetLayerMask);
-
-        for (int i = 0; i < count; i++)
+        get => _gRadius;
+        set
         {
-            Collider2D col = _collidersBuffer[i];
-            Rigidbody2D targetRb = col.attachedRigidbody;
-
-            if (targetRb == null)
-            {
-                continue;
-            }
-
-            Vector2 direction = (Vector2)transform.position - targetRb.position;
-            float distance = direction.magnitude;
-
-            if (distance <= _radius)
-            {
-                ConsumeEntity(col.gameObject);
-            }
-            else
-            {
-                AttractEntity(targetRb, direction, distance);
-            }
+            _gRadius = value;
+            OnRadiusChanged?.Invoke(_gRadius);
         }
     }
 
     /// <summary>
-    /// Applies a gravitational pull to the target.
-    /// The force intensifies as the object gets closer to the event horizon.
+    /// Applies initial event horizon radius and caches color data for flash animations.
     /// </summary>
-    private void AttractEntity(Rigidbody2D targetRb, Vector2 direction, float distance)
+    private void Awake()
     {
-        // Normalize the direction vector
-        Vector2 pullDirection = direction / distance;
-
-        // Calculate force intensity inversely proportional to the distance
-        float forceMultiplier = 1f - (distance / _attractRadius);
-
-        targetRb.AddForce(pullDirection * _attractForce * forceMultiplier, ForceMode2D.Force);
-
-        // TODO: detecter si c'est une boulle qu'on est en train de drag
-        GameInputManager.Instance.ForceDrop();
+        _disc = GetComponent<Disc>();
+        if (_disc != null)
+        {
+            _baseColor = _disc.ColorOuter;
+        }
+        GRadius = _startRadius;
     }
 
     /// <summary>
     /// Destroys or recycles the entity and triggers the black hole growth.
     /// </summary>
-    private void ConsumeEntity(GameObject targetObject)
+    public void ConsumeEntity(GameObject targetObject)
     {
-        // Check for BallEntity to properly use the Object Pool
+        // Force drop if the consumed object is currently dragged
+        if (GameInputManager.Instance != null && GameInputManager.Instance.CurrentDraggedObject != null)
+        {
+            var draggable = targetObject.GetComponentInParent<IDraggable>();
+            if (draggable != null && GameInputManager.Instance.CurrentDraggedObject == draggable)
+            {
+                GameInputManager.Instance.ForceDrop();
+            }
+        }
+
+        bool isTargetValid = false;
+
         if (targetObject.TryGetComponent(out BallEntity ball))
         {
-            BallPoolManager.Instance.ReleaseBall(ball);
+            isTargetValid = true;
+            
+            // If the ball is selected in the CraftingManager, deselect it first to prevent bugs
+            if (CraftingManager.Instance != null && CraftingManager.Instance.IsBallSelected(ball))
+            {
+                CraftingManager.Instance.DeselectBall(ball);
+            }
+
+            // Award points based on the consumed ball's SO configuration
+            if (ball.Data != null && IncrementManager.Instance != null)
+            {
+                IncrementManager.Instance.AddPoints(ball.Data.pointValue);
+            }
+
+            if (BallPoolManager.Instance != null)
+            {
+                BallPoolManager.Instance.ReleaseBall(ball);
+            }
+            else
+            {
+                Destroy(targetObject);
+            }
         }
         else if (targetObject.TryGetComponent(out MachineEntity machine))
         {
-            // Machines are not pooled yet, destroy them normally TODO POLLED IT ?
+            isTargetValid = true;
+            machine.gameObject.SetActive(false); // Force synchronous OnDisable to update networks
             Destroy(machine.gameObject);
         }
         else
         {
+            // Ensure OnDisable runs before destroy by deactivating it
+            targetObject.SetActive(false);
             Destroy(targetObject);
         }
 
-        //IncrementManager.Instance.AddPoints(ball.Data.point);
-        // si il bouffe une machine, on donne le nombre de point qu'elle � couter a crafter ?
-
-        NothingLoveEating();
-    }
-
-    /// <summary>
-    /// Grows the black hole radius and visual size after consuming an entity.
-    /// </summary>
-    private void NothingLoveEating()
-    {
-        _radius += _growthAmount;
-        _attractRadius += _growthAmount;
-
-        UpdateVisuals();
-    }
-
-    /// <summary>
-    /// Synchronizes the visual rendering with the physical data.
-    /// </summary>
-    private void UpdateVisuals()
-    {
-        if (_renderer != null)
+        if (isTargetValid)
         {
-            _renderer.Radius = _radius;
-            // Shader too ?
+            PlayFlash();
         }
+
+        GrowBlackHole();
     }
 
     /// <summary>
-    /// Draws debug gizmos in the Unity Editor to visualize the radius.
+    /// Plays a high-intensity HDR color flash animation on the main Disc.
     /// </summary>
-    private void OnDrawGizmosSelected()
+    private void PlayFlash()
     {
-        Gizmos.color = Color.black;
-        Gizmos.DrawWireSphere(transform.position, _radius);
+        if (_disc == null)
+        {
+            return;
+        }
 
-        Gizmos.color = Color.grey;
-        Gizmos.DrawWireSphere(transform.position, _attractRadius);
+        // Kill any existing color tweens on the disc to prevent overlapping issues
+        DOTween.Kill(_disc);
+
+        // Reset to base color first
+        _disc.ColorOuter = _baseColor;
+
+        // Sequence to boost color to HDR, then decay back to base
+        Color hdrColor = new Color(
+            _baseColor.r * _hdrFlashMultiplier,
+            _baseColor.g * _hdrFlashMultiplier,
+            _baseColor.b * _hdrFlashMultiplier,
+            _baseColor.a
+        );
+
+        Sequence seq = DOTween.Sequence();
+        seq.SetLink(gameObject); // Safely link to this GameObject's lifecycle
+        seq.Append(DOTween.To(() => _disc.ColorOuter, x => _disc.ColorOuter = x, hdrColor, _flashInDuration).SetEase(Ease.OutQuad));
+        seq.Append(DOTween.To(() => _disc.ColorOuter, x => _disc.ColorOuter = x, _baseColor, _flashOutDuration).SetEase(Ease.InQuad));
+    }
+
+    /// <summary>
+    /// Grows the black hole radius by the pre-configured growth amount.
+    /// </summary>
+    private void GrowBlackHole()
+    {
+        GRadius += _growthAmount;
+    }
+
+    /// <summary>
+    /// Set the gRadius to a new value smoothly using DOTween.
+    /// </summary>
+    [Button("Set Radius Animated", ButtonSizes.Large)]
+    public void SetRadiusAnimated(float targetRadius, float duration = 1f)
+    {
+        DOTween.To(() => GRadius, x => GRadius = x, targetRadius, duration).SetEase(Ease.InOutSine);
+    }
+
+    /// <summary>
+    /// Synchronizes visuals in real-time when modifying values in the editor.
+    /// </summary>
+    private void OnValidate()
+    {
+        if (Application.isPlaying)
+        {
+            OnRadiusChanged?.Invoke(_gRadius);
+        }
     }
 }

@@ -155,12 +155,28 @@ public class CraftArc : MonoBehaviour
         Vector3 startPos = pos1 + dir * _startRadius;
         Vector3 endPos = pos2 - dir * _endRadius;
 
-        // Calculate midpoint between the outer edges
-        Vector3 midpoint = (startPos + endPos) * 0.5f;
+        // Determine the anchor ball to slide outwards from or back to
+        bool anchorOnStart = true;
+        if (CraftingManager.Instance != null)
+        {
+            anchorOnStart = CraftingManager.Instance.DetermineAnchorOnStart(_startBall, _endBall);
+        }
 
-        // Slide the start and end positions outwards from the midpoint based on progress
-        Vector3 currentStart = Vector3.Lerp(midpoint, startPos, _animProgress);
-        Vector3 currentEnd = Vector3.Lerp(midpoint, endPos, _animProgress);
+        Vector3 currentStart;
+        Vector3 currentEnd;
+
+        if (anchorOnStart)
+        {
+            // Start ball is the anchor. Grow/shrink from startPos to endPos.
+            currentStart = startPos;
+            currentEnd = Vector3.Lerp(startPos, endPos, _animProgress);
+        }
+        else
+        {
+            // End ball is the anchor. Grow/shrink from endPos to startPos.
+            currentStart = Vector3.Lerp(endPos, startPos, _animProgress);
+            currentEnd = endPos;
+        }
 
         // Adjust line thickness
         _lineRenderer.widthMultiplier = _initialWidthMultiplier * _animProgress;

@@ -157,6 +157,7 @@ public class YellowBallBehavior : BallBehavior, IEnergyConsumer, IEnergyProducer
 
     public override void OnDisableBehavior(BallEntity ball)
     {
+        _currentNeighbors.Clear();
         EnergyManager.Instance?.UnregisterNode(this);
     }
 

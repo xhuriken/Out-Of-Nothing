@@ -1,0 +1,4 @@
+- [x] Add `_isInitialized` check to `OnValidate` to prevent `NullReferenceException` from TextMeshPro during play mode initialization
+- [x] Verify clean compilation using `dotnet build Out-Of-Nothing.sln`
+- [ ] Update `DEVELOPMENT_LOG.md`
+- [ ] Verify member visibility (Validation of Signature)
