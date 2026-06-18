@@ -13,6 +13,7 @@ public class ClickerMachine : MachineEntity, IEnergyConsumer
     [Header("Clicker Settings")]
     [SerializeField] private Transform _targetCenterTransform;
     [SerializeField] private float _ejectionForce = 6.0f;
+    [SerializeField] private Vector2 _localCenterOffset = new Vector2(0f, -0.2f);
 
     [Header("Energy Settings")]
     [SerializeField] private float _inputTransferSpeed = 0.5f;
@@ -20,9 +21,13 @@ public class ClickerMachine : MachineEntity, IEnergyConsumer
 
     [Header("Animation Settings")]
     [SerializeField] private Animator _animator;
+    [SerializeField] private string _clickTriggerName = "Click";
+    [SerializeField] private float _animationSpeed = 1.0f;
 
     private BallCaptureHandler _captureHandler;
     private bool _isProcessingAction;
+
+    private Vector3 CapturePosition => _targetCenterTransform.position + transform.TransformDirection(_localCenterOffset);
 
     public float InputTransferSpeed
     {
@@ -72,7 +77,7 @@ public class ClickerMachine : MachineEntity, IEnergyConsumer
         {
             if (_captureHandler.CapturedBall == null && !_isProcessingAction)
             {
-                _captureHandler.Capture(ball, _targetCenterTransform.position);
+                _captureHandler.Capture(ball, CapturePosition);
             }
         }
     }
@@ -114,8 +119,8 @@ public class ClickerMachine : MachineEntity, IEnergyConsumer
 
         if (_animator != null)
         {
-            _animator.speed = efficiency;
-            _animator.SetTrigger("Click");
+            _animator.speed = efficiency * _animationSpeed;
+            _animator.SetTrigger(_clickTriggerName);
         }
 
         if (willDuplicate)
@@ -124,7 +129,9 @@ public class ClickerMachine : MachineEntity, IEnergyConsumer
             ball.CurrentClickCount = 0;
 
             // Trigger click visual
+            ball.IsProcessing = false;
             ball.PerformDefaultClick();
+            ball.IsProcessing = true;
 
             // 2. Wait 1 second after clicking before starting the duplication visual mitosis, scaled by efficiency
             yield return new WaitForSeconds(1.0f / efficiency);
@@ -156,7 +163,7 @@ public class ClickerMachine : MachineEntity, IEnergyConsumer
 
     private IEnumerator PerformClickerDuplication(BallEntity parentBall)
     {
-        Vector3 centerPos = _targetCenterTransform.position;
+        Vector3 centerPos = CapturePosition;
         float efficiency = NetworkEfficiency;
 
         // Force parent to be exactly at center
@@ -204,39 +211,50 @@ public class ClickerMachine : MachineEntity, IEnergyConsumer
             _captureHandler.EjectCapturedBall(_ejectionForce);
 
             // Expel child ball downwards
-            childBall.IsProcessing = false;
-            if (childBall.Passport != null)
-            {
-                childBall.Passport.SetLockState(false);
-            }
+            Vector2 childEjectDir = -transform.up;
+            Vector3 childTargetExitPos = centerPos + (Vector3)childEjectDir * 1.2f;
+
             if (childBall.Collider != null)
             {
                 childBall.Collider.enabled = true;
             }
-
-            // Downward direction relative to the machine (pointing along -transform.up)
-            Vector2 childEjectDir = -transform.up;
-            childBall.transform.position = centerPos + (Vector3)childEjectDir * 1.2f;
-
-            // Ignore collision with machine colliders for a short duration
             _captureHandler.IgnoreCollisionWithMachine(childBall.Collider, true);
 
-            float massMultiplier = childBall.SetTemporaryHeavyMass(0.4f / efficiency, 50f);
-            if (childBall.Rb != null)
-            {
-                childBall.Rb.linearVelocity = Vector2.zero;
-                childBall.Rb.AddForce(childEjectDir * (_ejectionForce * massMultiplier), ForceMode2D.Impulse);
-            }
+            // Tween the child ball to the exit position smoothly
+            childBall.transform.DOMove(childTargetExitPos, 0.15f)
+                .SetEase(Ease.OutQuad)
+                .OnComplete(() =>
+                {
+                    if (childBall == null) return;
 
-            // Restore collisions after a short delay
+                    childBall.IsProcessing = false;
+                    if (childBall.Passport != null)
+                    {
+                        childBall.Passport.SetLockState(false);
+                    }
+
+                    float massMultiplier = childBall.SetTemporaryHeavyMass(0.4f / efficiency, 50f);
+                    if (childBall.Rb != null)
+                    {
+                        childBall.Rb.linearVelocity = Vector2.zero;
+                        childBall.Rb.AddForce(childEjectDir * (_ejectionForce * massMultiplier), ForceMode2D.Impulse);
+                    }
+
+                    // Restore collisions after a short delay
+                    DOVirtual.DelayedCall(0.5f / efficiency, () =>
+                    {
+                        if (childBall != null && _captureHandler != null)
+                        {
+                            _captureHandler.IgnoreCollisionWithMachine(childBall.Collider, false);
+                        }
+                    });
+                });
+
+            // Restore parent/child collision
             BallEntity savedParent = parentBall;
             BallEntity savedChild = childBall;
             DOVirtual.DelayedCall(0.5f / efficiency, () =>
             {
-                if (savedChild != null && _captureHandler != null)
-                {
-                    _captureHandler.IgnoreCollisionWithMachine(savedChild.Collider, false);
-                }
                 if (savedParent != null && savedChild != null && savedParent.Collider != null && savedChild.Collider != null)
                 {
                     Physics2D.IgnoreCollision(savedParent.Collider, savedChild.Collider, false);

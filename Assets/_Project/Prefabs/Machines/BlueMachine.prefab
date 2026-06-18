@@ -52,7 +52,7 @@ MonoBehaviour:
   detailLevel: 2
   culling: 0
   boundsPadding: 0
-  renderQueue: 1
+  renderQueue: -2
   zTest: 4
   zOffsetFactor: 0
   zOffsetUnits: 0
@@ -195,7 +195,7 @@ MonoBehaviour:
   detailLevel: 2
   culling: 0
   boundsPadding: 0
-  renderQueue: 1
+  renderQueue: -2
   zTest: 4
   zOffsetFactor: 0
   zOffsetUnits: 0
@@ -719,7 +719,7 @@ MonoBehaviour:
   detailLevel: 2
   culling: 0
   boundsPadding: 0
-  renderQueue: 1
+  renderQueue: -2
   zTest: 4
   zOffsetFactor: 0
   zOffsetUnits: 0
@@ -862,7 +862,7 @@ MonoBehaviour:
   detailLevel: 2
   culling: 0
   boundsPadding: 0
-  renderQueue: 1
+  renderQueue: -2
   zTest: 4
   zOffsetFactor: 0
   zOffsetUnits: 0
@@ -980,7 +980,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 5343191103907833943}
   - {fileID: 310545933157977808}
@@ -1044,7 +1044,7 @@ MonoBehaviour:
   detailLevel: 2
   culling: 0
   boundsPadding: 0
-  renderQueue: 1
+  renderQueue: -2
   zTest: 4
   zOffsetFactor: 0
   zOffsetUnits: 0
@@ -1187,7 +1187,7 @@ MonoBehaviour:
   detailLevel: 2
   culling: 0
   boundsPadding: 0
-  renderQueue: 1
+  renderQueue: -2
   zTest: 4
   zOffsetFactor: 0
   zOffsetUnits: 0
@@ -1329,7 +1329,7 @@ Animator:
   m_GameObject: {fileID: 7792627674517951936}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: a9d0e65038aaa29469ee3f568bbd3b2c, type: 2}
+  m_Controller: {fileID: 9100000, guid: e0ed57887a50ec848b1f2ef4f739c326, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -1543,6 +1543,9 @@ MonoBehaviour:
   _targetCenterTransform: {fileID: 1257352164796279254}
   _ejectionForce: 6
   _transformationDuration: 1
+  _animator: {fileID: 0}
+  _convertTriggerName: Convert
+  _animationSpeed: 1
   _inputTransferSpeed: 1
   _consumptionPerAction: 20
 --- !u!1 &8174611753005191281
@@ -1597,7 +1600,7 @@ MonoBehaviour:
   detailLevel: 2
   culling: 0
   boundsPadding: 0
-  renderQueue: 1
+  renderQueue: -2
   zTest: 4
   zOffsetFactor: 0
   zOffsetUnits: 0
@@ -1740,7 +1743,7 @@ MonoBehaviour:
   detailLevel: 2
   culling: 0
   boundsPadding: 0
-  renderQueue: 1
+  renderQueue: -2
   zTest: 4
   zOffsetFactor: 0
   zOffsetUnits: 0

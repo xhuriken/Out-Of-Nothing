@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 9150112361051098576}
   - component: {fileID: 6352149367576098042}
   - component: {fileID: 8472760280307493882}
+  - component: {fileID: 3753621616911530343}
   m_Layer: 9
   m_Name: GeneratorMachine
   m_TagString: Untagged
@@ -242,6 +243,28 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!95 &3753621616911530343
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 746673261679251023}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 75d8b4d4d069ef8498d741a9db7968a8, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &752403498098112197
 GameObject:
   m_ObjectHideFlags: 0
@@ -1275,7 +1298,7 @@ MonoBehaviour:
     snap: 1
     size: 20
     spacing: 1
-    offset: 0.0345148
+    offset: 0.0496484
     shapeModifier: 1
   fill:
     type: 0

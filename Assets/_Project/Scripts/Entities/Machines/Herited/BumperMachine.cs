@@ -19,6 +19,12 @@ public class BumperMachine : MachineEntity
     [SerializeField] private float _repulsionForce = 10f;
     [SerializeField] private BumperPushDirection _pushDirectionMode = BumperPushDirection.BumperFacingDown;
     [SerializeField] private LayerMask _objectsLayerMask;
+    [SerializeField] private Vector2 _localCenterOffset = new Vector2(0f, -0.4f);
+
+    [Header("Animation Settings")]
+    [SerializeField] private Animator _animator;
+    [SerializeField] private string _bumpTriggerName = "Bump";
+    [SerializeField] private float _animationSpeed = 1.0f;
 
     [Header("Backwards Compatibility")]
     [Tooltip("Old field mapped to _repulsionForce if modified")]
@@ -71,6 +77,10 @@ public class BumperMachine : MachineEntity
     protected override void Start()
     {
         base.Start();
+        if (_animator == null)
+        {
+            _animator = GetComponent<Animator>();
+        }
 
         // Set default layer mask if not configured
         if (_objectsLayerMask == 0)
@@ -153,6 +163,12 @@ public class BumperMachine : MachineEntity
 
             if (ballRigidbody != null)
             {
+                if (_animator != null)
+                {
+                    _animator.speed = _animationSpeed;
+                    _animator.SetTrigger(_bumpTriggerName);
+                }
+
                 // Prevent duplicate tweens and lock physics state
                 ballRigidbody.transform.DOKill();
                 ballRigidbody.bodyType = RigidbodyType2D.Kinematic;
@@ -165,7 +181,7 @@ public class BumperMachine : MachineEntity
                 }
 
                 // Smoothly center the ball
-                ballRigidbody.transform.DOMove(transform.position, 0.08f)
+                ballRigidbody.transform.DOMove(transform.TransformPoint(_localCenterOffset), 0.08f)
                     .SetEase(Ease.OutQuad)
                     .OnComplete(() =>
                     {

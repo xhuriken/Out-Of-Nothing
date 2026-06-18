@@ -14,6 +14,11 @@ public class BlueOscillator : MachineEntity, IEnergyConsumer
     [SerializeField] private float _ejectionForce = 6.0f;
     [SerializeField] private float _transformationDuration = 1.0f;
 
+    [Header("Animation Settings")]
+    [SerializeField] private Animator _animator;
+    [SerializeField] private string _convertTriggerName = "Convert";
+    [SerializeField] private float _animationSpeed = 1.0f;
+
     [Header("Energy Settings")]
     [SerializeField] private float _inputTransferSpeed = 1.0f;
     [SerializeField] private float _consumptionPerAction = 20f;
@@ -39,6 +44,10 @@ public class BlueOscillator : MachineEntity, IEnergyConsumer
         {
             _maxStorage = 20f;
         }
+        if (_animator == null)
+        {
+            _animator = GetComponent<Animator>();
+        }
         _captureHandler = GetComponent<BallCaptureHandler>();
         if (_targetCenterTransform == null)
         {
@@ -62,6 +71,12 @@ public class BlueOscillator : MachineEntity, IEnergyConsumer
 
         // Deduct energy
         CurrentEnergy = Mathf.Max(0f, CurrentEnergy - _consumptionPerAction);
+
+        if (_animator != null)
+        {
+            _animator.speed = _animationSpeed * NetworkEfficiency;
+            _animator.SetTrigger(_convertTriggerName);
+        }
 
         var redBall = _captureHandler.CapturedBall;
         Vector3 centerPos = _targetCenterTransform.position;
@@ -106,11 +121,19 @@ public class BlueOscillator : MachineEntity, IEnergyConsumer
                     {
                         // Eject the blue ball
                         _captureHandler.EjectCapturedBall(_ejectionForce);
+                        if (_animator != null)
+                        {
+                            _animator.speed = 1f;
+                        }
                         _isTransforming = false;
                     });
             }
             else
             {
+                if (_animator != null)
+                {
+                    _animator.speed = 1f;
+                }
                 _isTransforming = false;
             }
         });

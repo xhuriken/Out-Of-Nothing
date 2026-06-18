@@ -11,6 +11,12 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
     [Header("References")]
     [SerializeField] private Rectangle _energyRenderer;
 
+    [Header("Animation & Timing")]
+    [SerializeField] private Animator _animator;
+    [SerializeField] private string _spawnTriggerName = "Spawn";
+    [SerializeField] private float _animationSpeed = 1.0f;
+    [SerializeField] private float _ejectionDelay = 0.2f;
+
     [Header("Materialisator Settings")]
     [SerializeField] private float _ejectionForce = 5f;
     [SerializeField] private float _consumptionPerAction = 10f;
@@ -58,6 +64,10 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
         if (_maxStorage == 100f)
         {
             _maxStorage = 10f;
+        }
+        if (_animator == null)
+        {
+            _animator = GetComponent<Animator>();
         }
         if (_energyRenderer != null)
         {
@@ -118,9 +128,31 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
                 Debug.Log($"[RedMaterialisator] {gameObject.name} spawned a ball. Ticks taken: {_ticksSinceLastAction} (Base cadence: {_actionCadenceTicks}, Grid Efficiency: {NetworkEfficiency:F2}, Current Energy: {CurrentEnergy:F2})");
 
                 CurrentEnergy = EnergyNetwork.Quantize(Mathf.Max(0, CurrentEnergy - _consumptionPerAction));
-                SpawnBall();
+                TriggerSpawnSequence();
                 _ticksSinceLastAction = 0;
             }
+        }
+    }
+
+    private void TriggerSpawnSequence()
+    {
+        if (_animator != null)
+        {
+            _animator.speed = _animationSpeed * NetworkEfficiency;
+            _animator.SetTrigger(_spawnTriggerName);
+        }
+
+        float scaledDelay = _ejectionDelay / NetworkEfficiency;
+        if (scaledDelay > 0.001f)
+        {
+            DOVirtual.DelayedCall(scaledDelay, () =>
+            {
+                if (this != null) SpawnBall();
+            });
+        }
+        else
+        {
+            SpawnBall();
         }
     }
 
@@ -209,18 +241,52 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
             return;
         }
 
-        // Spawn to the right relative to the machine's rotation
-        Vector3 spawnPosition = transform.position + transform.right * (PhysicalRadius * 1.5f);
+        // Spawn at the machine's center
+        Vector3 spawnPosition = transform.position;
+        Vector3 targetPosition = transform.position + transform.right * (PhysicalRadius * 1.5f);
 
         // Logic handled through the pool manager
         BallEntity newBall = BallPoolManager.Instance.SpawnBall(_redBallData, spawnPosition);
 
         if (newBall != null)
         {
+            // Initial state: size 0, lock physics
+            newBall.transform.localScale = Vector3.zero;
+            newBall.IsProcessing = true;
+            if (newBall.Passport != null)
+            {
+                newBall.Passport.SetLockState(true);
+            }
+
             if (PhysicsCollider != null && newBall.Collider != null)
             {
                 // Ignore collision so the ball doesn't get stuck inside the machine
                 Physics2D.IgnoreCollision(PhysicsCollider, newBall.Collider, true);
+            }
+
+            // Slide out smoothly and scale up
+            Sequence spawnSeq = DOTween.Sequence();
+            spawnSeq.Append(newBall.transform.DOScale(Vector3.one, 0.15f).SetEase(Ease.OutQuad));
+            spawnSeq.Join(newBall.transform.DOMove(targetPosition, 0.15f).SetEase(Ease.OutQuad));
+            
+            spawnSeq.OnComplete(() =>
+            {
+                if (newBall == null) return;
+
+                newBall.IsProcessing = false;
+                if (newBall.Passport != null)
+                {
+                    newBall.Passport.SetLockState(false);
+                }
+
+                // Temporarily increase mass to easily push other balls out of the way during ejection
+                float massMultiplier = newBall.SetTemporaryHeavyMass(0.4f, 50f);
+
+                if (newBall.Rb != null)
+                {
+                    newBall.Rb.linearVelocity = Vector2.zero;
+                    newBall.Rb.AddForce(transform.right * (_ejectionForce * massMultiplier), ForceMode2D.Impulse);
+                }
 
                 // Re-enable collisions after a short delay (time to exit)
                 DOVirtual.DelayedCall(0.2f, () =>
@@ -230,12 +296,7 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
                         Physics2D.IgnoreCollision(PhysicsCollider, newBall.Collider, false);
                     }
                 });
-            }
-
-            // Temporarily increase mass to easily push other balls out of the way during ejection
-            float massMultiplier = newBall.SetTemporaryHeavyMass(0.4f, 50f);
-
-            newBall.Rb?.AddForce(transform.right * (_ejectionForce * massMultiplier), ForceMode2D.Impulse);
+            });
         }
     }
 }
