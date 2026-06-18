@@ -646,16 +646,16 @@ MonoBehaviour:
   _freeRotationSpeed: 0.5
   _connectionRadius: 3.5
   _physicalRadius: 1
-  _maxStorage: 1
+  _maxStorage: 10
   _dragForceMultiplier: 15
   _maxDragSpeed: 30
   _isRunning: 1
   _isBeingDragged: 0
   _currentEnergy: 0
   _energyRenderer: {fileID: 4782254245562662314}
-  _ejectionForce: 5
-  _consumptionPerAction: 1
-  _inputTransferSpeed: 0.05
+  _ejectionForce: 6
+  _consumptionPerAction: 10
+  _inputTransferSpeed: 0.5
   _redBallData: {fileID: 11400000, guid: 80d61bba963ad264f8475d89dc001b50, type: 2}
   _animSpeed: 0.5
   _actionCadenceTicks: 20

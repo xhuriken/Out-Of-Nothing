@@ -211,7 +211,7 @@ public class BallCaptureHandler : MonoBehaviour
         });
     }
 
-    private void IgnoreCollisionWithMachine(Collider2D ballCollider, bool ignore)
+    public void IgnoreCollisionWithMachine(Collider2D ballCollider, bool ignore)
     {
         if (ballCollider == null) return;
 

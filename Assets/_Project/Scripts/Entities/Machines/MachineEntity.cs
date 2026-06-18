@@ -41,6 +41,8 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable, IEnergyNode
     public bool IsRunning => _isRunning;
     public bool IsBeingDragged => _isBeingDragged;
 
+    public float NetworkEfficiency => CurrentNetwork != null ? CurrentNetwork.GetNetworkEfficiency() : 1f;
+
     #region IEnergyNode Implementation
     public Vector2 Position => transform.position;
     public float ConnectionRadius => _connectionRadius;

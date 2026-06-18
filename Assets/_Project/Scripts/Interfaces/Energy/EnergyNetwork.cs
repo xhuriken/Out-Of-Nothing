@@ -12,6 +12,7 @@ public class EnergyNetwork
     private readonly List<IEnergyConsumer> _consumers = new List<IEnergyConsumer>();
     private readonly List<IEnergyProducer> _producers = new List<IEnergyProducer>();
     private readonly List<YellowBallBehavior> _cables = new List<YellowBallBehavior>();
+    private float _networkEfficiency = 1f;
 
     /// <summary>
     /// Gets the collection of nodes currently in this network.
@@ -155,15 +156,71 @@ public class EnergyNetwork
             }
         }
 
-        // 6. Finalize Machine Allocations (Pro-rata if total supply < total demand)
+        // 6. Finalize Machine Allocations (Pro-rata distribution when under-fed)
         float totalProvidedToMachines = providedBySourceToMachines + providedByCablesToMachines;
-        float machineRatio = machineDemand > 0 ? totalProvidedToMachines / machineDemand : 0f;
-        foreach (var machine in machines)
+        if (totalProvidedToMachines < machineDemand - 0.0001f)
         {
-            if (machine == null || (machine is UnityEngine.Object obj && obj == null)) continue;
-            float missing = machine.MaxStorage - machine.CurrentEnergy;
-            float pull = Mathf.Min(machine.InputTransferSpeed, missing);
-            machine.EnergyAllocationRate += (pull * machineRatio) / tickRate;
+            float satisfactionRatio = machineDemand > 0f ? (totalProvidedToMachines / machineDemand) : 0f;
+            
+            // Custom Curve matching user's exact specifications:
+            // - S = 1.0 -> E = 1.0 (Full speed)
+            // - S = 0.666 (3 machines) -> E = 0.5 (50% speed)
+            // - S = 0.5 (4 machines) -> E = 0.05 (5% speed / extremely slow)
+            // - S < 0.5 -> decays exponentially
+            float efficiency = 1f;
+            if (satisfactionRatio >= 0.666f)
+            {
+                float t = (satisfactionRatio - 0.666f) / (1f - 0.666f);
+                efficiency = Mathf.Lerp(0.5f, 1f, t);
+            }
+            else if (satisfactionRatio >= 0.5f)
+            {
+                float t = (satisfactionRatio - 0.5f) / (0.666f - 0.5f);
+                efficiency = Mathf.Lerp(0.05f, 0.5f, t);
+            }
+            else
+            {
+                float ratioOfHalf = satisfactionRatio / 0.5f;
+                efficiency = 0.05f * ratioOfHalf * ratioOfHalf * ratioOfHalf;
+            }
+            _networkEfficiency = Mathf.Max(0.01f, efficiency);
+
+            if (PowerTickManager.Instance != null && PowerTickManager.Instance.CurrentTickCount % 10 == 0)
+            {
+                System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                sb.Append($"[EnergyNetwork Deficit] Efficiency: {_networkEfficiency:F2} | Supply: {totalProvidedToMachines:F2} / {machineDemand:F2} | Demanding: ");
+                foreach (var m in machines)
+                {
+                    if (m is MonoBehaviour mb)
+                    {
+                        float missing = m.MaxStorage - m.CurrentEnergy;
+                        float pull = Mathf.Min(m.InputTransferSpeed, missing);
+                        sb.Append($"{mb.gameObject.name} ({pull:F2}), ");
+                    }
+                }
+                Debug.Log(sb.ToString());
+            }
+
+            foreach (var machine in machines)
+            {
+                if (machine == null || (machine is UnityEngine.Object obj && obj == null)) continue;
+                float missing = machine.MaxStorage - machine.CurrentEnergy;
+                float pull = Mathf.Min(machine.InputTransferSpeed, missing);
+                float allocated = pull * satisfactionRatio;
+                machine.EnergyAllocationRate += allocated / tickRate;
+            }
+        }
+        else
+        {
+            _networkEfficiency = 1f;
+            // Allocate full demand
+            foreach (var machine in machines)
+            {
+                if (machine == null || (machine is UnityEngine.Object obj && obj == null)) continue;
+                float missing = machine.MaxStorage - machine.CurrentEnergy;
+                float pull = Mathf.Min(machine.InputTransferSpeed, missing);
+                machine.EnergyAllocationRate += pull / tickRate;
+            }
         }
 
         // 7. Finalize Generator Allocations (Pro-rata based on what was actually drawn from them)
@@ -195,6 +252,11 @@ public class EnergyNetwork
                 node.CurrentEnergy = Quantize(Mathf.Clamp(node.CurrentEnergy + deltaEnergy, 0f, node.MaxStorage));
             }
         }
+    }
+
+    public float GetNetworkEfficiency()
+    {
+        return _networkEfficiency;
     }
 
     private void LogNetworkSummary(float supply, float demand, float ratio)

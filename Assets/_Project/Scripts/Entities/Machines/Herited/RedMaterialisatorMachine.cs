@@ -13,8 +13,8 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
 
     [Header("Materialisator Settings")]
     [SerializeField] private float _ejectionForce = 5f;
-    [SerializeField] private float _consumptionPerAction = 1f;
-    [SerializeField] private float _inputTransferSpeed = 0.05f; // Absorb slowly (0.05 per tick)
+    [SerializeField] private float _consumptionPerAction = 10f;
+    [SerializeField] private float _inputTransferSpeed = 0.5f; // Absorb slowly (0.5 per tick)
     [SerializeField] private BallDataSO _redBallData;
 
     [Header("Storage Settings")]
@@ -32,6 +32,7 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
     private float _currentDashOffset;
     private Color _originalColor;
     private long _startFillTick;
+    private int _ticksSinceLastAction;
 
     public override float CurrentEnergy
     {
@@ -43,21 +44,21 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
     {
         get
         {
-            // If we already have enough energy for the next action, we stop demanding immediately.
-            // Using a small margin to avoid floating point precision issues near 1.0.
-            if (CurrentEnergy >= _consumptionPerAction - 0.0001f) return 0f;
-
-            if (IsWaiting()) return 0f;
+            if (CurrentEnergy >= MaxStorage - 0.0001f) return 0f;
             return _inputTransferSpeed;
         }
     }
 
     public float ConsumptionPerAction => _consumptionPerAction;
-    public override bool IsDemanding => !IsWaiting();
+    public override bool IsDemanding => true;
 
     protected override void Start()
     {
         base.Start();
+        if (_maxStorage == 100f)
+        {
+            _maxStorage = 10f;
+        }
         if (_energyRenderer != null)
         {
             _originalColor = _energyRenderer.Color;
@@ -106,21 +107,20 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
             Debug.LogWarning($"[RedMaterialisator] {gameObject.name} is misconfigured! MaxStorage ({_maxStorage}) is lower than ConsumptionPerAction ({_consumptionPerAction}). It will never spawn.");
         }
 
-        long currentTick = PowerTickManager.Instance.CurrentTickCount;
+        _ticksSinceLastAction++;
 
-        if (currentTick % _actionCadenceTicks == _tickOffset)
+        // Required ticks to trigger is scaled by NetworkEfficiency
+        int requiredTicks = Mathf.RoundToInt(_actionCadenceTicks / NetworkEfficiency);
+        if (_ticksSinceLastAction >= requiredTicks)
         {
             if (CurrentEnergy >= _consumptionPerAction - 0.001f)
             {
-                if (_enableLogs) Debug.Log($"[RedLogic] EXECUTING SPAWN at tick {currentTick}. Buffer was {CurrentEnergy}");
+                Debug.Log($"[RedMaterialisator] {gameObject.name} spawned a ball. Ticks taken: {_ticksSinceLastAction} (Base cadence: {_actionCadenceTicks}, Grid Efficiency: {NetworkEfficiency:F2}, Current Energy: {CurrentEnergy:F2})");
 
                 CurrentEnergy = EnergyNetwork.Quantize(Mathf.Max(0, CurrentEnergy - _consumptionPerAction));
                 SpawnBall();
+                _ticksSinceLastAction = 0;
             }
-
-            // Always recalculate on the deadline tick.
-            // This guarantees the machine will WAIT FIRST before pumping if it missed the previous deadline.
-            RecalculateStartFillTick();
         }
     }
 
@@ -134,16 +134,18 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
 
         float dashPeriod = _energyRenderer.DashSize + _energyRenderer.DashSpacing;
 
-        if (dashPeriod > 0)
+        // Only animate dashes if we are actively receiving energy
+        if (dashPeriod > 0 && EnergyAllocationRate > 0.0001f)
         {
             _currentDashOffset += Time.deltaTime * _animSpeed;
             _energyRenderer.DashOffset = _currentDashOffset % dashPeriod;
         }
 
         // 2. Just-In-Time Feedback
-        // Machine is gray ONLY if it is waiting for its scheduled pumping window.
-        // If it's full and ready to fire, it stays colored (Active).
-        _energyRenderer.Color = IsWaiting() ? Color.gray : _originalColor;
+        // Gray out if we are not full AND not receiving energy
+        bool isFull = CurrentEnergy >= MaxStorage - 0.001f;
+        bool isReceiving = EnergyAllocationRate > 0.0001f;
+        _energyRenderer.Color = (isFull || isReceiving) ? _originalColor : Color.gray;
     }
 
     private bool IsWaiting()

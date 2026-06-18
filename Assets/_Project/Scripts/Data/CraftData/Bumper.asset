@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5fb29fc96a470dc46adf9405412a4ed9, type: 3}
-  m_Name: RedMaterialisor
+  m_Name: Bumper
   m_EditorClassIdentifier: Assembly-CSharp::CraftRecipeSO
   requirements:
   - ballData: {fileID: 11400000, guid: 80d61bba963ad264f8475d89dc001b50, type: 2}
-    count: 5
-  resultPrefab: {fileID: 6162139808707930919, guid: 4f7b0be5d41156a4f9e469ffb2370fd4, type: 3}
-  shadowPrefab: {fileID: 7400269335471674966, guid: 34d45925aa59bf540b52b27a38166c55, type: 3}
+    count: 3
+  resultPrefab: {fileID: 8065190857723303819, guid: c0c1d4de894ce9f40b1337c3c8c0a4f6, type: 3}
+  shadowPrefab: {fileID: 3067657974841017866, guid: 73e07b3cd09fd12428b5c61b307308b0, type: 3}

@@ -24,7 +24,7 @@ public class PressMachine : MachineEntity, IEnergyConsumer
     private bool _canEjectBall;
 
     [Header("Energy Settings")]
-    [SerializeField] private float _inputTransferSpeed = 5f;
+    [SerializeField] private float _inputTransferSpeed = 0.5f;
     [SerializeField] private float _consumptionPerAction = 10f;
 
     public float InputTransferSpeed => _inputTransferSpeed;

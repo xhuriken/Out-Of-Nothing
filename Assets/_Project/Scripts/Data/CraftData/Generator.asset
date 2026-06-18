@@ -13,11 +13,7 @@ MonoBehaviour:
   m_Name: Generator
   m_EditorClassIdentifier: Assembly-CSharp::CraftRecipeSO
   requirements:
-  - ballData: {fileID: 11400000, guid: 80d61bba963ad264f8475d89dc001b50, type: 2}
-    count: 3
   - ballData: {fileID: 11400000, guid: 4cec66ca4a186e640ab24beb347eeb1b, type: 2}
-    count: 2
-  - ballData: {fileID: 11400000, guid: 8d01071631ac25e4fa82dc5636359ba7, type: 2}
-    count: 1
+    count: 4
   resultPrefab: {fileID: 746673261679251023, guid: 6b9c71f39c00ffa489e7dff47f05b902, type: 3}
   shadowPrefab: {fileID: 746673261679251023, guid: 27a699caa51ff994b8833880a63cd8ee, type: 3}

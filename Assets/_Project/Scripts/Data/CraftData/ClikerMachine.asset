@@ -10,10 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5fb29fc96a470dc46adf9405412a4ed9, type: 3}
-  m_Name: RedMaterialisor
+  m_Name: ClikerMachine
   m_EditorClassIdentifier: Assembly-CSharp::CraftRecipeSO
   requirements:
   - ballData: {fileID: 11400000, guid: 80d61bba963ad264f8475d89dc001b50, type: 2}
-    count: 5
-  resultPrefab: {fileID: 6162139808707930919, guid: 4f7b0be5d41156a4f9e469ffb2370fd4, type: 3}
-  shadowPrefab: {fileID: 7400269335471674966, guid: 34d45925aa59bf540b52b27a38166c55, type: 3}
+    count: 3
+  - ballData: {fileID: 11400000, guid: d7cdc62acaecd73468aaebc623cf8888, type: 2}
+    count: 1
+  - ballData: {fileID: 11400000, guid: 4cec66ca4a186e640ab24beb347eeb1b, type: 2}
+    count: 2
+  resultPrefab: {fileID: 4589521823684586251, guid: 0cd0721c1304eb54587546ab8f7966e9, type: 3}
+  shadowPrefab: {fileID: 4589521823684586251, guid: 812221f8ae3a6ce4d96e1bad219d59af, type: 3}
