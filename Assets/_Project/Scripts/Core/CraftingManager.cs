@@ -305,6 +305,12 @@ public class CraftingManager : MonoBehaviour
 
     private BallEntity RaycastBall()
     {
+        if (GameInputManager.Instance != null)
+        {
+            Vector2 cursorPos = GameInputManager.Instance.GetCursorWorldPosition();
+            return GameInputManager.Instance.FindClosestTarget<BallEntity>(cursorPos, GameInputManager.Instance.CursorActionRadius, _ballLayerMask);
+        }
+
         Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
         if (float.IsNaN(mouseScreenPos.x) || float.IsNaN(mouseScreenPos.y)) return null;
 

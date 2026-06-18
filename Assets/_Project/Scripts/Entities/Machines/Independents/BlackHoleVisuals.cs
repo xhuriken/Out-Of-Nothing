@@ -34,6 +34,16 @@ public class BlackHoleVisuals : MonoBehaviour
     [Tooltip("Offset added to _gRadius for the Attract shader _BlackHoleRadius.")]
     private float _attractShaderOffset = 2.5f;
 
+    /// <summary>
+    /// Gets the offset added to _gRadius for the Main Disc radius.
+    /// </summary>
+    public float MainDiscOffset => _mainDiscOffset;
+
+    /// <summary>
+    /// Gets the offset added to _gRadius for the Attract shader _BlackHoleRadius.
+    /// </summary>
+    public float AttractShaderOffset => _attractShaderOffset;
+
     private BlackHole _blackHole;
     private Disc _renderer;
     private MaterialPropertyBlock _propBlock;
@@ -78,7 +88,7 @@ public class BlackHoleVisuals : MonoBehaviour
     /// </summary>
     public void UpdateVisuals(float currentGRadius)
     {
-        if (_renderer != null)
+        if (_renderer != null && (_blackHole == null || !_blackHole.OverrideMainDisc))
         {
             _renderer.Radius = Mathf.Max(0.01f, currentGRadius + _mainDiscOffset);
         }
@@ -88,7 +98,7 @@ public class BlackHoleVisuals : MonoBehaviour
             BackgroundDisc.Radius = Mathf.Max(0.01f, currentGRadius + _backgroundOffset);
         }
 
-        if (AttractRenderer != null)
+        if (AttractRenderer != null && (_blackHole == null || !_blackHole.OverrideAttractShader))
         {
             if (_propBlock == null)
             {
@@ -110,6 +120,24 @@ public class BlackHoleVisuals : MonoBehaviour
             ShaderRenderer.GetPropertyBlock(_propBlock);
             _propBlock.SetFloat("_BlackHoleRadius", Mathf.Max(0.01f, currentGRadius + _shaderOffset));
             ShaderRenderer.SetPropertyBlock(_propBlock);
+        }
+    }
+
+    /// <summary>
+    /// Explicitly sets the _BlackHoleRadius parameter on the attract shader renderer.
+    /// </summary>
+    public void SetAttractShaderRadius(float radius)
+    {
+        if (AttractRenderer != null)
+        {
+            if (_propBlock == null)
+            {
+                _propBlock = new MaterialPropertyBlock();
+            }
+            _propBlock.Clear();
+            AttractRenderer.GetPropertyBlock(_propBlock);
+            _propBlock.SetFloat("_BlackHoleRadius", Mathf.Max(0.01f, radius));
+            AttractRenderer.SetPropertyBlock(_propBlock);
         }
     }
 

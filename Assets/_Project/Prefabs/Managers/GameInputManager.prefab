@@ -48,6 +48,7 @@ MonoBehaviour:
   _ballLayerMask:
     serializedVersion: 2
     m_Bits: 256
+  _cursorActionRadius: 0.35
 --- !u!114 &9046847195434887996
 MonoBehaviour:
   m_ObjectHideFlags: 0

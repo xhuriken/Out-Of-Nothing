@@ -9,6 +9,214 @@
 6. **LOGIQUE DE COMMIT** : NE JAMAIS commiter/pusher sans demande explicite de l'utilisateur.
 
 
+## [2026-06-18] - Shop Hover Fix, Retracting Bug, Purchase Shake/Glow & Spawn Direction
+**Date** : 2026-06-18
+**Auteur** : Antigravity (AI)
+
+### 1. Isolation des Animations de Hover des Slots du Shop (DOTween IDs)
+- **Problème** : Le survol (hover) des slots pendant l'animation d'ouverture ou de fermeture du Shop provoquait parfois l'arrêt brutal des mouvements des slots, les laissant figés au milieu du trajet. Cela survenait car sur certains prefabs, `_visualDisc` réside sur le même GameObject que `BallShop`, ce qui fait que `_visualDisc.transform.DOKill()` tuait le tween de mouvement parental.
+- **Solution** :
+  - Utilisation systématique d'identifiants DOTween uniques (`moveId` pour le spawner/hider, `hoverId` pour le hover, et `shakeId` pour le shake).
+  - Dans `SetHovered()`, nous appelons désormais `DOTween.Kill(hoverId)` au lieu de tuer globalement les tweens du transform, isolant totalement le hover des autres interpolations.
+  - Les slots ne se figent plus jamais pendant le déploiement ou la fermeture, même s'ils sont survolés.
+
+### 2. Correction du Blocage du Slot Cliqué et de l'Animation de Shake
+- **Problème** : 
+  - Lors d'un achat réussi, le slot cliqué restait figé. Si nous nettoyions le hover au clic globalement, cela tuait instantanément l'animation de secousse (shake) en cas de solde insuffisant, car le système de hover ré-enregistrait le slot comme survolé à la frame suivante et appelait `SetHovered(true)`.
+- **Solution** :
+  - **Hover différé** : Le nettoyage de hover (`ClearHoveredSlot()`) dans `GameInputManager` est désormais délégué à la méthode de succès de transaction du `Shop` (`OnBallSelected`).
+  - **Shake préservé** : Si la transaction échoue, le hover n'est pas nettoyé. L'animation de secousse (`DOShakePosition`) sur le `_visualDisc.transform` et le `_priceText.transform` se déroule donc sans être annulée par un changement d'état.
+
+### 3. Gestion de Solde Insuffisant, Secousse/Flash et Anti-Spam
+- **Problème** : L'utilisateur souhaite une secousse (shake) et un flash rouge HDR en cas de solde insuffisant, mais aussi une protection contre le spam-clic qui provoquait des instabilités visuelles.
+- **Solution** :
+  - La soustraction des points est gérée par `IncrementManager.Instance.RemovePoints()`.
+  - Refonte de `FlashPriceTextRed()` dans `BallShop.cs` : pour éviter de tuer les tweens de déplacement principaux, les secousses (`DOShakePosition` avec le tag `shakeId`) sont appliquées séparément sur `_visualDisc.transform` et `_priceText.transform`.
+  - Le flash rouge utilise une intensité HDR augmentée (`ColorOuter = Color.red * 5.0f`).
+  - **Anti-Spam** : Ajout d'une protection temporelle (`_lastFlashTime`) limitant le déclenchement des effets visuels de solde insuffisant à un maximum d'une fois toutes les `0.4` secondes, ignorant le clic spam.
+
+### 4. Spawning Périphérique, Lancement Physique Correct et Transitions Plus Rapides
+- **Problème** : La boule achetée apparaissait au centre du Shop, provoquant des collisions parasites. L'impulsion physique de `35f` ou `12f` restait trop violente, et le déploiement/fermeture des slots manquait de nervosité et de rapidité.
+- **Solution** :
+  - **Axe de Lancement Précis** : Conversion de la direction locale du slot choisi en direction mondiale via `transform.TransformDirection(direction)`.
+  - **Élimination des Collisions** : La boule est instanciée de manière décalée à la périphérie du Shop (`transform.position + direction * (_gRadius + ballData.radius + 0.1f)`), éliminant tout chevauchement physique avec le Shop.
+  - **Force d'Impulsion Ajustée** : Réduction finale de `_expelForce` à **`6f`** (soit moitié moins fort que les `12f` précédents) pour assurer une éjection dynamique mais propre et contrôlable.
+  - **Transitions Rapides** : Réduction de la durée de mouvement des slots (`_moveDuration` à `0.3s`) et des délais d'attente (`_spawnDelay` / `_hideDelay` à `0.05s`, `_postHideDelay` à `0.1s`), rendant l'UI circulaire extrêmement nerveuse et rapide.
+
+- **Code Modifié** :
+  - **`BallShop.cs`** [MODIFIÉ] : Tweens de hover isolés sur le disque enfant avec unique DOTween IDs, secousses découplées dans `FlashPriceTextRed()`, réinitialisation du disque visuel au repli, et cooldown anti-spam.
+  - **`Shop.cs`** [MODIFIÉ] : Réduction de la force par défaut (`_expelForce = 6f`), accélération des délais de transition de spawner, utilisation de `TransformDirection` pour l'axe d'expulsion, positionnement de spawn en périphérie sans overlap, force d'expulsion proportionnelle à la masse lourde et appel à `ClearHoveredSlot()` sur achat réussi.
+  - **`GameInputManager.cs`** [MODIFIÉ] : Exposition de `ClearHoveredSlot()` et retrait de la logique de hover-cleaning synchrone du clic générique.[MODIFIÉ] : Exposition de `ClearHoveredSlot()` et retrait de la logique de hover-cleaning synchrone du clic générique.
+
+
+## [2026-06-18] - Shop Simplification & Repulsion Component
+**Date** : 2026-06-18
+**Auteur** : Antigravity (AI)
+
+### 1. Simplification du Shop et Séparation de la Répulsion Passive
+- **Problème** : L'utilisateur souhaite simplifier le script du Shop en retirant les mécaniques jugées excessives à ce stade (rebonds de collisions complexes au relâcher du drag, effets sonores et dépendance à l'AudioSource), tout en conservant la répulsion passive de zone (Reflect) pour les machines et les boules, le drag-and-drop sans rotation, et le déploiement circulaire de 8 slots d'achat.
+- **Solution** :
+  - **Simplification de `Shop.cs`** :
+    - Retrait de la logique de collision complexe de drag-end (`CheckCollisionAndRepulse`, `RepulseDraggedWith`).
+    - Suppression des références sonores (`_cantPlaceSound`) et du composant `AudioSource`.
+    - Suppression de la routine de répulsion passive interne.
+    - Ajout de propriétés d'état publiques (`GRadius`, `IsShopActive`, `IsAnimating`) pour permettre à des scripts externes de requêter son statut.
+    - Configuration forcée de `_rotationMode = MachineRotationMode.None` dans `Start()` et `Reset()` pour interdire la rotation.
+    - Déconnexion totale du réseau d'énergie en surchargeant `IsDemanding` (renvoie `false`), `OnEnable()`, `OnDisable()` et `OnDestroy()` sans appeler la classe de base pour éviter l'enregistrement auprès de l'énergéticien (`EnergyManager`) et du gestionnaire de tick (`PowerTickManager`).
+    - Surcharge de `OnDrawGizmos()` pour éviter de tracer la sphère cyan d'énergie.
+  - **Création de `ShopRepulsion.cs`** :
+    - Nouveau script autonome et modulaire (Component-based) attaché au même GameObject.
+    - Gère la détection `OverlapCircleNonAlloc` et repousse dynamiquement les boules (AddForce) et kinématiquement les machines (MovePosition) en direction sortante du centre du Shop.
+    - Pause automatiquement son effet lorsque le Shop est en cours de drag, ouvert, ou en animation.
+- **Code Modifié / Ajouté** :
+  - **`Shop.cs`** [MODIFIÉ] : Nettoyage et simplification des méthodes de collision/sfx/physique, exposition des variables d'état.
+  - **`ShopRepulsion.cs`** [NOUVEAU] : Logique découplée de répulsion passive.
+
+### 2. Refactoring de l'Éjection de la Bourse en Impulsion Physique
+- **Problème** : L'utilisateur ne souhaite plus d'animation d'ouverture progressive d'angles sur le Shapes Disc du Shop. Il souhaite que la boule achetée soit propulsée physiquement en partant du centre du Shop dans la direction du slot d'achat sélectionné. Lors de cette expulsion physique, la boule doit être temporairement très lourde pendant 2 secondes (pour pousser les obstacles hors de son chemin) et grandir via une animation de scale de zéro à sa taille normale (en 0.5s).
+- **Solution** :
+  - Suppression de la référence au disque (`_discComponent`) et de la routine d'ouverture d'angles (`ExpelObjectRoutine`) dans `Shop.cs`.
+  - Dans `HideBallShopsAndPurchaseRoutine()`, après fermeture des slots d'achat :
+    - Instanciation de la boule au centre (`transform.position`).
+    - Échelle initiale forcée à `Vector3.zero`.
+    - Appel à `SetTemporaryHeavyMass(2f, 50f)` sur le composant `BallEntity` de la boule pour appliquer une masse lourde temporaire (50x) pendant 2 secondes.
+    - Activation de la boule en physique dynamique et application d'une force d'impulsion `AddForce(direction * _expelForce, ForceMode2D.Impulse)` (avec `_expelForce` réglé à `15f` par défaut dans l'Inspecteur).
+    - Animation de l'échelle de `zero` à `Vector3.one` en `0.5f` secondes via `DOScale()` avec un easing `Ease.OutQuad`.
+- **Code Modifié / Ajouté** :
+  - **`Shop.cs`** [MODIFIÉ] : Implémentation de la nouvelle éjection physique avec masse lourde temporaire et animation d'échelle, retrait des références de disque.
+
+### 3. Découplage de MachineEntity et Animation en Espace Local (Local Space)
+- **Problème** : 
+  - Hériter de `MachineEntity` polluait inutilement le code du Shop avec des surcharges d'énergie vides et complexes (trop de code pour rien).
+  - Pendant le déplacement (drag) du Shop au cours des animations d'ouverture/fermeture des boules, les slots d'achat (`BallShop`) restaient statiques dans l'espace global du monde et se retrouvaient décalés ou "laissés sur place", car DOTween animait leurs coordonnées absolues mondiales.
+  - La valeur `_gRadius` définie dans l'Inspecteur du Shop n'avait aucune influence sur le visuel de son disque externe ni sur son rayon de collision physique dans l'éditeur.
+- **Solution** :
+  - **Héritage MonoBehaviour & IDraggable** : `Shop.cs` hérite désormais directement de `MonoBehaviour` et implémente `IDraggable` de manière autonome, en dupliquant le code de drag-and-drop physique de base (KISS).
+  - **Liaison GRadius et Offsets Visuels** :
+    - Ajout de champs de référence inspecteur pour `_backgroundDisc`, `_shaderRenderer` et `_reflectRenderer` dans `Shop.cs`.
+    - Implémentation des mêmes offsets que pour le trou noir : `_mainDiscOffset = -0.54f`, `_backgroundOffset = 0.09f`, `_shaderOffset = -0.1f` et `_reflectShaderOffset = 2.5f`.
+    - Mise à jour de `UpdateVisualsAndCollider()` pour affecter les dimensions des disques principaux/secondaires, le rayon du `CircleCollider2D` et la valeur `_BlackHoleRadius` dans les blocs de propriétés des SpriteRenderers de shaders (notamment le Reflect).
+    - Modification de la portée d'éjection des 8 boules dans `SpawnBallShopsRoutine()` pour qu'elle s'adapte proportionnellement à `_gRadius` (c'est-à-dire `actualRadius = _gRadius * _radius`), de sorte que modifier `_gRadius` affecte aussi la distance à laquelle les boules se déploient.
+  - **Espace Local pour les Tweens** :
+    - Calcul des positions circulaires cibles des slots en local coordinates dans `SpawnBallShopsRoutine()` de `Shop.cs`.
+    - Refactorisation de `BallShop.cs` pour utiliser `DOLocalMove` au lieu de `DOMove`, ramenant les slots vers `Vector3.zero` local lors de la fermeture.
+    - Puisque les slots sont enfants du Shop, ils suivent désormais organiquement ses déplacements physiques par translation de coordonnées parentales, même pendant le drag ou en pleine animation.
+  - **Immunité BlackHole** : Modification de `BlackHole.ConsumeEntity` pour rechercher explicitement la présence du composant `Shop` découpé et annuler sa consommation.
+- **Code Modifié / Ajouté** :
+  - **`Shop.cs`** [MODIFIÉ] : Changement d'héritage, intégration du drag manuel, transition vers le local space pour les spawner routines, offsets de disques/shaders configurables et liaison de `_gRadius` dans `OnValidate`.
+  - **`BallShop.cs`** [MODIFIÉ] : Remplacement de `DOMove` par `DOLocalMove` et transition vers `Vector3.zero` local pour la rentrée.
+  - **`BlackHole.cs`** [MODIFIÉ] : Vérification par `GetComponent<Shop>()` pour exclure la machine découplée du trou noir.
+
+### 4. Mise à jour en temps réel du centre du shader de réflexion (_ReflectCenter)
+- **Problème** : Lorsque le Shop se déplace (notamment pendant le drag ou le mouvement physique), le centre du shader de réflexion (`_ReflectCenter`) présent sur le `_reflectRenderer` (qui utilise le shader `Shop Reflect.shadergraph`) présentait un décalage ou ne se mettait pas à jour en temps réel en dehors du mode Play.
+- **Solution** :
+  - Ajout de l'attribut `[ExecuteAlways]` sur la classe `Shop` pour permettre l'exécution des fonctions d'édition également dans l'Éditeur Unity.
+  - Ajout d'une variable privée `_lastPosition` pour suivre la dernière position connue du Shop.
+  - Implémentation de la méthode `LateUpdate()` qui détecte si le Shop a bougé (`transform.position != _lastPosition`) et met à jour dynamiquement `_ReflectCenter` dans le bloc de propriétés de matériau du `_reflectRenderer` sans latence de frame par rapport au rendu physique.
+  - Limitation des vérifications d'entrées utilisateur (clic de souris / activation du Shop) uniquement pendant l'exécution du jeu (`Application.isPlaying`).
+- **Code Modifié / Ajouté** :
+  - **`Shop.cs`** [MODIFIÉ] : Ajout de `[ExecuteAlways]`, initialisation et suivi de `_lastPosition` dans `Awake`/`Start`, ajout de `LateUpdate` et de `UpdateShaderReflectCenter()`, protection par `Application.isPlaying` dans `Start` et `Update`.
+
+### 5. Normalisation des clics et survols via le GameCursor et un rayon d'action
+- **Problème** : Les clics et survols (hover) n'étaient pas synchronisés avec le curseur visuel personnalisé (`GameCursor`), car ils reposaient sur les événements Unity natifs (`OnMouseEnter`, `OnMouseDown`) et des raycasts physiques calculés à partir de la position masquée de la souris système (`Mouse.current`). De plus, le manque de tolérance (missclick) rendait la sélection difficile.
+- **Solution** :
+  - Centralisation des interactions dans `GameInputManager` utilisant la position visuelle lissée du curseur (`GameCursor.Instance.transform.position`).
+  - Ajout d'un paramètre de rayon d'action réglable `_cursorActionRadius` (`0.5f` par défaut) pour tolérer les légères approximations de clic.
+  - Implémentation de `FindClosestTarget<T>()` qui balaie les colliders sous le rayon d'action et trie par distance pour retourner la cible la plus proche.
+  - Gestion de l'état de survol en continu (`UpdateHoverState`) pour piloter `SetHovered()` sur les slots d'achat `BallShop`.
+  - Désactivation des méthodes de message Unity (`OnMouseEnter`, `OnMouseExit`, `OnMouseDown`) sur `BallShop` pour éviter les doublons avec le curseur système masqué.
+  - Redirection du clic du Shop vers une méthode publique `ToggleShopActiveState()` et suppression de l'ancien check de clic interne du Shop dans son `Update()`.
+  - Alignement de la sélection de craft (`CraftingManager.RaycastBall`) pour interroger également le rayon d'action.
+  - **Correction de la cliquabilité et du survol (Hover/Click)** :
+    - Ajout du flag d'état `IsInteractive` sur `BallShop` (passant à `true` en fin d'animation de déploiement) pour bloquer les clics prématurés à l'origine de l'animation.
+    - Ajout du flag d'état `IsHiding` sur `BallShop` pour bloquer les overrides de survol (hover) lors de la rétractation, résolvant le bug de la boule cliquée qui restait figée à sa position ouverte. Le survol reste pleinement opérationnel pendant l'animation d'ouverture.
+    - Centralisation du hover dans `GameInputManager.FindClosestTarget` en excluant les slots uniquement s'ils se cachent (`IsHiding`).
+    - Prolongation de l'état `_isAnimating` dans `Shop.cs` pour bloquer les interactions durant toute la durée visuelle des tweens.
+  - **Secousse et Flash HDR sur Solde Insuffisant** :
+    - En cas de points insuffisants, déclenchement d'une secousse physique (`transform.DOShakePosition`) sur le slot entier et d'un flash rouge lumineux temporaire (`ColorOuter = Color.red * 2.5f`) sur son disque Shapes extérieur.
+  - **Éjection et Trajectoire de Spawning** :
+    - Décalage de la position d'apparition de la boule à la périphérie du Shop (`transform.position + direction * _gRadius`) pour éviter les collisions internes.
+    - Réinitialisation complète des vélocités résiduelles de la boule (`Rb.linearVelocity = zero`) au spawn et augmentation de la force d'impulsion à `35f` par défaut pour assurer un lancer puissant et précis dans l'axe de son slot associé.
+- **Code Modifié / Ajouté** :
+  - **`GameInputManager.cs`** [MODIFIÉ] : Alignement du filtrage de cible pour exclure uniquement les slots en cours de disparition (`IsHiding`), blocage des clics sur les slots non interactifs (`IsInteractive`).
+  - **`BallShop.cs`** [MODIFIÉ] : Intégration des flags `IsInteractive` / `IsHiding`, désactivation du survol lors du retrait, implémentation de la secousse physique globale et de la coloration du disque externe rouge HDR dans `FlashPriceTextRed()`.
+  - **`Shop.cs`** [MODIFIÉ] : Augmentation de la force par défaut (`_expelForce = 35f`), spawn de la boule décalé à la périphérie, réinitialisation des forces physiques au lancer, et prolongation des timers de coroutines de transition.
+  - **`CraftingManager.cs`** [MODIFIÉ] : Alignement de `RaycastBall()` pour utiliser le rayon de tolérance du GameInputManager.
+
+
+## [2026-06-18] - Implosion Animation Sequence (ImploseNothing)
+**Date** : 2026-06-18
+**Auteur** : Antigravity (AI)
+
+### 1. Séquence d'Animation ImploseNothing et Contrôle Odin
+- **Problème** : L'utilisateur souhaite ajouter une animation spectaculaire en 4 phases nommée "ImploseNothing" sur le trou noir. L'animation doit modifier le GRadius, le rayon du shader d'attraction, la couleur et le radius/thickness du disque principal, tout en supportant les modifications en jeu sans corrompre les effets de flash existants ni créer de transitions brusques si plusieurs boules sont absorbées en même temps.
+- **Solution** :
+  - **Phase 1** : Réduction de `GRadius` vers une valeur cible absolue (`_implodeGRadiusTarget` à la place d'un pourcentage) en `Xtemps` avec une courbe `InOutElastic`.
+  - **Phase 2** : Redimensionnement du disque principal (radius et épaisseur). Pour garder le bord extérieur du disque immobile ("triche" visuelle), l'épaisseur augmente proportionnellement à la baisse du rayon : `Thickness = 2 * (outerBoundary - Radius)`. Pendant ce temps, la couleur passe au rouge en `Ytemps`.
+    - **Ajout de Secousse (Shake)** : Le `GRadius` subit une secousse (shake) via une sinusoïde amortie (`_gRadiusShakeOffset` modulé par amplitude et fréquence dans l'inspecteur) sur le même intervalle `Ytemps`, renvoyant les vibrations physiques et visuelles de manière fluide via `OnRadiusChanged`.
+  - **Phase 3** : Le paramètre `_BlackHoleRadius` du shader d'attraction grandit en `Ztemps` jusqu'à couvrir entièrement les limites de largeur et de hauteur de la zone de jeu (`GameZone.Instance`), calculée comme la demi-diagonale maximale de la zone : `Mathf.Sqrt(halfWidth^2 + halfHeight^2)`.
+    - **Extension de la Physique d'Attraction** : Synchronisation de la portée physique d'attraction (`CurrentAttractPhysicsRadius`) avec l'échelle visuelle du shader d'attraction lors des phases 3 et 4, restaurée ensuite à sa portée normale (`GRadius + _attractRadiusOffset`).
+  - **Phase 4** : Retour stylisé et graduel de toutes les variables à leurs valeurs par défaut d'origine (Gradius repasse à `_startRadius`, les offsets, l'épaisseur, la couleur et les shaders sont réinitialisés proprement).
+- **Protection des Effets de Flash** : Remplacement du reset de couleur brute dans `PlayFlash()`. Le flash anime désormais un multiplicateur d'intensité HDR indépendant (`_flashIntensityMultiplier`) appliqué sur `_currentColor` (couleur de base courante). Si un flash se joue alors que le trou noir est devenu rouge ou est en cours de transition, l'intensité s'applique sur la couleur rouge sans la réinitialiser. Les appels superposés (plusieurs boules absorbées en même temps) tuent proprement le tween précédent pour rejouer l'intensité sans à-coup.
+- **Système d'Overrides Visuels** : Ajout de propriétés publiques `OverrideMainDisc` et `OverrideAttractShader` sur `BlackHole.cs`. Dans `BlackHoleVisuals.UpdateVisuals`, les mises à jour procédurales automatiques sont bypassées si ces flags sont levés, permettant à DOTween de piloter entièrement l'animation sans interférence.
+- **Code Modifié** :
+  - **`BlackHole.cs`** : Déclaration des paramètres Odin, variables d'état (y compris shake), réécriture de `PlayFlash()` avec multiplicateur d'intensité HDR, et implémentation de `ImploseNothing()`.
+  - **`BlackHoleVisuals.cs`** : Exposition des offsets, méthode publique `SetAttractShaderRadius()`, et application des overrides visuels.
+  - **`BlackHolePhysics.cs`** : Intégration de `CurrentAttractPhysicsRadius` pour les détections physiques d'attraction et le rendu de Gizmos.
+
+### 2. Ajustements du Shake de GRadius et Marge de GameZone
+- **Problème** :
+  - Le shake ne se jouait pas tout le long de la phase Z (`_zDuration`), car il était chaîné avec `.Join()` après le tween de Phase 3, ce qui le faisait démarrer à la Phase 3 mais durer plus longtemps (débordant sur la Phase 4 de restauration).
+  - La marge de sécurité pour couvrir les coins de la `GameZone` rectangulaire avec l'attract shader circulaire devait être validée à `+ 3f`.
+  - Le shake devait impacter proprement tous les composants dépendants du `GRadius` (disque de fond, shader principal, shader d'attraction et physique d'attraction).
+- **Solution** :
+  - **Insertion du Shake au Début de la Phase 2** : Changement de `_implodeSequence.Join` en `_implodeSequence.Insert(_xDuration, shakeTween)` pour démarrer le shake de secousse exactement au début de la Phase 2 et s'arrêter précisément à la fin de la Phase 3 (durée totale = `_yDuration + _zDuration`).
+  - **Marge GameZone Validée** : Confirmation de l'ajout de `3f` de marge de sécurité au calcul de la diagonale maximale de la zone de jeu (`Mathf.Sqrt(halfWidth * halfWidth + halfHeight * halfHeight) + 3f`).
+  - **Secousse Propre via GRadius** : Le shake applique les secousses au `_gRadiusShakeOffset` qui est directement intégré dans le getter de la propriété `GRadius`. Cela déclenche l'événement `OnRadiusChanged` qui répercute automatiquement la vibration sur le disque de fond et le shader principal. Pour le disque principal et le shader/physique d'attraction (qui sont en état "override" pilotés manuellement), le shake tween applique manuellement et de manière synchrone `_gRadiusShakeOffset` à leurs variables respectives.
+- **Code Modifié** :
+  - **`BlackHole.cs`** : Remplacement de `Join` par `Insert` pour caler précisément la secousse sur les Phases 2 et 3.
+
+### 3. Croissance Proportionnelle de GRadius en Phase 3 et Protection de l'Implosion
+- **Problème** :
+  - Si des entités sont consommées par le trou noir pendant l'animation d'implosion, la fonction `GrowBlackHole()` s'exécute et augmente `GRadius` au runtime. Cela perturbe l'interpolation en direct et décale les sous-éléments visuels par rapport aux parties fixes ou animées.
+  - L'assignation `GRadius += _growthAmount` appelle le setter `GRadius = GRadius + _growthAmount`. Comme le getter renvoie `_gRadius + _gRadiusShakeOffset`, la valeur du shake temporaire se retrouvait additionnée de façon PERMANENTE à la base `_gRadius`, corrompant de fait le rayon global du trou noir.
+  - L'animation de fin (Phase 4) restaurait le trou noir à la taille par défaut `_startRadius` au lieu de son échelle d'avant l'implosion (`preImplodeGRadius`), effaçant de façon anormale toute la progression/croissance cumulée de la partie.
+  - Manque de feedback sur la taille visuelle et physique lors de la Phase 3 : l'utilisateur souhaite que le trou noir et le disque principal grandissent également pour atteindre un certain pourcentage de l'attract shader (qui représente la taille totale de la map).
+  - Lors de la Phase 3, l'épaisseur du disque principal restait bloquée à sa valeur élevée calculée à la fin de la Phase 2 (`phase2EndThickness = 2 * (outerBoundary - targetRadius)`). Comme le rayon augmentait fortement vers `blackHoleGrowthTarget`, le disque principal avec sa forte épaisseur débordait anormalement par rapport au disque de fond et au shader de bruit central, brisant l'alignement visuel.
+- **Solution** :
+  - **Désactivation de la Croissance au Runtime** : Dans `GrowBlackHole()`, ajout d'un contrôle de sortie anticipée `if (IsImploding) return;`. La fonction modifie désormais directement la variable de stockage `_gRadius` au lieu de passer par le setter, puis notifie manuellement les écouteurs via `OnRadiusChanged`.
+  - **Équilibre du Setter/Getter** : Ajustement du setter `GRadius` pour soustraire le décalage temporaire du shake : `_gRadius = value - _gRadiusShakeOffset`. Cela maintient un système de coordonnées cohérent et empêche le shake de polluer la variable racine de taille.
+  - **Restauration vers la Taille Initiale d'Avant-Implosion** : Remplacement de `_startRadius` par `preImplodeGRadius` dans le calcul des tweens de retour de la Phase 4. Le trou noir récupère ainsi son état exact pré-implosion.
+  - **Ajout du Slider de Croissance (Phase 3)** : Ajout du paramètre sérialisé `_implodeGRadiusGrowthPercent` (via un slider de pourcentage `[Range(0f, 1f)]` dans l'Inspecteur). Dans la Phase 3 de l'implosion, `GRadius` grandit en parallèle jusqu'à atteindre `_implodeGRadiusGrowthPercent * attractShaderRadiusTarget`.
+  - **Adaptation du Disque Principal (Phase 3)** :
+    - Le rayon cible du disque principal (`baseMainDiscRadius`) s'arrête désormais à `blackHoleGrowthTarget + MainDiscOffset` (au lieu de `blackHoleGrowthTarget` brut), ce qui correspond à sa proportion standard par rapport au reste des composants.
+    - Ajout d'une interpolation jointe sur `_disc.Thickness` pour ramener progressivement l'épaisseur depuis sa valeur de fin de Phase 2 (`phase2EndThickness`) jusqu'à sa valeur d'origine fine (`_originalMainDiscThickness`) au cours de la Phase 3.
+- **Code Modifié** :
+  - **`BlackHole.cs`** : Déclaration de `_implodeGRadiusGrowthPercent`, modification de `GRadius` (setter), protection de `GrowBlackHole()`, et modification des cibles d'animation dans `ImploseNothing()`.
+
+### 4. Raccourci Clavier pour l'Implosion
+- **Problème** : L'utilisateur souhaite pouvoir déclencher l'animation d'implosion `ImploseNothing()` via la touche 'I' du clavier pour simplifier les tests au runtime.
+- **Solution** : Ajout d'une méthode `Update()` dans `BlackHole.cs` utilisant le nouveau système d'entrée (`UnityEngine.InputSystem.Keyboard.current`) pour écouter les pressions sur `iKey.wasPressedThisFrame` et lancer l'animation.
+- **Code Modifié** :
+  - **`BlackHole.cs`** : Import du namespace `UnityEngine.InputSystem` et implémentation de la méthode `Update()`.
+
+### 5. Implémentation du Shop et de la Répulsion (Reflect)
+- **Problème** : L'utilisateur souhaite ajouter une machine Shop (qui coordonne des sous-éléments d'achat `BallShop` disposés en cercle). Le Shop est cliquable (tente l'achat ou ouvre/ferme l'UI), draggable (déplaçable), mais pas rotatable. La machine doit intégrer une zone de force field de répulsion (Reflect) passive, et être immunisée contre l'aspiration du trou noir. L'animation d'éjection d'un objet acheté doit animer l'ouverture progressive d'un angle dans le cercle Shapes Disc. Les couleurs arc-en-ciel doivent avoir un paramètre pour en réduire la luminosité.
+- **Solution** :
+  - **Shop & BallShop Components** : Création des classes `Shop` (héritant de `MachineEntity`) et `BallShop` (coordonnant les informations de prix et de configuration). L'affichage utilise `IncrementManager.Instance.Points` comme monnaie globale.
+  - **Répulsion Passive (Reflect)** : Implémentation d'une méthode `RepelEntities()` s'exécutant dans `FixedUpdate` du `Shop` qui repousse à la fois les machines (kinematic) et les balles (dynamic) le long du vecteur sortant de sa zone (`_gRadius + _repelRadiusOffset`).
+  - **Répulsion après Drag (Collision Bump)** : Implémentation de `CheckCollisionAndRepulse()` s'exécutant à la fin du drag (`OnDragEnd`) pour projeter la machine si elle est relâchée sur un emplacement déjà occupé.
+  - **Animation d'Éjection** : Interpolation DOTween de l'objet acheté vers sa position de sortie tout en calculant et affectant `AngRadiansStart` et `AngRadiansEnd` sur le Shapes Disc du Shop pour créer la fente d'ouverture dynamique qui suit l'objet.
+  - **Luminosité du Rainbow Cycle** : Ajout des variables `_saturation` et `_value` (valeur de luminosité par défaut à `0.6f` au lieu de `1.0f`) dans `RainbowColorCycle.cs` pour atténuer la saturation/brillance.
+  - **Immunité Trou Noir** : Ajout d'une condition d'exclusion `!(machine is Shop)` dans `BlackHole.ConsumeEntity` pour empêcher que le Shop soit aspiré.
+- **Code Modifié / Ajouté** :
+  - **`RainbowColorCycle.cs`** [MODIFIÉ] : Ajout des paramètres de couleur et de luminosité.
+  - **`BallShop.cs`** [NOUVEAU] : Logique de slot d'achat individuel cliquable.
+  - **`Shop.cs`** [NOUVEAU] : Logique générale de machine shop coordinateuse et du champ de force de répulsion.
+  - **`BlackHole.cs`** [MODIFIÉ] : Exclusion du Shop dans `ConsumeEntity()`.
+
+---
+
 ## [2026-06-17] - Typewriter-based Score Animation (Only last character)
 **Date** : 2026-06-17
 **Auteur** : Antigravity (AI)
@@ -622,4 +830,34 @@
   - **Jitter Control**: Inside `UpdateArcGeometry()`, random offset jitter is only added to the segments when `_isActive` is true.
   - **Dynamic Tracking & Optimization**: Inside `LateUpdate()`, when active, the jitter geometry updates at a fixed `_updateFrequency` rate to maintain the electricity effect. When inactive, it updates on every frame so the completely flat, straight grey line tracks moving nodes/balls smoothly without any stutter or lag, but since there is no jitter, the line remains visually motionless relative to the nodes.
 - **Verification**: Solution compiled successfully via `dotnet build` with 0 errors.
+
+
+
+---
+
+## [2026-06-18] - Shop Snappy Transition & Physics Improvements
+**Date** : 2026-06-18
+**Author** : Antigravity (AI)
+
+### 1. Robust Price Text Color Recovery
+- **Problem**: When spam clicking slots with insufficient points, the price text color could get locked to red or pink instead of reverting to white.
+- **Root Cause**: Re-triggering the red flash while the color tween was returning to white overwrote the cached default color with an intermediate color, or closing the shop deactivated the object and halted the color reset tween.
+- **Solution**: Implemented `_hasCachedOriginalColor` in `BallShop.Initialize` to store `_originalPriceColor` exactly once. In both `SpawnWithMoveAndScale` and `HideWithMoveAndScale`, explicitly killed active shake/color tweens on the text and reset its color to `_originalPriceColor`.
+
+### 2. Early Slot Interactivity and Snappy Transitions
+- **Problem**: The slots could only be clicked after their spawn animation fully completed, which felt sluggish when clicking rapidly.
+- **Solution**: Reduced default timing parameters (move duration down to `0.2s`, spawn delay to `0.03s`). Set `_isInteractive` to true at **60%** of the transition duration using a `DOVirtual.DelayedCall`, allowing the player to select slot items early while they are settling.
+
+### 3. Coroutine-Safe Shop Selection Interruption
+- **Problem**: Clicking a slot mid-animation started the hide-and-purchase routine while the spawn routine was still running in the background, creating conflict.
+- **Solution**: Implemented explicit coroutine tracking fields (`_spawnCoroutine`, `_hideCoroutine`, `_purchaseCoroutine`) in `Shop.cs`. Successfully stopped conflicting routines (`StopCoroutine`) and synchronized state flags (`_isOpening = false`, `_isClosing = false`) upon slot selection or interface toggling.
+
+### 4. Centered Spawning & Shop Collision Disablement
+- **Problem**: Spawning the ball on the perimeter could overlap with obstacles or cause violent ejection forces.
+- **Solution**: Set the ball's spawn position to the shop center (`transform.position`). Temporarily disabled physical collision between the spawned ball and the main Shop's `Collider2D` using `Physics2D.IgnoreCollision` for `0.5s` to allow a smooth exit from the shop.
+
+### 5. Halved expulsion force
+- **Problem**: The expulsion force launched the ball too quickly.
+- **Solution**: Halved the expel force in the physics calculation of `Shop.cs` (`_expelForce * 0.5f`) to provide a gentler, more controlled exit velocity.
+
 

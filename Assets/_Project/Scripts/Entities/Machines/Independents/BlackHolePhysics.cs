@@ -74,7 +74,7 @@ public class BlackHolePhysics : MonoBehaviour
         }
 
         float gRadius = _blackHole.GRadius;
-        float currentAttractRadius = gRadius + _attractRadiusOffset;
+        float currentAttractRadius = _blackHole.OverrideAttractShader ? _blackHole.CurrentAttractPhysicsRadius : (gRadius + _attractRadiusOffset);
         int count = Physics2D.OverlapCircleNonAlloc(transform.position, currentAttractRadius, _collidersBuffer, _targetLayerMask);
 
         _attractedObjectsThisFrame.Clear();
@@ -114,12 +114,12 @@ public class BlackHolePhysics : MonoBehaviour
                 _blackHole.ConsumeEntity(targetRb.gameObject);
             }
             // Attract if the edge has entered the attraction zone
-            else if (distanceToEdge <= gRadius + _attractRadiusOffset)
+            else if (distanceToEdge <= currentAttractRadius)
             {
                 AttractEntity(targetRb, direction, distanceToEdge, gRadius, currentAttractRadius);
 
                 // Track for visual glitch
-                float range = _attractRadiusOffset;
+                float range = currentAttractRadius - gRadius;
                 if (range > 0f)
                 {
                     float distanceFromHorizon = distanceToEdge - gRadius;
@@ -197,7 +197,8 @@ public class BlackHolePhysics : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, gRadius);
 
         Gizmos.color = new Color(1f, 0.6f, 0f, 0.2f);
-        Gizmos.DrawWireSphere(transform.position, gRadius + _attractRadiusOffset);
+        float attractRadius = _blackHole.OverrideAttractShader ? _blackHole.CurrentAttractPhysicsRadius : (gRadius + _attractRadiusOffset);
+        Gizmos.DrawWireSphere(transform.position, attractRadius);
     }
 
     /// <summary>
@@ -219,6 +220,7 @@ public class BlackHolePhysics : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, gRadius);
 
         Gizmos.color = new Color(1f, 0.6f, 0f, 0.5f);
-        Gizmos.DrawWireSphere(transform.position, gRadius + _attractRadiusOffset);
+        float attractRadius = _blackHole.OverrideAttractShader ? _blackHole.CurrentAttractPhysicsRadius : (gRadius + _attractRadiusOffset);
+        Gizmos.DrawWireSphere(transform.position, attractRadius);
     }
 }

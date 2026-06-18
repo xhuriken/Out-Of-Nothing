@@ -1,4 +1,16 @@
-- [x] Add `_isInitialized` check to `OnValidate` to prevent `NullReferenceException` from TextMeshPro during play mode initialization
-- [x] Verify clean compilation using `dotnet build Out-Of-Nothing.sln`
-- [ ] Update `DEVELOPMENT_LOG.md`
-- [ ] Verify member visibility (Validation of Signature)
+- [x] Refactor `BallShop.cs` hover animations to target `_visualDisc.transform` instead of `transform` (prevent tween conflicts).
+- [x] Add unique DOTween IDs to isolate slot spawner motion, hovers, and shakes (fix random spawner freezes).
+- [x] Refactor `BallShop.cs` failed purchase animation to shake child transforms and flash red HDR outer glow.
+- [x] Defer hover clearing to successful purchases only, allowing shakes to play on insufficient funds.
+- [x] Update `Shop.cs` launch direction to be converted to world space using `TransformDirection`.
+- [x] Update `Shop.cs` spawn position to spawn the ball outside the Shop's collider (prevent physics depenetration overlaps).
+- [x] Update `Shop.cs` expel force to scale with the temporary mass multiplier, reducing base force to 12f.
+- [x] Update `GameInputManager.cs` to clear slot hover state upon successful click selection.
+- [x] Prevent price text from staying red when spammed in `BallShop.cs` by caching original color and resetting tweens.
+- [x] Allow clicking on slots mid-animation (60% duration) by setting `_isInteractive` early.
+- [x] Stop conflicting spawn/hide coroutines in `Shop.cs` on slot purchase/selection.
+- [x] Spawn purchased ball at the center of the shop (`transform.position`).
+- [x] Temporarily ignore collision between the spawned ball and the main shop's collider for `0.5f` seconds.
+- [x] Halve expulsion force in the physics calculation of `Shop.cs` (`_expelForce * 0.5f`).
+- [x] Verify compilation of the project using `dotnet build`.
+- [x] Update `DEVELOPMENT_LOG.md` and `TODO.md` at project root.

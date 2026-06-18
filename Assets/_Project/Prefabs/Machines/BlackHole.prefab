@@ -5236,10 +5236,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BlackHole
   _startRadius: 0.5
   _growthAmount: 0.005
-  _gRadius: 1
-  _hdrFlashMultiplier: 3
-  _flashInDuration: 0.05
-  _flashOutDuration: 0.35
+  _gRadius: 0.5
+  _hdrFlashMultiplier: 2.5
+  _flashInDuration: 0.02
+  _flashOutDuration: 0.15
+  _implodeGRadiusTarget: 3
+  _xDuration: 1
+  _xEase: 25
+  _implodeMainDiscTargetRadius: 2
+  _implodeGRadiusGrowthPercent: 0.442
+  _implodeTargetColor: {r: 1, g: 0, b: 0, a: 1}
+  _yDuration: 0.3
+  _yEase: 7
+  _zDuration: 10
+  _zEase: 7
+  _returnDuration: 1
+  _returnEase: 6
+  _shakeAmplitude: 0.06
+  _shakeFrequency: 100
 --- !u!114 &5816716308862006155
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5401,7 +5415,7 @@ MonoBehaviour:
   _attractRadiusOffset: 2
   _targetLayerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 768
 --- !u!114 &5088892304724699252
 MonoBehaviour:
   m_ObjectHideFlags: 0
