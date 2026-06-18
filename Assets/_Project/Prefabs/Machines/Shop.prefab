@@ -424,6 +424,7 @@ MonoBehaviour:
   _priceTextOffset: 0.8
   _hoverScaleMultiplier: 1.15
   _hoverGlowMultiplier: 1.5
+  _isLocked: 1
 --- !u!114 &1297037082727425617
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -627,6 +628,7 @@ MonoBehaviour:
   _priceTextOffset: 0.8
   _hoverScaleMultiplier: 1.15
   _hoverGlowMultiplier: 1.5
+  _isLocked: 0
 --- !u!114 &1203264499379848000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -830,6 +832,7 @@ MonoBehaviour:
   _priceTextOffset: 0.8
   _hoverScaleMultiplier: 1.15
   _hoverGlowMultiplier: 1.5
+  _isLocked: 1
 --- !u!114 &690747744184354454
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1033,6 +1036,7 @@ MonoBehaviour:
   _priceTextOffset: 0.8
   _hoverScaleMultiplier: 1.15
   _hoverGlowMultiplier: 1.5
+  _isLocked: 1
 --- !u!114 &3567303108301727299
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1963,6 +1967,7 @@ MonoBehaviour:
   _priceTextOffset: 0.8
   _hoverScaleMultiplier: 1.15
   _hoverGlowMultiplier: 1.5
+  _isLocked: 0
 --- !u!114 &3805629412227601535
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2394,6 +2399,7 @@ MonoBehaviour:
   _priceTextOffset: 0.8
   _hoverScaleMultiplier: 1.15
   _hoverGlowMultiplier: 1.5
+  _isLocked: 1
 --- !u!114 &2185897854276493639
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7911,6 +7917,7 @@ MonoBehaviour:
   _priceTextOffset: 0.8
   _hoverScaleMultiplier: 1.15
   _hoverGlowMultiplier: 1.5
+  _isLocked: 0
 --- !u!114 &1314556844050494759
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8433,6 +8440,7 @@ MonoBehaviour:
   _priceTextOffset: 0.8
   _hoverScaleMultiplier: 1.15
   _hoverGlowMultiplier: 1.5
+  _isLocked: 0
 --- !u!114 &8758516554582327407
 MonoBehaviour:
   m_ObjectHideFlags: 0
