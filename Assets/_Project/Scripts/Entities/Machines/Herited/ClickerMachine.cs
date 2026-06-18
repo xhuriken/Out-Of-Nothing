@@ -38,6 +38,10 @@ public class ClickerMachine : MachineEntity, IEnergyConsumer
     protected override void Start()
     {
         base.Start();
+        if (_maxStorage == 100f)
+        {
+            _maxStorage = 10f;
+        }
         _captureHandler = GetComponent<BallCaptureHandler>();
         if (_targetCenterTransform == null)
         {
@@ -100,14 +104,17 @@ public class ClickerMachine : MachineEntity, IEnergyConsumer
     {
         _isProcessingAction = true;
 
-        // 1. Wait 1 second after entering and centering before the click happens
-        yield return new WaitForSeconds(1.0f);
+        float efficiency = NetworkEfficiency;
+
+        // 1. Wait 1 second after entering and centering before the click happens, scaled by efficiency
+        yield return new WaitForSeconds(1.0f / efficiency);
 
         // Determine if this click will trigger duplication (mitosis)
         bool willDuplicate = (ball.CurrentClickCount + 1 >= ball.Data.clicksRequiredForDuplication);
 
         if (_animator != null)
         {
+            _animator.speed = efficiency;
             _animator.SetTrigger("Click");
         }
 
@@ -119,8 +126,8 @@ public class ClickerMachine : MachineEntity, IEnergyConsumer
             // Trigger click visual
             ball.PerformDefaultClick();
 
-            // 2. Wait 1 second after clicking before starting the duplication visual mitosis
-            yield return new WaitForSeconds(1.0f);
+            // 2. Wait 1 second after clicking before starting the duplication visual mitosis, scaled by efficiency
+            yield return new WaitForSeconds(1.0f / efficiency);
 
             // Execute duplication
             yield return StartCoroutine(PerformClickerDuplication(ball));
@@ -132,11 +139,16 @@ public class ClickerMachine : MachineEntity, IEnergyConsumer
             ball.ReceiveClick();
             ball.IsProcessing = true;
 
-            // 2. Wait 1 second after clicking before ejecting
-            yield return new WaitForSeconds(1.0f);
+            // 2. Wait 1 second after clicking before ejecting, scaled by efficiency
+            yield return new WaitForSeconds(1.0f / efficiency);
 
             // Expel parent ball in opposite direction of entry
             _captureHandler.EjectCapturedBall(_ejectionForce);
+        }
+
+        if (_animator != null)
+        {
+            _animator.speed = 1f; // Reset animator speed
         }
 
         _isProcessingAction = false;
@@ -145,14 +157,15 @@ public class ClickerMachine : MachineEntity, IEnergyConsumer
     private IEnumerator PerformClickerDuplication(BallEntity parentBall)
     {
         Vector3 centerPos = _targetCenterTransform.position;
+        float efficiency = NetworkEfficiency;
 
         // Force parent to be exactly at center
         parentBall.transform.position = centerPos;
 
-        // Squash and stretch scale preparation for duplication (mitosis feel)
+        // Squash and stretch scale preparation for duplication (mitosis feel), scaled by efficiency
         Sequence prepSeq = DOTween.Sequence();
-        prepSeq.Append(parentBall.transform.DOScale(new Vector3(1.4f, 0.6f, 1f), 0.35f).SetEase(Ease.OutQuad));
-        prepSeq.Join(parentBall.transform.DOShakePosition(0.35f, 0.08f, 30, 90f, false, false));
+        prepSeq.Append(parentBall.transform.DOScale(new Vector3(1.4f, 0.6f, 1f), 0.35f / efficiency).SetEase(Ease.OutQuad));
+        prepSeq.Join(parentBall.transform.DOShakePosition(0.35f / efficiency, 0.08f, 30, 90f, false, false));
         yield return prepSeq.WaitForCompletion();
 
         // Ensure parent returns to center after shake
@@ -175,10 +188,10 @@ public class ClickerMachine : MachineEntity, IEnergyConsumer
                 childBall.Collider.enabled = false;
             }
 
-            // Animate both parent and child recovering to normal scale (split feel)
+            // Animate both parent and child recovering to normal scale (split feel), scaled by efficiency
             Sequence splitSeq = DOTween.Sequence();
-            splitSeq.Append(parentBall.transform.DOScale(Vector3.one, 0.45f).SetEase(Ease.OutElastic));
-            splitSeq.Join(childBall.transform.DOScale(Vector3.one, 0.45f).SetEase(Ease.OutElastic));
+            splitSeq.Append(parentBall.transform.DOScale(Vector3.one, 0.45f / efficiency).SetEase(Ease.OutElastic));
+            splitSeq.Join(childBall.transform.DOScale(Vector3.one, 0.45f / efficiency).SetEase(Ease.OutElastic));
             yield return splitSeq.WaitForCompletion();
 
             // Ignore collision between parent and child ball temporarily so overlapping resolution doesn't deflect them sideways
@@ -208,7 +221,7 @@ public class ClickerMachine : MachineEntity, IEnergyConsumer
             // Ignore collision with machine colliders for a short duration
             _captureHandler.IgnoreCollisionWithMachine(childBall.Collider, true);
 
-            float massMultiplier = childBall.SetTemporaryHeavyMass(0.4f, 50f);
+            float massMultiplier = childBall.SetTemporaryHeavyMass(0.4f / efficiency, 50f);
             if (childBall.Rb != null)
             {
                 childBall.Rb.linearVelocity = Vector2.zero;
@@ -218,7 +231,7 @@ public class ClickerMachine : MachineEntity, IEnergyConsumer
             // Restore collisions after a short delay
             BallEntity savedParent = parentBall;
             BallEntity savedChild = childBall;
-            DOVirtual.DelayedCall(0.5f, () =>
+            DOVirtual.DelayedCall(0.5f / efficiency, () =>
             {
                 if (savedChild != null && _captureHandler != null)
                 {

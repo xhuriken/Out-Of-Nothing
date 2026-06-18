@@ -1532,7 +1532,7 @@ MonoBehaviour:
   _freeRotationSpeed: 2
   _connectionRadius: 3.5
   _physicalRadius: 1.4
-  _maxStorage: 100
+  _maxStorage: 20
   _dragForceMultiplier: 15
   _maxDragSpeed: 30
   _isRunning: 1
@@ -1544,7 +1544,7 @@ MonoBehaviour:
   _ejectionForce: 6
   _transformationDuration: 1
   _inputTransferSpeed: 1
-  _consumptionPerAction: 10
+  _consumptionPerAction: 20
 --- !u!1 &8174611753005191281
 GameObject:
   m_ObjectHideFlags: 0

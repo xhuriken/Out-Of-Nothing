@@ -769,7 +769,7 @@ MonoBehaviour:
   _freeRotationSpeed: 2
   _connectionRadius: 3.5
   _physicalRadius: 1
-  _maxStorage: 100
+  _maxStorage: 10
   _dragForceMultiplier: 15
   _maxDragSpeed: 30
   _isRunning: 1

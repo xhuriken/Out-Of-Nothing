@@ -15,8 +15,8 @@ public class BlueOscillator : MachineEntity, IEnergyConsumer
     [SerializeField] private float _transformationDuration = 1.0f;
 
     [Header("Energy Settings")]
-    [SerializeField] private float _inputTransferSpeed = 0.5f;
-    [SerializeField] private float _consumptionPerAction = 10f;
+    [SerializeField] private float _inputTransferSpeed = 1.0f;
+    [SerializeField] private float _consumptionPerAction = 20f;
 
     private BallCaptureHandler _captureHandler;
     private bool _isTransforming;
@@ -35,6 +35,10 @@ public class BlueOscillator : MachineEntity, IEnergyConsumer
     protected override void Start()
     {
         base.Start();
+        if (_maxStorage == 100f)
+        {
+            _maxStorage = 20f;
+        }
         _captureHandler = GetComponent<BallCaptureHandler>();
         if (_targetCenterTransform == null)
         {
@@ -61,10 +65,11 @@ public class BlueOscillator : MachineEntity, IEnergyConsumer
 
         var redBall = _captureHandler.CapturedBall;
         Vector3 centerPos = _targetCenterTransform.position;
+        float efficiency = NetworkEfficiency;
 
-        float squeezeDur = _transformationDuration * 0.2f;
-        float shrinkDur = _transformationDuration * 0.3f;
-        float expandDur = _transformationDuration * 0.5f;
+        float squeezeDur = (_transformationDuration * 0.2f) / efficiency;
+        float shrinkDur = (_transformationDuration * 0.3f) / efficiency;
+        float expandDur = (_transformationDuration * 0.5f) / efficiency;
 
         // Sequence: Scale down the red ball, swap it with blue ball at scale 0, scale it up, then eject it!
         Sequence transformSeq = DOTween.Sequence();

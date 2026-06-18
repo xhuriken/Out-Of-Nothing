@@ -12,8 +12,8 @@ public class GeneratorMachine : MachineEntity, IEnergyProducer
     [SerializeField] private Rectangle _energyRenderer;
 
     [Header("Generator Settings")]
-    [SerializeField] private float _productionPerTick = 0.12f; // Can sustain 2 Reds (0.10) but not 3 (0.15)
-    [SerializeField] private float _outputTransferSpeed = 0.5f;
+    [SerializeField] private float _productionPerTick = 1.0f; // Can sustain 2 Reds (0.50 each) but not 3 (1.50)
+    [SerializeField] private float _outputTransferSpeed = 5.0f;
     [SerializeField] private float _animSpeed = 0.5f;
 
     [Header("Debug")]
@@ -29,6 +29,15 @@ public class GeneratorMachine : MachineEntity, IEnergyProducer
 
     public float ProductionPerTick => _productionPerTick;
     public float OutputTransferSpeed => _outputTransferSpeed;
+
+    protected override void Start()
+    {
+        base.Start();
+        if (_maxStorage == 100f)
+        {
+            _maxStorage = 20f;
+        }
+    }
 
     private void FixedUpdate()
     {
