@@ -1,5 +1,6 @@
 using Shapes;
 using UnityEngine;
+using DG.Tweening;
 
 /// <summary>
 /// Represents the border of the map. All object inside must bounce on collision.
@@ -22,6 +23,9 @@ public class GameZone : MonoBehaviour
     [SerializeField] private bool _enableDebugLogs = false;
 
     private EdgeCollider2D _edgeCollider;
+
+    public float Width => _width;
+    public float Height => _height;
 
     // Limits properties for easy access
     // Left = minX, Right = maxX, Top = maxY, Bottom = minY
@@ -112,4 +116,17 @@ public class GameZone : MonoBehaviour
         };
     }
 
+    /// <summary>
+    /// Smoothly expands the scale of the playfield boundaries by a multiplier using DOTween.
+    /// </summary>
+    public void ExpandScale(float multiplier, float duration = 1.5f)
+    {
+        DOTween.Kill(this);
+        DOTween.To(() => _width, x => { _width = x; UpdateBoundaries(); }, _width * multiplier, duration)
+            .SetEase(Ease.OutQuad)
+            .SetTarget(this);
+        DOTween.To(() => _height, x => { _height = x; UpdateBoundaries(); }, _height * multiplier, duration)
+            .SetEase(Ease.OutQuad)
+            .SetTarget(this);
+    }
 }

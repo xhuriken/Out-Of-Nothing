@@ -7910,7 +7910,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BallShop
   _identity:
-    Price: 20
+    Price: 50
     BallData: {fileID: 11400000, guid: 8d01071631ac25e4fa82dc5636359ba7, type: 2}
   _priceText: {fileID: 6417296908505380795}
   _visualDisc: {fileID: 1314556844050494759}

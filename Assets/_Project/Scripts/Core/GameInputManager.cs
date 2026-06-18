@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using DG.Tweening;
 
 /// <summary>
 /// Centralized input manager to handle clicks and prevent spam.
@@ -108,25 +109,37 @@ public class GameInputManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Handles the Scroll input action to rotate the currently dragged object.
+    /// Handles the Scroll input action. Rotates the currently dragged object or zooms the camera.
     /// </summary>
     public void OnScroll(InputAction.CallbackContext context)
     {
-        if (_currentDraggedObject != null && context.performed)
+        if (context.performed)
         {
-            if (_currentDraggedObject as UnityEngine.Object == null)
+            float scrollValue = 0f;
+            if (context.valueType == typeof(Vector2))
             {
-                ForceDrop();
-                return;
+                scrollValue = context.ReadValue<Vector2>().y;
             }
-            
-            // The scroll wheel is the Y axis
-            float scrollValue = context.ReadValue<float>();
+            else
+            {
+                scrollValue = context.ReadValue<float>();
+            }
 
-            //if (Mathf.Abs(scrollValue) > 0.01f)
-            //{
-            _currentDraggedObject.OnDragRotate(scrollValue);
-            //}
+            if (_currentDraggedObject != null)
+            {
+                if (_currentDraggedObject as UnityEngine.Object == null)
+                {
+                    ForceDrop();
+                    return;
+                }
+                
+                _currentDraggedObject.OnDragRotate(scrollValue);
+            }
+            else
+            {
+                // If not dragging any object, scroll zooms the camera
+                CameraController.Instance?.AdjustZoom(scrollValue);
+            }
         }
     }
 
@@ -317,5 +330,4 @@ public class GameInputManager : MonoBehaviour
             GameCursor.Instance?.SetDragAnimation(false);
         }
     }
-
 }
