@@ -137,6 +137,19 @@ public class BallEntity : MonoBehaviour, IDraggable
 
         UpdateVisualsAndPhysics();
         _behavior?.Initialize(this);
+
+        // Ignore collision with all active bumpers
+        foreach (var bumper in BumperMachine.ActiveBumpers)
+        {
+            if (bumper != null)
+            {
+                Collider2D bumperCollider = bumper.GetComponent<Collider2D>();
+                if (bumperCollider != null && _collider != null)
+                {
+                    Physics2D.IgnoreCollision(_collider, bumperCollider, true);
+                }
+            }
+        }
     }
 
     #region Interaction Relay
