@@ -54,6 +54,49 @@ public class PistonMachine : MachineEntity
         CurrentEnergy = _maxStorage;
     }
 
+    public override void ReleaseCapturedBalls()
+    {
+        base.ReleaseCapturedBalls();
+        if (_ballInside != null)
+        {
+            DOTween.Kill(_ballInside.transform);
+            if (_ballInside.Collider != null)
+            {
+                _ballInside.Collider.enabled = true;
+            }
+            _ballInside.IsProcessing = false;
+            if (_ballInside.Passport != null)
+            {
+                _ballInside.Passport.SetLockState(false);
+            }
+            _ballInside = null;
+        }
+    }
+
+    public override bool OnDragStart()
+    {
+        ReleaseCapturedBalls();
+        return base.OnDragStart();
+    }
+
+    protected override void OnDisable()
+    {
+        base.OnDisable();
+        if (_ballInside != null)
+        {
+            BallEntity ball = _ballInside;
+            _ballInside = null;
+            if (BallPoolManager.Instance != null)
+            {
+                BallPoolManager.Instance.ReleaseBall(ball);
+            }
+            else
+            {
+                Destroy(ball.gameObject);
+            }
+        }
+    }
+
     // I choose the fixed update because if we have a lag, i dont want the machine to be desync with other...
     private void FixedUpdate()
     {

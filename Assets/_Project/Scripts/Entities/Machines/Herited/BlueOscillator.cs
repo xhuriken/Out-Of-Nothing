@@ -25,6 +25,7 @@ public class BlueOscillator : MachineEntity, IEnergyConsumer
 
     private BallCaptureHandler _captureHandler;
     private bool _isTransforming;
+    private Sequence _transformSeq;
 
     public float InputTransferSpeed
     {
@@ -55,10 +56,34 @@ public class BlueOscillator : MachineEntity, IEnergyConsumer
         }
     }
 
+    public override void ReleaseCapturedBalls()
+    {
+        if (_isTransforming)
+        {
+            if (_transformSeq != null && _transformSeq.IsActive())
+            {
+                _transformSeq.Kill();
+            }
+
+            if (_captureHandler != null && _captureHandler.CapturedBall != null)
+            {
+                DOTween.Kill(_captureHandler.CapturedBall.transform);
+                _captureHandler.CapturedBall.transform.localScale = Vector3.one;
+            }
+
+            _isTransforming = false;
+            if (_animator != null)
+            {
+                _animator.speed = 1f;
+            }
+        }
+        base.ReleaseCapturedBalls();
+    }
+
     public override bool OnDragStart()
     {
-        // Prevent drag if we have a ball inside or are performing a transformation
-        if (_captureHandler != null && _captureHandler.CapturedBall != null)
+        // Prevent drag if we are performing a transformation
+        if (_isTransforming)
         {
             return false;
         }
@@ -87,13 +112,14 @@ public class BlueOscillator : MachineEntity, IEnergyConsumer
         float expandDur = (_transformationDuration * 0.5f) / efficiency;
 
         // Sequence: Scale down the red ball, swap it with blue ball at scale 0, scale it up, then eject it!
-        Sequence transformSeq = DOTween.Sequence();
+        _transformSeq = DOTween.Sequence();
+        _transformSeq.SetLink(gameObject);
         
         // Squeeze/squash slightly, then shrink to 0
-        transformSeq.Append(redBall.transform.DOScale(new Vector3(1.2f, 0.8f, 1f), squeezeDur).SetEase(Ease.OutQuad));
-        transformSeq.Append(redBall.transform.DOScale(Vector3.zero, shrinkDur).SetEase(Ease.InBack));
+        _transformSeq.Append(redBall.transform.DOScale(new Vector3(1.2f, 0.8f, 1f), squeezeDur).SetEase(Ease.OutQuad));
+        _transformSeq.Append(redBall.transform.DOScale(Vector3.zero, shrinkDur).SetEase(Ease.InBack));
         
-        transformSeq.OnComplete(() =>
+        _transformSeq.OnComplete(() =>
         {
             Vector2 savedEntryDir = _captureHandler.EntryDirection;
 
@@ -146,6 +172,12 @@ public class BlueOscillator : MachineEntity, IEnergyConsumer
         // Capture only when entering the CENTER trigger
         if (partId == "CENTER" && collider.gameObject.TryGetComponent(out BallEntity ball))
         {
+            // Forbid Yellow Balls
+            if ((ball.Data != null && ball.Data.id == "YellowBall") || ball.Behavior is YellowBallBehavior)
+            {
+                return;
+            }
+
             if (ball.Data == _redBallData && _captureHandler.CapturedBall == null && !_isTransforming)
             {
                 _captureHandler.Capture(ball, _targetCenterTransform.position);

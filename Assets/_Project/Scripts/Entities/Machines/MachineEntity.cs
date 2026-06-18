@@ -84,6 +84,26 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable, IEnergyNode
         {
             PowerTickManager.Instance.OnPowerTick -= HandleTick;
         }
+
+        // Clean up and release any captured ball to the pool so it doesn't get orphaned/stuck in the scene
+        var captureHandlers = GetComponentsInChildren<BallCaptureHandler>();
+        foreach (var handler in captureHandlers)
+        {
+            if (handler != null && handler.CapturedBall != null)
+            {
+                BallEntity ball = handler.CapturedBall;
+                handler.ClearReference();
+                
+                if (BallPoolManager.Instance != null)
+                {
+                    BallPoolManager.Instance.ReleaseBall(ball);
+                }
+                else
+                {
+                    Destroy(ball.gameObject);
+                }
+            }
+        }
     }
 
     protected virtual void Start()
@@ -119,6 +139,18 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable, IEnergyNode
     public virtual void OnPartTriggerEnter(string partId, Collider2D collider) { }
     #endregion
 
+    public virtual void ReleaseCapturedBalls()
+    {
+        var captureHandlers = GetComponentsInChildren<BallCaptureHandler>();
+        foreach (var handler in captureHandlers)
+        {
+            if (handler != null && handler.CapturedBall != null)
+            {
+                handler.ReleaseCapturedBall();
+            }
+        }
+    }
+
     #region Drag & Drop Implementation
     public virtual bool OnDragStart()
     {
@@ -132,6 +164,10 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable, IEnergyNode
 
         _rb.bodyType = RigidbodyType2D.Dynamic;
         _rb.linearVelocity = Vector2.zero;
+
+        // Release any captured ball when dragging starts
+        ReleaseCapturedBalls();
+
         return true;
     }
 

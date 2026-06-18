@@ -58,10 +58,24 @@ public class ClickerMachine : MachineEntity, IEnergyConsumer
         }
     }
 
+    public override void ReleaseCapturedBalls()
+    {
+        if (_isProcessingAction)
+        {
+            StopAllCoroutines();
+            _isProcessingAction = false;
+            if (_animator != null)
+            {
+                _animator.speed = 1f;
+            }
+        }
+        base.ReleaseCapturedBalls();
+    }
+
     public override bool OnDragStart()
     {
-        // Prevent drag if we have a ball inside or are processing
-        if ((_captureHandler != null && _captureHandler.CapturedBall != null) || _isProcessingAction)
+        // Prevent drag only if we are processing the click animation/action
+        if (_isProcessingAction)
         {
             return false;
         }
@@ -75,6 +89,12 @@ public class ClickerMachine : MachineEntity, IEnergyConsumer
         // Capture any BallEntity when entering the CENTER trigger
         if (partId == "CENTER" && collider.gameObject.TryGetComponent(out BallEntity ball))
         {
+            // Forbid Yellow Balls
+            if ((ball.Data != null && ball.Data.id == "YellowBall") || ball.Behavior is YellowBallBehavior)
+            {
+                return;
+            }
+
             if (_captureHandler.CapturedBall == null && !_isProcessingAction)
             {
                 _captureHandler.Capture(ball, CapturePosition);

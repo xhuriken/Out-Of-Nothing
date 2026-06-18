@@ -95,6 +95,8 @@ public class BallCaptureHandler : MonoBehaviour
         var ball = CapturedBall;
         CapturedBall = null;
 
+        DOTween.Kill(ball.transform);
+
         if (ball.Collider != null)
         {
             ball.Collider.enabled = true;

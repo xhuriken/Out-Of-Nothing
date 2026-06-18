@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using System.Collections;
+using System.Collections.Generic;
 
 
 using Febucci.UI;
@@ -12,14 +13,37 @@ public class MonologueUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI textMeshPro;
 
     [Header("Text Animator Reference (Optional)")]
-
     [SerializeField] private TypewriterByCharacter typewriter;
+
+    [Header("Mysterious Styling")]
+    [SerializeField] private TMP_FontAsset mysteriousFont;
+    [SerializeField] private bool applyMysteriousTags = true;
+    [SerializeField] [Range(0.01f, 3f)] private float typewriterSpeedMultiplier = 0.6f;
 
     private Coroutine _displayCoroutine;
     
 #pragma warning disable 0414
     private bool _isTypingFinished = false;
 #pragma warning restore 0414
+
+    private struct QueueItem
+    {
+        public string text;
+        public float exposureTime;
+    }
+
+    private Queue<QueueItem> _dialogueQueue = new Queue<QueueItem>();
+    private bool _isDisplaying = false;
+
+    private void OnDisable()
+    {
+        if (_dialogueQueue != null)
+        {
+            _dialogueQueue.Clear();
+        }
+        _isDisplaying = false;
+        _displayCoroutine = null;
+    }
 
     private void Start()
     {
@@ -33,6 +57,12 @@ public class MonologueUI : MonoBehaviour
         if (textMeshPro == null)
         {
             textMeshPro = GetComponentInChildren<TextMeshProUGUI>();
+        }
+
+        // Apply mysterious font if provided
+        if (textMeshPro != null && mysteriousFont != null)
+        {
+            textMeshPro.font = mysteriousFont;
         }
 
 
@@ -59,7 +89,7 @@ public class MonologueUI : MonoBehaviour
     }
 
     /// <summary>
-    /// Displays a monologue line.
+    /// Enqueues a monologue line to be displayed in sequence.
     /// </summary>
     public void ShowLine(string text, float exposureTime)
     {
@@ -69,13 +99,29 @@ public class MonologueUI : MonoBehaviour
             return;
         }
 
-        // Stop any running monologue display
-        if (_displayCoroutine != null)
+        _dialogueQueue.Enqueue(new QueueItem { text = text, exposureTime = exposureTime });
+
+        if (!_isDisplaying)
         {
-            StopCoroutine(_displayCoroutine);
+            _displayCoroutine = StartCoroutine(Co_ProcessQueue());
+        }
+    }
+
+    /// <summary>
+    /// Processes the monologue queue sequentially.
+    /// </summary>
+    private IEnumerator Co_ProcessQueue()
+    {
+        _isDisplaying = true;
+
+        while (_dialogueQueue.Count > 0)
+        {
+            QueueItem nextItem = _dialogueQueue.Dequeue();
+            yield return StartCoroutine(Co_ShowLine(nextItem.text, nextItem.exposureTime));
         }
 
-        _displayCoroutine = StartCoroutine(Co_ShowLine(text, exposureTime));
+        _isDisplaying = false;
+        _displayCoroutine = null;
     }
 
     private IEnumerator Co_ShowLine(string text, float exposureTime)
@@ -83,10 +129,22 @@ public class MonologueUI : MonoBehaviour
         monologuePanel.SetActive(true);
         _isTypingFinished = false;
 
+        string formattedText = text;
+        if (applyMysteriousTags)
+        {
+            // Only wrap if it doesn't already contain formatting tags for movement/effects
+            bool hasEffects = text.Contains("<wiggle") || text.Contains("<glitch") || text.Contains("<shake") || text.Contains("<wave") || text.Contains("<bounce") || text.Contains("<rain");
+            if (!hasEffects)
+            {
+                formattedText = $"<wiggle a=0.08 b=12><i>{text}</i></wiggle>";
+            }
+        }
+
         if (typewriter != null)
         {
             // Use Text Animator typewriter
-            typewriter.ShowText(text);
+            typewriter.ShowText(formattedText);
+            typewriter.SetTypewriterSpeed(typewriterSpeedMultiplier);
 
             // Wait until the typewriter finishes typing
             while (!_isTypingFinished)
@@ -99,7 +157,7 @@ public class MonologueUI : MonoBehaviour
             // Fallback: Show text immediately using standard TextMeshPro
             if (textMeshPro != null)
             {
-                textMeshPro.text = text;
+                textMeshPro.text = formattedText;
             }
             _isTypingFinished = true;
         }
@@ -133,7 +191,6 @@ public class MonologueUI : MonoBehaviour
         {
             monologuePanel.SetActive(false);
         }
-        _displayCoroutine = null;
     }
 
     private void OnTypingFinished()

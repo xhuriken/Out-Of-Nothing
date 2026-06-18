@@ -97,6 +97,13 @@ public class GameCursor : MonoBehaviour
     {
         if (_mainCamera == null) return;
 
+        // Automatically toggle cursor visibility based on the menu state
+        bool isMenuOpen = MenuController.Instance != null && MenuController.Instance.IsOpen;
+        Cursor.visible = isMenuOpen;
+        transform.localScale = isMenuOpen ? Vector3.zero : Vector3.one;
+
+        if (isMenuOpen) return; // Skip tracking and smoothing when menu is open
+
         // Get target world position based on mouse screen position
         Vector2 mouseScreenPosition = Mouse.current.position.ReadValue();
         if (float.IsNaN(mouseScreenPosition.x) || float.IsNaN(mouseScreenPosition.y)) return;

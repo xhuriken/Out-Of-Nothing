@@ -30,13 +30,42 @@ public class PressMachine : MachineEntity, IEnergyConsumer
     public float InputTransferSpeed => _inputTransferSpeed;
     public float ConsumptionPerAction => _consumptionPerAction;
 
-    public override bool OnDragStart()
+    public override void ReleaseCapturedBalls()
     {
+        base.ReleaseCapturedBalls();
         if (_ballInside != null)
-            return false;
+        {
+            DOTween.Kill(_ballInside.transform);
+            if (_ballInside.Collider != null)
+            {
+                _ballInside.Collider.enabled = true;
+            }
+            _ballInside.IsProcessing = false;
+            if (_ballInside.Passport != null)
+            {
+                _ballInside.Passport.SetLockState(false);
+            }
+            _ballInside = null;
+        }
+    }
 
-        return base.OnDragStart();
+    protected override void OnDisable()
+    {
+        base.OnDisable();
 
+        if (_ballInside != null)
+        {
+            BallEntity ball = _ballInside;
+            _ballInside = null;
+            if (BallPoolManager.Instance != null)
+            {
+                BallPoolManager.Instance.ReleaseBall(ball);
+            }
+            else
+            {
+                Destroy(ball.gameObject);
+            }
+        }
     }
 
     private void FixedUpdate()

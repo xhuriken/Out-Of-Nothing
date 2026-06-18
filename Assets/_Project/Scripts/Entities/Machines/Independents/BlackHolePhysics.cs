@@ -118,6 +118,12 @@ public class BlackHolePhysics : MonoBehaviour
             {
                 AttractEntity(targetRb, direction, distanceToEdge, gRadius, currentAttractRadius);
 
+                MachineEntity machine = targetRb.GetComponent<MachineEntity>();
+                if (machine != null)
+                {
+                    machine.ReleaseCapturedBalls();
+                }
+
                 // Track for visual glitch
                 float range = currentAttractRadius - gRadius;
                 if (range > 0f)
@@ -125,12 +131,12 @@ public class BlackHolePhysics : MonoBehaviour
                     float distanceFromHorizon = distanceToEdge - gRadius;
                     float depth = 1f - Mathf.Clamp01(distanceFromHorizon / range);
                     BallEntity ball = targetRb.GetComponent<BallEntity>();
-                    MachineEntity machine = ball == null ? targetRb.GetComponent<MachineEntity>() : null;
+                    MachineEntity glitchMachine = ball == null ? machine : null;
                     _attractedObjectsThisFrame[targetRb.transform] = new AttractedObjectData 
                     { 
                         Depth = depth, 
                         Ball = ball, 
-                        Machine = machine 
+                        Machine = glitchMachine 
                     };
                 }
             }

@@ -37,6 +37,15 @@ public class GameInputManager : MonoBehaviour
 
     private void Update()
     {
+        if (MenuController.Instance != null && MenuController.Instance.IsOpen)
+        {
+            if (_currentDraggedObject != null)
+            {
+                ForceDrop();
+            }
+            return;
+        }
+
         if (Application.isPlaying)
         {
             UpdateHoverState();
@@ -64,6 +73,8 @@ public class GameInputManager : MonoBehaviour
 
     public void OnClick(InputAction.CallbackContext context)
     {
+        if (MenuController.Instance != null && MenuController.Instance.IsOpen) return;
+
         if (context.performed)
         {
             // If crafting is active, route the click ONLY to the crafting system
@@ -87,6 +98,8 @@ public class GameInputManager : MonoBehaviour
     /// </summary>
     public void OnDrag(InputAction.CallbackContext context)
     {
+        if (MenuController.Instance != null && MenuController.Instance.IsOpen) return;
+
         // Allow dragging even in crafting mode
         if (context.performed)
         {
@@ -113,6 +126,8 @@ public class GameInputManager : MonoBehaviour
     /// </summary>
     public void OnScroll(InputAction.CallbackContext context)
     {
+        if (MenuController.Instance != null && MenuController.Instance.IsOpen) return;
+
         if (context.performed)
         {
             float scrollValue = 0f;
@@ -145,6 +160,8 @@ public class GameInputManager : MonoBehaviour
 
     public void OnCraft(InputAction.CallbackContext context)
     {
+        if (MenuController.Instance != null && MenuController.Instance.IsOpen) return;
+
         if (context.performed)
         {
             // Toggle mode: if it was hold, now it's toggle.
@@ -156,6 +173,8 @@ public class GameInputManager : MonoBehaviour
 
     public void OnCodex(InputAction.CallbackContext context)
     {
+        if (MenuController.Instance != null && MenuController.Instance.IsOpen) return;
+
         if (context.performed)
         {
             //Open Condex UI

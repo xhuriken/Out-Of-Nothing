@@ -5,6 +5,8 @@ using System.Collections.Generic;
 
 public class MenuController : MonoBehaviour
 {
+    public static MenuController Instance { get; private set; }
+
     [Header("Main Menu Settings")]
     public RectTransform menuPanel;
     public List<RectTransform> buttons;
@@ -36,6 +38,18 @@ public class MenuController : MonoBehaviour
     private bool isOpen = false;
     private bool isSettingsOpen = false;
     private bool isJournalOpen = false;
+
+    public bool IsOpen => isOpen;
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+    }
 
     // --- SÉCURITÉS ANTI-SPAM ---
     private bool isAnimatingMain = false;
