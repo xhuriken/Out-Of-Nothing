@@ -52,6 +52,9 @@ TagManager:
   - name: BlackHole
     uniqueID: 2267250833
     locked: 0
+  - name: UI
+    uniqueID: 1744938747
+    locked: 0
   - name: Cursor
     uniqueID: 2820182973
     locked: 0

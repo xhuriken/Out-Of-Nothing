@@ -7,22 +7,22 @@ using DG.Tweening;
 public class JournalManager : MonoBehaviour
 {
     [Header("Menu Controller Link")]
-    public MenuController menuController; // Référence au script principal
+    public MenuController menuController; // RÃ©fÃ©rence au script principal
 
     [Header("Configuration UI - Grille Principale (Panel 1)")]
     public Transform gridLayoutGroup;
     public GameObject slotPrefab;
 
-    [Header("Configuration UI - Détails (Panel 2)")]
+    [Header("Configuration UI - DÃ©tails (Panel 2)")]
     public GameObject titreJournal;       // L'objet texte "JOURNAL"
     public GameObject zoneDetails;         // Un parent vide unique qui contient (Nom, Desc, Image, Craft) pour les masquer/afficher d'un coup
     public TextMeshProUGUI textNom;
     public TextMeshProUGUI textDescription;
-    public Transform previewContainerPanel2; // Là où on va instancier le visuel en gros
+    public Transform previewContainerPanel2; // LÃ  oÃ¹ on va instancier le visuel en gros
     public Transform craftGridLayoutGroup;  // La grille pour les slots de craft
-    public GameObject craftSlotPrefab;      // Le prefab utilisé pour afficher les ingrédients (peut être le même slotPrefab)
+    public GameObject craftSlotPrefab;      // Le prefab utilisÃ© pour afficher les ingrÃ©dients (peut Ãªtre le mÃªme slotPrefab)
 
-    [Header("Données du Jeu")]
+    [Header("DonnÃ©es du Jeu")]
     public List<ItemData> allItems;
 
     private List<JournalSlot> spawnedSlots = new List<JournalSlot>();
@@ -30,9 +30,27 @@ public class JournalManager : MonoBehaviour
     private GameObject currentLargePreview;
     private ItemData currentSelectedItem;
 
+    public float InitialZoneDetailsPosY { get; private set; }
+
     private void Start()
     {
-        // Au tout début, on affiche le titre "Journal" et on cache les détails
+        // Enregistrement automatique dans MenuController pour eviter le glisser-deposer manuel
+        if (menuController != null)
+        {
+            menuController.journalManager = this;
+        }
+
+        // Sauvegarde de la position Y initiale de la zone de details
+        if (zoneDetails != null)
+        {
+            RectTransform detailRt = zoneDetails.GetComponent<RectTransform>();
+            if (detailRt != null)
+            {
+                InitialZoneDetailsPosY = detailRt.anchoredPosition.y;
+            }
+        }
+
+        // Au tout dÃ©but, on affiche le titre "Journal" et on cache les dÃ©tails
         titreJournal.SetActive(true);
         zoneDetails.SetActive(false);
         ShowCategory(ItemData.ItemType.Ball);
@@ -40,7 +58,7 @@ public class JournalManager : MonoBehaviour
 
     public void OnClickBallsButton()
     {
-        ResetPanel2(); // Si on change de catégorie, on réinitialise le panneau du haut
+        ResetPanel2(); // Si on change de catÃ©gorie, on rÃ©initialise le panneau du haut
         ShowCategory(ItemData.ItemType.Ball);
     }
 
@@ -66,7 +84,7 @@ public class JournalManager : MonoBehaviour
             JournalSlot slot = newSlotObj.GetComponent<JournalSlot>();
             spawnedSlots.Add(slot);
 
-            // On lui passe "this" (ce manager) en plus pour activer la détection du clic
+            // On lui passe "this" (ce manager) en plus pour activer la dÃ©tection du clic
             slot.Setup(filteredItems[i], this);
         }
     }
@@ -89,13 +107,13 @@ public class JournalManager : MonoBehaviour
         if (data.previewPrefab != null)
         {
             // --- CORRECTIF ICI ---
-            // Le ", false" à la fin dit à Unity : "Ne touche pas au scale, laisse celui du prefab !"
+            // Le ", false" Ã  la fin dit Ã  Unity : "Ne touche pas au scale, laisse celui du prefab !"
             currentLargePreview = Instantiate(data.previewPrefab, previewContainerPanel2, false);
 
             RectTransform rt = currentLargePreview.GetComponent<RectTransform>();
             if (rt != null)
             {
-                // On le recentre, mais on ne touche SURTOUT PLUS à son localScale
+                // On le recentre, mais on ne touche SURTOUT PLUS Ã  son localScale
           
                 rt.localScale = rt.localScale * 3.5f;
             }
@@ -155,7 +173,7 @@ public class JournalManager : MonoBehaviour
                     slotScript.Setup(ingredient, null);
 
                     // IMPORTANT : On tue TOUS les tweens qui pourraient tourner sur ce slot
-                    // et on force son échelle locale à (1,1,1)
+                    // et on force son Ã©chelle locale Ã  (1,1,1)
                     slotScript.transform.DOKill();
                     slotScript.transform.localScale = Vector3.one;
                 }
@@ -181,17 +199,62 @@ public class JournalManager : MonoBehaviour
         foreach (GameObject slot in spawnedCraftSlots) Destroy(slot);
         spawnedCraftSlots.Clear();
 
-        // On coupe TOUT le bloc de détails d'un coup
-        zoneDetails.SetActive(false);
+        // On coupe TOUT le bloc de details d'un coup
+        if (zoneDetails != null)
+        {
+            zoneDetails.SetActive(false);
+            RectTransform detailRt = zoneDetails.GetComponent<RectTransform>();
+            if (detailRt != null)
+            {
+                detailRt.DOKill();
+                detailRt.anchoredPosition = new Vector2(detailRt.anchoredPosition.x, InitialZoneDetailsPosY);
+            }
+        }
 
-        // On réactive proprement le titre "JOURNAL" tout seul
+        // On reactive proprement le titre "JOURNAL" tout seul
         titreJournal.SetActive(true);
         titreJournal.transform.localScale = Vector3.one;
 
-        // La mâchoire reprend sa position normale
+        // La machoire reprend sa position normale
         if (menuController != null)
         {
             menuController.AnimateJournalDetailsClose();
+        }
+    }
+
+    public void ResetPanelContentOnly()
+    {
+        currentSelectedItem = null;
+
+        // Nettoyage complet sans declencher d'animation de panneau
+        if (currentLargePreview != null) Destroy(currentLargePreview);
+        foreach (GameObject slot in spawnedCraftSlots) Destroy(slot);
+        spawnedCraftSlots.Clear();
+
+        // On coupe le bloc de details et on reactive le titre
+        if (zoneDetails != null)
+        {
+            zoneDetails.SetActive(false);
+            RectTransform detailRt = zoneDetails.GetComponent<RectTransform>();
+            if (detailRt != null)
+            {
+                detailRt.DOKill();
+                detailRt.anchoredPosition = new Vector2(detailRt.anchoredPosition.x, InitialZoneDetailsPosY);
+            }
+        }
+        if (titreJournal != null)
+        {
+            titreJournal.SetActive(true);
+            titreJournal.transform.localScale = Vector3.one;
+        }
+    }
+
+    public void RefreshLayouts()
+    {
+        if (craftGridLayoutGroup != null && craftGridLayoutGroup.gameObject.activeSelf)
+        {
+            Canvas.ForceUpdateCanvases();
+            LayoutRebuilder.ForceRebuildLayoutImmediate(craftGridLayoutGroup.GetComponent<RectTransform>());
         }
     }
 }

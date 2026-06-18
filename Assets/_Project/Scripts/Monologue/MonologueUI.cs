@@ -24,10 +24,10 @@ public class MonologueUI : MonoBehaviour
     private void Start()
     {
         // Hide panel at start
-        //if (monologuePanel != null)
-        //{
-        //    monologuePanel.SetActive(false);
-        //}
+        if (monologuePanel != null)
+        {
+            monologuePanel.SetActive(false);
+        }
 
         // Auto-detect components if not assigned
         if (textMeshPro == null)
@@ -129,7 +129,10 @@ public class MonologueUI : MonoBehaviour
         
 
         // Hide panel
-  
+        if (monologuePanel != null)
+        {
+            monologuePanel.SetActive(false);
+        }
         _displayCoroutine = null;
     }
 
