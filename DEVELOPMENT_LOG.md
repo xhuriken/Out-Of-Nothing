@@ -13,6 +13,56 @@
 
 
 
+## [2026-06-18] - Custom Game Events: Customizable Delays, Durations & Spawning Parameters
+**Date** : 2026-06-18
+**Auteur** : Antigravity (AI)
+
+### 1. Spawning et animation de la FirstBall à la bienvenue
+- **Problème** : Au démarrage du jeu, la balle initiale (FirstBall) doit être instanciée au centre de l'espace (0, 0, 0) avec une animation rapide sur son échelle (scale). Ces valeurs doivent être paramétrables.
+- **Solution** : Instanciation directe du prefab `_firstBallPrefab` en `(0, 0, 0)` via `Instantiate()` après un délai configurable (`_firstBallSpawnDelay` par défaut `0.5s`) et animation rapide d'apparition par échelle sur une durée configurable (`_firstBallSpawnDuration` par défaut `0.6s`).
+
+### 2. Spawning dynamique du Black Hole à l'événement 10 balles
+- **Problème** : Le trou noir apparaît à l'événement `BlackHoleStart` (10 balles). Son apparition, sa durée de transition et sa courbe d'easing doivent être paramétrables.
+- **Solution** :
+  - Exposition de propriétés publiques `StartRadius` et `YDuration` dans `BlackHole.cs` pour donner accès aux configurations du prefab.
+  - Dans `MonologueManager.cs`, à la transition positive de l'événement `BlackHoleStart`, lancement d'une coroutine avec un délai paramétrable (`_blackHoleSpawnDelay` par défaut `0s`) qui instancie `_blackHolePrefab` en `(0,0,0)`.
+  - Initialisation de `bh.GRadius = 0f` et lancement d'un tween DOTween vers `bh.StartRadius` sur une durée configurable (`_blackHoleSpawnDuration` par défaut `1.5s`) avec un easing configurable (`_blackHoleSpawnEase` par défaut `InOutElastic`).
+
+### 3. Spawning dynamique du Shop à l'événement 20 points
+- **Problème** : Ajout d'un événement à 20 points : Nothing doit parler en anglais, puis le Shop doit apparaître sur un cercle de rayon configurable à une distance configurable, avec un délai de spawn et une durée de transition éditables. Le script `Shop` est sur un enfant du prefab.
+- **Solution** :
+  - Modification de `Shop.cs` : ajout d'un setter public sur la propriété `GRadius` qui appelle dynamiquement `UpdateVisualsAndCollider()`, et exposition de la propriété en lecture seule `BaseGRadius` initialisée à `Awake()`.
+  - Dans `MonologueManager.cs`, intégration d'une vérification de score à chaque seconde. Lorsque les points atteignent ou dépassent 20 pour la première fois, Nothing dit *"You can cultivate others if you want."* via `TriggerMonologueDirect` (durée d'exposition 4s).
+  - Lancement d'une coroutine qui attend un délai configurable (`_shopSpawnDelay` par défaut `1s`), sélectionne une position aléatoire sur un cercle de rayon `6f` autour de `(0,0,0)` (autour du trou noir) et instancie `_shopPrefab` à cet endroit.
+  - Recherche du composant `Shop` dans les enfants du prefab instancié via `GetComponentInChildren<Shop>()` (car le composant réside sur un objet enfant).
+  - Initialisation de `shop.GRadius = 0f` et interpolation de la valeur vers `shop.BaseGRadius` sur une durée configurable (`_shopSpawnDuration` par défaut `1s`) avec une courbe configurable (`_shopSpawnEase` par défaut `InOutSine`).
+
+- **Code Modifié** :
+  - **`BlackHole.cs`** [MODIFIÉ] : Exposition en lecture seule de `StartRadius` et `YDuration`.
+  - **`Shop.cs`** [MODIFIÉ] : Implémentation du setter public `GRadius`, conservation et exposition de `BaseGRadius`, et mise à jour de `OnValidate()`.
+  - **`MonologueManager.cs`** [MODIFIÉ] : Ajout de variables sérialisées pour les délais (`_firstBallSpawnDelay`, `_blackHoleSpawnDelay`, `_shopSpawnDelay`) et durées/eases d'apparition de tous les objets, et routage des événements de spawn associés.
+
+
+## [2026-06-18] - FirstBall Fluid Repulsion & Heavy Mass Reset Fix
+**Date** : 2026-06-18
+**Auteur** : Antigravity (AI)
+
+### 1. Répulsion physique fluide de la FirstBall contre le Black Hole
+- **Problème** : La répulsion de la `FirstBall` contre le Black Hole était saccadée ("PafPaf"), alternant une phase de slide cinématique cinétique (`DOMove`) et un kick de vélocité physique dynamique. De plus, la force d'éjection n'était pas assez puissante.
+- **Solution** : Refonte de `HandleBlackHoleCollision` dans `FirstBallBehavior.cs`. La coroutine cinématique a été retirée au profit d'une expulsion physique directe et synchrone en une seule frame ("1 paf" fluide). La balle est immédiatement positionnée juste à l'extérieur de l'horizon du trou noir pour éviter les re-collisions en boucle, et reçoit une vélocité physique sortante instantanée de `24f` (2x la vélocité précédente de `12f`).
+
+### 2. Correction du bug de masse lourde persistante sur les boules du Shop
+- **Problème** : De temps en temps, les boules achetées au Shop restaient lourdes (haute masse) longtemps après avoir été relâchées. Cela se produisait car `SetTemporaryHeavyMass` lisait la masse courante du Rigidbody pour la restaurer plus tard. Si plusieurs appels se chevauchaient ou si une balle était désactivée et renvoyée à la pool avant la fin du délai, la masse restait corrompue et se multipliait à chaque nouvel appel.
+- **Solution** : 
+  - Ajout d'un cache `_originalMass` dans `BallEntity.cs` initialisé lors de l' `Awake()`.
+  - Modification de `SetTemporaryHeavyMass()` pour qu'il calcule le multiplicateur par rapport à `_originalMass` au lieu de la masse dynamique courante.
+  - Réinitialisation systématique de `_rb.mass = _originalMass` dans `Initialize()` et `OnDisable()` pour garantir qu'aucune balle ne conserve sa masse modifiée en retournant ou sortant de la pool de balles.
+
+- **Code Modifié** :
+  - **`FirstBallBehavior.cs`** [MODIFIÉ] : Remplacement de la coroutine cinématique `Co_ExpelFromBlackHole` par une répulsion physique synchrone, augmentation de la vélocité d'éjection à `24f` et suppression des variables inutilisées `_expelDuration` et `_expelDistance`.
+  - **`BallEntity.cs`** [MODIFIÉ] : Ajout de la variable `_originalMass`, mise en cache dans `Awake()`, réinitialisation de la masse dans `Initialize()` et `OnDisable()`, et correction de `SetTemporaryHeavyMass()`.
+
+
 ## [2026-06-18] - Shop Visual Glitch, Parent Destruction & Smooth Expulsion
 **Date** : 2026-06-18
 **Auteur** : Antigravity (AI)
@@ -959,6 +1009,101 @@
   - `Assets/_Project/Scripts/Visual/RainbowColorCycle.cs`
 - **Verification**: Ran `dotnet build Assembly-CSharp.csproj` which now completes successfully with 0 errors. Verified project compilation stability and member visibility/accessibility.
 
+---
 
+## [2026-06-18] - Diagnostic de Désactivation des Balles (Trace d'Appel)
+**Date** : 2026-06-18
+**Author** : Antigravity (AI)
 
+### 1. Ajout de Logs de Diagnostic dans BallEntity.OnDisable()
+- **Problem**: Des balles (notamment les balles jaunes / Yellow Balls) se font désactiver (paf, éteintes) immédiatement après leur apparition/duplication sans raison apparente à l'écran.
+- **Solution**: Ajout d'un log de diagnostic dans `BallEntity.OnDisable()` qui capture la trace d'appel (`System.Environment.StackTrace`) au moment exact de la désactivation pour identifier précisément l'appelant.
+- **Verification**: Compilation réussie sans aucune erreur de syntaxe ou d'accessibilité via `dotnet build Assembly-CSharp.csproj`.
 
+---
+
+## [2026-06-18] - Résolution du Bug d'Overlap Physique lors du Recyclage des Balles
+**Date** : 2026-06-18
+**Author** : Antigravity (AI)
+
+### 1. Séquencement d'Activation et de Positionnement dans BallPoolManager
+- **Problem**: Les balles nouvellement instanciées ou dupliquées (comme les Yellow Balls) se faisaient consommer instantanément par le Trou Noir.
+- **Root Cause**: Les balles mangées par le Trou Noir restaient physiquement au centre `(0,0)` (l'endroit où elles étaient mangées) dans la Pool. Lors d'un nouveau spawn, `pool.Get()` récupérait la balle et déclenchait `OnTakeFromPool` qui faisait `SetActive(true)` à `(0,0)`, activant temporairement la balle au centre du Trou Noir avant que son `transform.position` ne soit mis à jour. La physique 2D de Unity n'ayant pas encore synchronisé le déplacement du transform vers la nouvelle position, `BlackHolePhysics.FixedUpdate()` détectait la balle à `(0,0)` et l'aspirait à nouveau instantanément.
+- **Solution**:
+  - Refactorisation de `BallPoolManager.OnTakeFromPool` pour supprimer l'appel immédiat à `SetActive(true)`.
+  - Modification de `BallPoolManager.OnReturnedToPool` pour désactiver l'objet ET le téléporter à une coordonnée lointaine `(9999, 9999)`.
+  - Modification de `BallPoolManager.SpawnBall` pour mettre à jour à la fois `transform.position` et `Rb.position` (Rigidbody2D) alors que l'objet est encore inactif, puis l'activer proprement (`SetActive(true)`).
+- **Verification**: Projet compilé avec succès (0 erreur) via `dotnet build Assembly-CSharp.csproj`.
+
+---
+
+## [2026-06-18] - Résolution de Couleur Bloquée dans le Shop & Implémentation de la First Ball
+**Date** : 2026-06-18
+**Author** : Antigravity (AI)
+
+### 1. Correction du Bug de Couleur Bloquée Rouge dans BallShop
+- **Problem**: Les slots verrouillés (ou normaux) du Shop pouvaient rester bloqués en rouge/HDR brillant si l'interface était fermée ou si une interaction rapide interrompait le tween de retour au gris/couleur d'origine.
+- **Solution**: Dans `BallShop.cs`, modification de `SpawnWithMoveAndScale` et `HideWithMoveAndScale` pour forcer la réinitialisation de `_visualDisc.ColorOuter` à sa couleur de base (`baseColor`, tenant compte de l'état `_isLocked`).
+
+### 2. Implémentation du Comportement FirstBall (Balle Incassable et Duplicatrice de Red Balls)
+- **Problem**: Besoin de créer une balle spéciale "First Ball" (variante de la boule rouge) qui :
+  1. Possède un composant Shapes supplémentaire (configuré côté éditeur).
+  2. Ne peut pas être détruite par le Trou Noir et est expulsée/repoussée de la même manière que la boutique.
+  3. Duplique des boules rouges standards au lieu de First Balls lors de la mitose (duplication).
+- **Solution**:
+  - **Overload de Duplication** : Ajout d'une surcharge `PerformDuplicate(BallDataSO childData)` dans `BallEntity.cs` permettant de spécifier quel type de balle instancier comme enfant, et refactorisation de `PerformDefaultDuplicate` pour utiliser cet overload avec sa propre config `_data`.
+  - **FirstBallBehavior** : Création de `FirstBallBehavior.cs` (héritant de `BallBehavior`) qui surcharge `OnDuplicate` pour appeler `ball.PerformDuplicate(_redBallData)` et implémente `HandleBlackHoleCollision` pour déclencher un monologue direct ("This ball cannot be destroyed by the anomaly!") et repousser la balle via un tween `DOMove`.
+  - **BlackHole Integration** : Interception des balles possédant le comportement `FirstBallBehavior` dans `BlackHole.ConsumeEntity` pour annuler la consommation et rediriger vers leur méthode de répulsion.
+  - **MSBuild Integration** : Enregistrement de `FirstBallBehavior.cs` dans `Assembly-CSharp.csproj`.
+- **Verification**: Projet compilé avec succès (0 erreur) via `dotnet build Assembly-CSharp.csproj`.
+
+---
+
+## [2026-06-18] - Monologue "Dumb..." pour la First Ball & Target Transform personnalisable dans BallJellyBounce
+**Date** : 2026-06-18
+**Author** : Antigravity (AI)
+
+### 1. Ajout du Monologue "Dumb..." unique sur collision avec le Trou Noir
+- **Problem**: Remplacer l'ancien monologue informatif générique par un trigger de monologue unique déclenché après 5 chutes/collisions de la First Ball dans le Trou Noir.
+- **Solution**:
+  - Ajout d'un compteur interne `_blackHoleContactCount` dans `FirstBallBehavior.cs`.
+  - Retrait du monologue temporaire *"This ball cannot be destroyed by the anomaly!"*.
+  - Déclenchement de `MonologueManager.Instance.TriggerMonologueDirect("Dumb...", 3f)` lorsque le compteur de collisions atteint exactement 5 (évènement unique).
+
+### 2. Custom Target Transform pour l'animation Jelly Bounce
+- **Problem**: Animer une autre Transform cible configurée manuellement (par exemple, un sous-objet visuel ou enfant) plutôt que le root transform du script `BallJellyBounce.cs`.
+- **Solution**:
+  - Ajout d'un champ sérialisé `_targetTransform` dans `BallJellyBounce.cs`.
+  - Création de la propriété `TargetTransform` renvoyant `_targetTransform` s'il est non null, sinon `transform` (KISS).
+  - Remplacement de toutes les animations de déformation/rotation (up, DOBlendableScaleBy, DOPunchScale, DOTween.Kill) par `TargetTransform`.
+- **Verification**: Projet compilé avec succès (0 erreur) via `dotnet build Assembly-CSharp.csproj`.
+
+---
+
+## [2026-06-18] - Fluidification de l'Expulsion FirstBall & Réinitialisation d'Échelle Jelly Bounce
+**Date** : 2026-06-18
+**Author** : Antigravity (AI)
+
+### 1. Vélocité de sortie lors du passage Dynamic
+- **Problem**: À la fin du slide d'expulsion du Trou Noir, la First Ball repassait en mode Dynamic avec une vélocité nulle (`rb.linearVelocity = zero`), ce qui la stoppait net et la laissait vulnérable à la force d'attraction gravitationnelle du Trou Noir, la forçant à s'y faire ré-attirer en boucle (effet de shake/bloqué).
+- **Solution**: Application d'une vélocité de sortie outward (`direction * 12f`) via le Rigidbody / Passeport physique à la fin du slide, permettant à la balle d'échapper à l'attraction du Trou Noir de façon fluide et de continuer sa course naturelle.
+
+### 2. Réinitialisation de l'échelle dans ResetJellyState
+- **Problem**: En cas d'interruption du Jelly Bounce (ex: arrêt forcé des animations de déformation), la transform restait bloquée à son échelle déformée (squashed/stretched) car `ResetJellyState()` tuait les tweens sans forcer `localScale = Vector3.one`.
+- **Solution**: Mise à jour de `ResetJellyState()` dans `BallJellyBounce.cs` pour forcer `localScale = Vector3.one` sur `TargetTransform` et de `Co_ExpelFromBlackHole` dans `FirstBallBehavior.cs` pour réinitialiser le jelly state au début du slide d'expulsion.
+- **Verification**: Projet compilé avec succès (0 erreur) via `dotnet build Assembly-CSharp.csproj`.
+
+---
+
+## [2026-06-18] - Réapparition (Respawn) du Shop après Explosion de l'Anomalie
+**Date** : 2026-06-18
+**Author** : Antigravity (AI)
+
+### 1. Exposition de RequestShopSpawn() et Réutilisation du Spawner
+- **Problem** : Après la séquence d'implosion/explosion (implosion sequence) du Trou Noir (Black Hole), le Shop n'était pas recréé, ce qui bloquait la progression et forçait le joueur à jouer sans boutique.
+- **Solution** :
+  - **Exposition** : Ajout d'une méthode publique `RequestShopSpawn()` dans [MonologueManager.cs](file:///c:/Users/celestin/Unity%20Games/Out-Of-Nothing/Assets/_Project/Scripts/Monologue/MonologueManager.cs) qui lance la coroutine existante et optimisée `Co_SpawnShopAfterDelay()`.
+  - **Réutilisation & Optimisation** : Utilisation du même mécanisme d'instanciation aléatoire sur un cercle de rayon 6 et de la même animation progressive (`GRadius` interpolé via DOTween de 0 à `BaseGRadius`) pour garantir un comportement 100% identique à l'évènement de départ.
+  - **Intégration du Trou Noir** : Appel de `MonologueManager.Instance.RequestShopSpawn()` dans le callback `OnComplete` de la séquence `_implodeSequence` dans [BlackHole.cs](file:///c:/Users/celestin/Unity%20Games/Out-Of-Nothing/Assets/_Project/Scripts/Entities/Machines/Independents/BlackHole.cs).
+  - **Sécurité anti-duplicata** : La vérification existante `FindAnyObjectByType<Shop>() != null` empêche de spawner deux shops simultanément en cas d'appels concurrents.
+- **Verification** : Projet compilé avec succès sans erreur de compilation via `dotnet build Out-Of-Nothing.sln`.

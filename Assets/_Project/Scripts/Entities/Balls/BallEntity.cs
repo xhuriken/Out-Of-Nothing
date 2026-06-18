@@ -59,6 +59,7 @@ public class BallEntity : MonoBehaviour, IDraggable
     private CircleCollider2D _collider;
     private BallBehavior _behavior; // Found on the prefab
     private bool _isBeingDragged;
+    private float _originalMass;
 
     public BallDataSO Data => _data;
     public Rigidbody2D Rb => _rb;
@@ -104,6 +105,11 @@ public class BallEntity : MonoBehaviour, IDraggable
         // Find the behavior component added to the prefab
         _behavior = GetComponent<BallBehavior>();
 
+        if (_rb != null)
+        {
+            _originalMass = _rb.mass;
+        }
+
         if (_data != null) Initialize(_data);
     }
 
@@ -139,6 +145,7 @@ public class BallEntity : MonoBehaviour, IDraggable
             _rb.bodyType = RigidbodyType2D.Dynamic;
             _rb.linearVelocity = Vector2.zero;
             _rb.angularVelocity = 0f;
+            _rb.mass = _originalMass;
         }
 
         UpdateVisualsAndPhysics();
@@ -250,6 +257,8 @@ public class BallEntity : MonoBehaviour, IDraggable
 
     private void OnDisable()
     {
+        // Debug.Log($"[DIAGNOSTIC] Ball {gameObject.name} (ID: {(_data != null ? _data.id : "null")}) was deactivated. Stack Trace:\n{System.Environment.StackTrace}");
+
         DOTween.Kill(this);
         transform.rotation = Quaternion.identity;
         transform.localScale = Vector3.one;
@@ -258,6 +267,7 @@ public class BallEntity : MonoBehaviour, IDraggable
             _rb.bodyType = RigidbodyType2D.Dynamic;
             _rb.linearVelocity = Vector2.zero;
             _rb.angularVelocity = 0f;
+            _rb.mass = _originalMass;
         }
         _isProcessing = false;
         _isDuplicating = false;
@@ -289,12 +299,15 @@ public class BallEntity : MonoBehaviour, IDraggable
     {
         if (_rb == null) return 1f;
 
-        float originalMass = _rb.mass;
-        _rb.mass = originalMass * massMultiplier;
+        // Use the cached original mass to prevent compounding mass issues when called multiple times
+        _rb.mass = _originalMass * massMultiplier;
 
         DOVirtual.DelayedCall(duration, () =>
         {
-            if (this != null && _rb != null) _rb.mass = originalMass;
+            if (this != null && _rb != null)
+            {
+                _rb.mass = _originalMass;
+            }
         });
 
         return massMultiplier;
@@ -310,6 +323,14 @@ public class BallEntity : MonoBehaviour, IDraggable
     /// but continue to interact physically with other dynamic objects.
     /// </summary>
     public void PerformDefaultDuplicate()
+    {
+        PerformDuplicate(_data);
+    }
+
+    /// <summary>
+    /// Performs a high-fidelity mitosis-style duplication animation using DOTween, spawning the specified child ball.
+    /// </summary>
+    public void PerformDuplicate(BallDataSO childData)
     {
         if (_isProcessing || _isDuplicating)
         {
@@ -347,7 +368,7 @@ public class BallEntity : MonoBehaviour, IDraggable
         prepSeq.OnComplete(() =>
         {
             // Spawn the child ball from the pool
-            BallEntity newBall = BallPoolManager.Instance.SpawnBall(_data, transform.position);
+            BallEntity newBall = BallPoolManager.Instance.SpawnBall(childData, transform.position);
             if (newBall == null)
             {
                 // Fallback cleanup if spawn failed

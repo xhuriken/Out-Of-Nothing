@@ -7586,8 +7586,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5622054505144940897}
-  - {fileID: 6728777313598435685}
   - {fileID: 6984028587148141174}
+  - {fileID: 6728777313598435685}
   - {fileID: 3176097631522800873}
   - {fileID: 4864947020299609021}
   - {fileID: 6344415067936596900}
@@ -9419,7 +9419,7 @@ Transform:
   m_GameObject: {fileID: 8722592081039246311}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -7.31, y: -4.56, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -9457,7 +9457,7 @@ MonoBehaviour:
   _moveDuration: 0.5
   _radius: 2
   _shopDetectionRadius: 0.8
-  _expelForce: 15
+  _expelForce: 25
   _dragForceMultiplier: 15
   _maxDragSpeed: 30
   _expelDuration: 0.6

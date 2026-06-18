@@ -51,6 +51,18 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 13635a60c3da7ff4b92ef6940619e10d, type: 2}
   ballCountCheckInterval: 1
   randomCheckInterval: 15
+  _blackHolePrefab: {fileID: 9221366279253860388, guid: 00cdc9da06a954145a5d01809e0a69c5, type: 3}
+  _shopPrefab: {fileID: 8066355344277714226, guid: 76b2e03532ed69444944920d72b7ffd3, type: 3}
+  _firstBallPrefab: {fileID: 6365762943045552501, guid: 655bced4138eb6840b5814511bb1b210, type: 3}
+  _blackHoleStartEvent: {fileID: 11400000, guid: 13635a60c3da7ff4b92ef6940619e10d, type: 2}
+  _firstBallSpawnDelay: 1
+  _blackHoleSpawnDelay: 2
+  _shopSpawnDelay: 2
+  _firstBallSpawnDuration: 0.6
+  _blackHoleSpawnDuration: 2
+  _shopSpawnDuration: 1
+  _shopSpawnEase: 24
+  _blackHoleSpawnEase: 25
 --- !u!114 &7908928667259935979
 MonoBehaviour:
   m_ObjectHideFlags: 0

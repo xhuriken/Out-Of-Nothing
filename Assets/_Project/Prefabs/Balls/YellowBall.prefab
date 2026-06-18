@@ -10061,7 +10061,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 3d50166ab25f08441aae86be0b23a8d8, type: 2}
+  - {fileID: 2100000, guid: d72c5e047d4188246887ffb9389e25a7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -10118,6 +10118,7 @@ MonoBehaviour:
   _jellyVibrato: 6
   _jellyElasticity: 2
   _collisionCooldown: 0.05
+  _targetTransform: {fileID: 0}
 --- !u!1 &5315152641140204183
 GameObject:
   m_ObjectHideFlags: 0

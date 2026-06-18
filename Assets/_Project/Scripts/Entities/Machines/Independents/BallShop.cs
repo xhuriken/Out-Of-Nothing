@@ -183,10 +183,12 @@ public class BallShop : MonoBehaviour
         transform.localPosition = Vector3.zero;
         transform.localScale = Vector3.zero;
         
-        // Ensure child visual scale is reset
+        // Ensure child visual scale and color outer are reset to defaults
         if (_visualDisc != null)
         {
             _visualDisc.transform.localScale = Vector3.one;
+            Color baseColor = _isLocked ? Color.gray : (_identity != null && _identity.BallData != null ? _identity.BallData.color : Color.gray);
+            _visualDisc.ColorOuter = baseColor;
         }
         
         transform.DOLocalMove(localTargetPos, duration).SetEase(Ease.OutBack).SetId(moveId);
@@ -227,10 +229,8 @@ public class BallShop : MonoBehaviour
         if (_visualDisc != null)
         {
             _visualDisc.transform.localScale = Vector3.one;
-            if (_identity != null && _identity.BallData != null)
-            {
-                _visualDisc.ColorOuter = _identity.BallData.color;
-            }
+            Color baseColor = _isLocked ? Color.gray : (_identity != null && _identity.BallData != null ? _identity.BallData.color : Color.gray);
+            _visualDisc.ColorOuter = baseColor;
         }
 
         // If not active in hierarchy, clean up state immediately without generating tweens

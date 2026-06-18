@@ -32,6 +32,63 @@
 - [x] Verify member visibility and project integrity.
 - [x] Update `DEVELOPMENT_LOG.md` with the resolution of the csproj synchronization.
 - [x] Complete `TODO.md` checklist.
+- [x] Add stack trace logging inside `BallEntity.OnDisable()`.
+- [x] Run `dotnet build` to verify.
+- [x] Update `DEVELOPMENT_LOG.md` and `TODO.md` with the diagnostic logging.
+- [x] Fix the physics overlap/activation bug in `BallPoolManager.cs`.
+- [x] Run `dotnet build` to verify compilation.
+- [x] Update `DEVELOPMENT_LOG.md` and `TODO.md` with the resolution.
+- [x] Fix stuck red color bug in `BallShop.cs` slots during hide/spawn animations.
+- [x] Implement overload `PerformDuplicate(childData)` in `BallEntity.cs`.
+- [x] Create `FirstBallBehavior.cs` component for unconsumable balls.
+- [x] Intercept `FirstBallBehavior` in `BlackHole.ConsumeEntity` to trigger repulsion.
+- [x] Verify compile success via `dotnet build`.
+- [x] Update `DEVELOPMENT_LOG.md` and `TODO.md` with the new changes.
+- [x] Trigger unique monologue "Dumb..." in `FirstBallBehavior` on 5th Black Hole collision.
+- [x] Add customizable `_targetTransform` reference inside `BallJellyBounce.cs` for animations.
+- [x] Run `dotnet build` to verify compilation.
+- [x] Update `DEVELOPMENT_LOG.md` and `TODO.md` with the new updates.
+- [x] Apply outward exit velocity to repelled FirstBall to escape gravity loop.
+- [x] Force localScale to Vector3.one in ResetJellyState() in `BallJellyBounce.cs`.
+- [x] Verify compile success via `dotnet build`.
+- [x] Update `DEVELOPMENT_LOG.md` and `TODO.md` with the new changes.
+- [x] Fix the repulsion of `FirstBallBehavior.cs` to trigger a single fluid physical launch ("1 paf") instead of slide-then-launch.
+- [x] Increase the expulsion velocity of the First Ball to `24f` (2x the old velocity of `12f`).
+- [x] Cache `_originalMass` in `BallEntity.cs` during `Awake()` and restore `_rb.mass = _originalMass` in `OnDisable()`.
+- [x] Use `_originalMass` in `BallEntity.SetTemporaryHeavyMass` to prevent mass corruption from compounding calls.
+- [x] Run `dotnet build` to verify compilation.
+- [x] Update `DEVELOPMENT_LOG.md` and `TODO.md` with final modifications.
+- [x] Expose `StartRadius` and `YDuration` in `BlackHole.cs`.
+- [x] Expose `GRadius` (with setter) and `BaseGRadius` in `Shop.cs`, caching the base radius in `Awake()`.
+- [x] Modify `MonologueManager.cs` to serialize `_blackHolePrefab`, `_shopPrefab`, `_firstBallData`, `_shopSpawnDuration`, `_shopSpawnEase`, and `_blackHoleStartEvent`.
+- [x] Implement the `FirstBall` spawn logic on the game start event if it's the first launch.
+- [x] Implement the `BlackHole` spawn and `InOutElastic` radius animation when the 10-balls event (`BlackHoleStart`) triggers.
+- [x] Implement the 20-points event check, triggering a monologue and scheduling the `Shop` spawn after 5 seconds with `InOut` animation.
+- [x] Verify compilation with `dotnet build`.
+- [x] Update `DEVELOPMENT_LOG.md` and `TODO.md` with final modifications.
+- [x] Modify `MonologueManager.cs` to serialize `_firstBallPrefab` instead of `_firstBallData`.
+- [x] Update `SpawnFirstBall()` in `MonologueManager.cs` to instantiate the prefab directly.
+- [x] Verify compilation with `dotnet build`.
+- [x] Update `DEVELOPMENT_LOG.md` and `TODO.md` with final modifications.
+- [x] In `MonologueManager.cs`, update `Co_SpawnShopAfterDelay()` to instantiate the Shop prefab at a random position on a circle of radius 3 centered at (0, 0, 0).
+- [x] In `MonologueManager.cs`, update `Co_SpawnShopAfterDelay()` to use `GetComponentInChildren<Shop>()` to find the `Shop` component and animate its `GRadius`.
+- [x] Verify compilation with `dotnet build`.
+- [x] Update `DEVELOPMENT_LOG.md` and `TODO.md` with final modifications.
+- [x] In `MonologueManager.cs`, update `Trigger20PointsEvent()` to use a delay of 1 second instead of 5.
+- [x] In `MonologueManager.cs`, update `Co_SpawnShopAfterDelay()` to instantiate the Shop at a distance of 6 from the center instead of 3.
+- [x] Verify compilation with `dotnet build`.
+- [x] Update `DEVELOPMENT_LOG.md` and `TODO.md` with final modifications.
+- [x] Expose delays and durations for all custom events (FirstBall, BlackHole, Shop) in MonologueManager.cs.
+- [x] Use serialized values in MonologueManager.cs instead of hardcoded numbers for delays and durations.
+- [x] Verify compilation with `dotnet build`.
+- [x] Update `DEVELOPMENT_LOG.md` and `TODO.md` with final modifications.
+- [x] Expose `RequestShopSpawn()` method in `MonologueManager.cs`.
+- [x] Call `MonologueManager.Instance.RequestShopSpawn()` inside `OnComplete` of `_implodeSequence` in `BlackHole.cs`.
+- [x] Verify compilation with `dotnet build`.
+- [x] Update `DEVELOPMENT_LOG.md` and `TODO.md` with final modifications.
+
+
+
 
 
 

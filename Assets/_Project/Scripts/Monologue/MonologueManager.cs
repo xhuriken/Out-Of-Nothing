@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 
 public class MonologueManager : MonoBehaviour
 {
@@ -18,6 +19,59 @@ public class MonologueManager : MonoBehaviour
     private float ballCountCheckInterval = 1f;
     [SerializeField] [Tooltip("How often (in seconds) the system rolls for random playtime monologues.")]
     private float randomCheckInterval = 15f;
+
+    [Header("Event Prefabs and Data")]
+    [SerializeField]
+    [Tooltip("The prefab of the Black Hole to spawn.")]
+    private GameObject _blackHolePrefab;
+
+    [SerializeField]
+    [Tooltip("The prefab of the Shop to spawn.")]
+    private GameObject _shopPrefab;
+
+    [SerializeField]
+    [Tooltip("The prefab of the First Ball to spawn.")]
+    private GameObject _firstBallPrefab;
+
+    [SerializeField]
+    [Tooltip("The monologue event that triggers the Black Hole spawn.")]
+    private MonologueEventSO _blackHoleStartEvent;
+
+    [Header("Event Delays")]
+    [SerializeField]
+    [Tooltip("Delay in seconds between the welcome monologue trigger and the First Ball spawn.")]
+    private float _firstBallSpawnDelay = 0.5f;
+
+    [SerializeField]
+    [Tooltip("Delay in seconds between the 10-balls monologue trigger and the Black Hole spawn.")]
+    private float _blackHoleSpawnDelay = 0f;
+
+    [SerializeField]
+    [Tooltip("Delay in seconds between the 20-points monologue trigger and the Shop spawn.")]
+    private float _shopSpawnDelay = 1f;
+
+    [Header("Event Durations and Eases")]
+    [SerializeField]
+    [Tooltip("Duration for the First Ball spawn scale animation.")]
+    private float _firstBallSpawnDuration = 0.6f;
+
+    [SerializeField]
+    [Tooltip("Duration for the Black Hole GRadius spawn animation.")]
+    private float _blackHoleSpawnDuration = 1.5f;
+
+    [SerializeField]
+    [Tooltip("Duration for the Shop GRadius spawn animation (Xtemps).")]
+    private float _shopSpawnDuration = 1f;
+
+    [SerializeField]
+    [Tooltip("The Ease type for the Shop GRadius spawn animation.")]
+    private Ease _shopSpawnEase = Ease.InOutSine;
+
+    [SerializeField]
+    [Tooltip("The Ease type for the Black Hole GRadius spawn animation.")]
+    private Ease _blackHoleSpawnEase = Ease.InOutElastic;
+
+    private bool _hasTriggered20PointsEvent = false;
 
     // Runtime state tracking
     private readonly HashSet<MonologueEventSO> _triggeredEvents = new HashSet<MonologueEventSO>();
@@ -144,6 +198,19 @@ public class MonologueManager : MonoBehaviour
         {
             TriggerMonologue(mEvent);
             _triggeredEvents.Add(mEvent);
+
+            // Welcome event logic: spawn FirstBall
+            if (mEvent.ConditionType == MonologueConditionType.GameStart)
+            {
+                if (_firstBallSpawnDelay > 0f)
+                {
+                    StartCoroutine(Co_SpawnFirstBallAfterDelay(_firstBallSpawnDelay));
+                }
+                else
+                {
+                    SpawnFirstBall();
+                }
+            }
         }
     }
 
@@ -154,6 +221,13 @@ public class MonologueManager : MonoBehaviour
         while (true)
         {
             yield return wait;
+
+            // Check if 20 points are reached to trigger monologue and shop spawn
+            if (!_hasTriggered20PointsEvent && IncrementManager.Instance != null && IncrementManager.Instance.Points >= 20)
+            {
+                _hasTriggered20PointsEvent = true;
+                Trigger20PointsEvent();
+            }
 
             foreach (var mEvent in monologueEvents)
             {
@@ -168,6 +242,19 @@ public class MonologueManager : MonoBehaviour
                 {
                     TriggerMonologue(mEvent);
                     _triggeredEvents.Add(mEvent);
+
+                    // 10 balls event (represented by BlackHoleStart) triggers the Black Hole spawn
+                    if (mEvent == _blackHoleStartEvent || mEvent.name == "BlackHoleStart")
+                    {
+                        if (_blackHoleSpawnDelay > 0f)
+                        {
+                            StartCoroutine(Co_SpawnBlackHoleAfterDelay(_blackHoleSpawnDelay));
+                        }
+                        else
+                        {
+                            SpawnBlackHole();
+                        }
+                    }
                 }
 
                 if (currentlyMet)
@@ -261,5 +348,132 @@ public class MonologueManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Spawns the First Ball at (0,0,0) and animates its scale quickly from 0 to 1.
+    /// </summary>
+    private void SpawnFirstBall()
+    {
+        if (_firstBallPrefab == null)
+        {
+            Debug.LogError("MonologueManager: Cannot spawn First Ball because _firstBallPrefab is missing.");
+            return;
+        }
+
+        GameObject firstBall = Instantiate(_firstBallPrefab, Vector3.zero, Quaternion.identity);
+        if (firstBall != null)
+        {
+            firstBall.transform.localScale = Vector3.zero;
+            firstBall.transform.DOScale(Vector3.one, _firstBallSpawnDuration).SetEase(Ease.OutElastic);
+        }
+    }
+
+    /// <summary>
+    /// Spawns the Black Hole at Vector3.zero, sets GRadius to 0, and animates it to StartRadius over YDuration using InOutElastic.
+    /// </summary>
+    private void SpawnBlackHole()
+    {
+        if (_blackHolePrefab == null)
+        {
+            Debug.LogError("MonologueManager: Black Hole prefab is not assigned.");
+            return;
+        }
+
+        // Avoid spawning multiple Black Holes
+        if (FindAnyObjectByType<BlackHole>() != null)
+        {
+            Debug.LogWarning("MonologueManager: A Black Hole already exists in the scene.");
+            return;
+        }
+
+        GameObject bhObj = Instantiate(_blackHolePrefab, Vector3.zero, Quaternion.identity);
+        BlackHole bh = bhObj.GetComponent<BlackHole>();
+        if (bh != null)
+        {
+            float targetRadius = bh.StartRadius;
+
+            // Start GRadius at 0
+            bh.GRadius = 0f;
+
+            // Animate GRadius from 0 to targetRadius using the specified Ease and duration
+            DOTween.To(() => bh.GRadius, x => bh.GRadius = x, targetRadius, _blackHoleSpawnDuration)
+                   .SetEase(_blackHoleSpawnEase);
+        }
+    }
+
+    /// <summary>
+    /// Triggers the 20 points monologue and schedules the Shop spawn.
+    /// </summary>
+    private void Trigger20PointsEvent()
+    {
+        TriggerMonologueDirect("You can cultivate others if you want.", 4f);
+        StartCoroutine(Co_SpawnShopAfterDelay(_shopSpawnDelay));
+    }
+
+    /// <summary>
+    /// Triggers the Shop spawn sequence with the configured delay and animation.
+    /// Exposes a public interface for spawning the Shop after Black Hole implosions/explosions.
+    /// </summary>
+    public void RequestShopSpawn()
+    {
+        StartCoroutine(Co_SpawnShopAfterDelay(_shopSpawnDelay));
+    }
+
+    /// <summary>
+    /// Coroutine to spawn the Shop after a delay, animating its GRadius from 0 to its base radius.
+    /// </summary>
+    private IEnumerator Co_SpawnShopAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        if (_shopPrefab == null)
+        {
+            Debug.LogError("MonologueManager: Shop prefab is not assigned.");
+            yield break;
+        }
+
+        // Avoid spawning multiple Shops
+        if (FindAnyObjectByType<Shop>() != null)
+        {
+            Debug.LogWarning("MonologueManager: A Shop already exists in the scene.");
+            yield break;
+        }
+
+        // Choose a random position on a circle of radius 6 around Vector3.zero
+        Vector2 randomDir = UnityEngine.Random.insideUnitCircle.normalized;
+        Vector3 spawnPosition = (Vector3)(randomDir * 6f);
+
+        GameObject shopObj = Instantiate(_shopPrefab, spawnPosition, Quaternion.identity);
+        Shop shop = shopObj.GetComponentInChildren<Shop>();
+        if (shop != null)
+        {
+            float targetRadius = shop.BaseGRadius;
+
+            // Start GRadius at 0
+            shop.GRadius = 0f;
+
+            // Animate GRadius from 0 to targetRadius using the specified Ease and duration (Xtemps)
+            DOTween.To(() => shop.GRadius, x => shop.GRadius = x, targetRadius, _shopSpawnDuration)
+                   .SetEase(_shopSpawnEase);
+        }
+    }
+
+    /// <summary>
+    /// Coroutine to spawn the First Ball after a delay.
+    /// </summary>
+    private IEnumerator Co_SpawnFirstBallAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        SpawnFirstBall();
+    }
+
+    /// <summary>
+    /// Coroutine to spawn the Black Hole after a delay.
+    /// </summary>
+    private IEnumerator Co_SpawnBlackHoleAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        SpawnBlackHole();
     }
 }

@@ -90,6 +90,7 @@ public class Shop : MonoBehaviour, IDraggable
     private bool _isExpelling = false;
     private float _cooldownTimer = 0f;
     private CircleCollider2D _circleCollider;
+    private float _baseGRadius;
 
     private bool _isShopActive = false;
     private bool _isOpening = false;
@@ -117,9 +118,22 @@ public class Shop : MonoBehaviour, IDraggable
     private readonly List<BallShop> _ballShops = new List<BallShop>();
 
     /// <summary>
-    /// Gets the event horizon radius of the shop.
+    /// Gets or sets the event horizon radius of the shop.
     /// </summary>
-    public float GRadius => _gRadius;
+    public float GRadius
+    {
+        get => _gRadius;
+        set
+        {
+            _gRadius = value;
+            UpdateVisualsAndCollider();
+        }
+    }
+
+    /// <summary>
+    /// Gets the base event horizon radius of the shop.
+    /// </summary>
+    public float BaseGRadius => _baseGRadius;
 
     /// <summary>
     /// Gets whether the shop user interface is currently open.
@@ -150,6 +164,7 @@ public class Shop : MonoBehaviour, IDraggable
         _circleCollider = GetComponent<CircleCollider2D>();
         _propBlock = new MaterialPropertyBlock();
         _lastPosition = transform.position;
+        _baseGRadius = _gRadius;
         UpdateVisualsAndCollider();
     }
 
@@ -310,6 +325,10 @@ public class Shop : MonoBehaviour, IDraggable
     /// </summary>
     private void OnValidate()
     {
+        if (!Application.isPlaying)
+        {
+            _baseGRadius = _gRadius;
+        }
         UpdateVisualsAndCollider();
     }
 

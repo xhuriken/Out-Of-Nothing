@@ -130,6 +130,16 @@ public class BlackHole : MonoBehaviour
     public bool IsImploding { get; private set; } = false;
 
     /// <summary>
+    /// Gets the starting radius of the black hole.
+    /// </summary>
+    public float StartRadius => _startRadius;
+
+    /// <summary>
+    /// Gets the duration of Phase 2 (Ytemps).
+    /// </summary>
+    public float YDuration => _yDuration;
+
+    /// <summary>
     /// Event fired whenever the event horizon radius changes.
     /// </summary>
     public event Action<float> OnRadiusChanged;
@@ -193,6 +203,13 @@ public class BlackHole : MonoBehaviour
 
         if (targetObject.TryGetComponent(out BallEntity ball))
         {
+            // If it is the unconsumable First Ball, trigger its repulsion instead of eating it
+            if (ball.Behavior is FirstBallBehavior firstBallBehavior)
+            {
+                firstBallBehavior.HandleBlackHoleCollision(ball, this);
+                return;
+            }
+
             isTargetValid = true;
             
             // If the ball is selected in the CraftingManager, deselect it first to prevent bugs
@@ -515,6 +532,12 @@ public class BlackHole : MonoBehaviour
             if (_visuals != null)
             {
                 _visuals.UpdateVisuals(GRadius);
+            }
+
+            // Spawn a new Shop after the implosion/explosion sequence completes
+            if (MonologueManager.Instance != null)
+            {
+                MonologueManager.Instance.RequestShopSpawn();
             }
         });
     }

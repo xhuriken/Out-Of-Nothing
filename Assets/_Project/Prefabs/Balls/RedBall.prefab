@@ -286,6 +286,7 @@ MonoBehaviour:
   _jellyVibrato: 6
   _jellyElasticity: 2
   _collisionCooldown: 0.05
+  _targetTransform: {fileID: 0}
 --- !u!1001 &3684954513481821394
 PrefabInstance:
   m_ObjectHideFlags: 0

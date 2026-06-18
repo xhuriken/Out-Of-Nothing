@@ -71,8 +71,16 @@ public class BallPoolManager : MonoBehaviour
         }
 
         BallEntity ball = pool.Get();
+        
+        // Set positions while the object is still inactive to prevent physics engine overlaps
         ball.transform.position = position;
+        if (ball.Rb != null)
+        {
+            ball.Rb.position = position;
+        }
+        
         ball.Initialize(data);
+        ball.gameObject.SetActive(true);
 
         return ball;
     }
@@ -101,12 +109,19 @@ public class BallPoolManager : MonoBehaviour
 
     private void OnTakeFromPool(BallEntity ball)
     {
-        ball.gameObject.SetActive(true);
+        // SetActive(true) is handled inside SpawnBall after position assignment to prevent physics overlap issues
     }
 
     private void OnReturnedToPool(BallEntity ball)
     {
         ball.gameObject.SetActive(false);
+        
+        // Teleport to a far away position so it doesn't trigger overlaps at (0,0) before next spawn
+        ball.transform.position = new Vector3(9999f, 9999f, 0f);
+        if (ball.Rb != null)
+        {
+            ball.Rb.position = new Vector2(9999f, 9999f);
+        }
     }
 
     private void OnDestroyPoolObject(BallEntity ball)

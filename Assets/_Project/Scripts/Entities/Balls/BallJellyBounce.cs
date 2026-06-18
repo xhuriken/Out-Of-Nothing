@@ -26,6 +26,10 @@ public class BallJellyBounce : MonoBehaviour
     [Header("Optimization")]
     [SerializeField] private float _collisionCooldown = 0.05f;
 
+    [Header("Target transform configuration")]
+    [SerializeField] [Tooltip("Exposed target transform to animate instead of the root transform. If left unassigned, defaults to this script's transform.")]
+    private Transform _targetTransform;
+
     private float _lastCollisionTime = 0f;
     private Tween _jellyTween;
 
@@ -34,6 +38,11 @@ public class BallJellyBounce : MonoBehaviour
 
     private Rigidbody2D _rb;
     private Vector2 _lastVelocity;
+
+    /// <summary>
+    /// Gets the transform to target for the jelly bounce animations.
+    /// </summary>
+    private Transform TargetTransform => _targetTransform != null ? _targetTransform : transform;
 
     private void Awake()
     {
@@ -96,7 +105,7 @@ public class BallJellyBounce : MonoBehaviour
         // 1. Align the Y axis to the collision normal.
         if (normal != Vector2.zero)
         {
-            transform.up = normal;
+            TargetTransform.up = normal;
         }
 
         // 2. Proportionally map the impact to intensity and duration
@@ -118,10 +127,10 @@ public class BallJellyBounce : MonoBehaviour
         Sequence jellySeq = DOTween.Sequence();
         jellySeq.SetTarget(this); // Links sequence to this object for DOTween.Kill(this)
 
-        jellySeq.Append(transform.DOBlendableScaleBy(squash, duration * 0.2f).SetEase(Ease.OutSine))
-                .Append(transform.DOBlendableScaleBy(-squash * 1.2f, duration * 0.4f).SetEase(Ease.InOutSine))
-                .Append(transform.DOBlendableScaleBy(squash * 0.5f, duration * 0.3f).SetEase(Ease.InOutSine))
-                .Append(transform.DOBlendableScaleBy(-squash * 0.3f, duration * 0.1f).SetEase(Ease.InSine))
+        jellySeq.Append(TargetTransform.DOBlendableScaleBy(squash, duration * 0.2f).SetEase(Ease.OutSine))
+                .Append(TargetTransform.DOBlendableScaleBy(-squash * 1.2f, duration * 0.4f).SetEase(Ease.InOutSine))
+                .Append(TargetTransform.DOBlendableScaleBy(squash * 0.5f, duration * 0.3f).SetEase(Ease.InOutSine))
+                .Append(TargetTransform.DOBlendableScaleBy(-squash * 0.3f, duration * 0.1f).SetEase(Ease.InSine))
                 .OnComplete(() => _activeIntensitySum -= finalIntensity);
     }
 
@@ -131,7 +140,7 @@ public class BallJellyBounce : MonoBehaviour
     /// </summary>
     private void ApplyJellyBounceSimple(float impact, Vector2 normal)
     {
-        if (normal != Vector2.zero) transform.up = normal;
+        if (normal != Vector2.zero) TargetTransform.up = normal;
 
         float t = Mathf.InverseLerp(_minCollisionVelocity, _maxCollisionVelocity, impact);
         float intensity = Mathf.Lerp(_minJellyPunch, _maxJellyPunch, t);
@@ -144,12 +153,22 @@ public class BallJellyBounce : MonoBehaviour
         }
 
         Vector3 squash = new Vector3(intensity, -intensity, 0f);
-        _jellyTween = transform.DOPunchScale(squash, duration, _jellyVibrato, _jellyElasticity);
+        _jellyTween = TargetTransform.DOPunchScale(squash, duration, _jellyVibrato, _jellyElasticity);
     }
 
     public void ResetJellyState()
     {
         DOTween.Kill(this);
+        if (_targetTransform != null)
+        {
+            DOTween.Kill(_targetTransform);
+            _targetTransform.localScale = Vector3.one;
+        }
+        else
+        {
+            DOTween.Kill(transform);
+            transform.localScale = Vector3.one;
+        }
         if (_jellyTween != null) _jellyTween.Kill();
         _activeIntensitySum = 0f;
     }
