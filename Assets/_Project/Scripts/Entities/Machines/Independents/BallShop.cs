@@ -334,7 +334,7 @@ public class BallShop : MonoBehaviour
     /// </summary>
     private string GetRandomRuneString()
     {
-        const string glyphs = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz#@$&?*█▲▼◆◇";
+        const string glyphs = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789#@$&?*!%+=<>";
         char[] chars = new char[3];
         for (int i = 0; i < 3; i++)
         {

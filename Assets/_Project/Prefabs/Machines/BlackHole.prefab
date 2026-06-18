@@ -5251,7 +5251,7 @@ MonoBehaviour:
   _zDuration: 10
   _zEase: 7
   _returnDuration: 1
-  _returnEase: 6
+  _returnEase: 24
   _shakeAmplitude: 0.06
   _shakeFrequency: 100
 --- !u!114 &5816716308862006155

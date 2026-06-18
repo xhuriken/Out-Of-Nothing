@@ -88,6 +88,12 @@ public class BlackHoleVisualGlitch : MonoBehaviour
             {
                 tx.localScale = Vector3.one;
                 
+                var shop = tx.GetComponent<Shop>();
+                if (shop != null)
+                {
+                    shop.SetAttractionVisualState(1f, 0f);
+                }
+
                 var ball = tx.GetComponent<BallEntity>();
                 if (ball != null)
                 {
@@ -179,12 +185,23 @@ public class BlackHoleVisualGlitch : MonoBehaviour
             // Save the updated state back to the dictionary
             _glitchedObjects[tx] = glitchState;
 
-            // Apply the current glitch offset and shrink factor to the scale
-            float scaleX = (1f + glitchState.GlitchOffset.x) * shrinkFactor;
-            float scaleY = (1f + glitchState.GlitchOffset.y) * shrinkFactor;
+            // Retrieve Shop if applicable to scale it using GRadius rather than localScale
+            Shop shop = tx.GetComponent<Shop>();
+            if (shop != null)
+            {
+                float randomOffset = (glitchState.GlitchOffset.x + glitchState.GlitchOffset.y) * 0.5f;
+                shop.SetAttractionVisualState(shrinkFactor, randomOffset);
+                tx.localScale = Vector3.one;
+            }
+            else
+            {
+                // Apply the current glitch offset and shrink factor to the scale
+                float scaleX = (1f + glitchState.GlitchOffset.x) * shrinkFactor;
+                float scaleY = (1f + glitchState.GlitchOffset.y) * shrinkFactor;
 
-            // Prevent scale from going exactly to zero to avoid physics warning, keep a minimum of 0.01f
-            tx.localScale = new Vector3(Mathf.Max(0.01f, scaleX), Mathf.Max(0.01f, scaleY), 1f);
+                // Prevent scale from going exactly to zero to avoid physics warning, keep a minimum of 0.01f
+                tx.localScale = new Vector3(Mathf.Max(0.01f, scaleX), Mathf.Max(0.01f, scaleY), 1f);
+            }
         }
     }
 
@@ -198,6 +215,12 @@ public class BlackHoleVisualGlitch : MonoBehaviour
             if (kvp.Key != null)
             {
                 kvp.Key.localScale = Vector3.one;
+                var shop = kvp.Key.GetComponent<Shop>();
+                if (shop != null)
+                {
+                    shop.SetAttractionVisualState(1f, 0f);
+                }
+
                 var ball = kvp.Key.GetComponent<BallEntity>();
                 if (ball != null)
                 {

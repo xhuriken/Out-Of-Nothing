@@ -93,6 +93,27 @@ public class MonologueManager : MonoBehaviour
         monologueUI.ShowLine(line.text, line.exposureTime);
     }
 
+    /// <summary>
+    /// Displays a monologue line directly with the specified text and exposure time.
+    /// </summary>
+    /// <param name="text">The raw text to display.</param>
+    /// <param name="exposureTime">The duration to keep the text on screen after typing finishes.</param>
+    public void TriggerMonologueDirect(string text, float exposureTime)
+    {
+        if (monologueUI == null)
+        {
+            monologueUI = FindAnyObjectByType<MonologueUI>();
+            if (monologueUI == null)
+            {
+                Debug.LogError("MonologueManager: Cannot show monologue because MonologueUI is missing from the scene!");
+                return;
+            }
+        }
+
+        monologueUI.ShowLine(text, exposureTime);
+    }
+
+
     // --- EVALUATION UTILITIES ---
 
     private bool ShouldEvaluate(MonologueEventSO mEvent)

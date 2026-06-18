@@ -9460,6 +9460,9 @@ MonoBehaviour:
   _expelForce: 15
   _dragForceMultiplier: 15
   _maxDragSpeed: 30
+  _expelDuration: 0.6
+  _firstContactMonologue: {fileID: 0}
+  _secondContactMonologue: {fileID: 0}
 --- !u!114 &6106422691913210168
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -15,3 +15,17 @@
 - [x] Add locked slots option with runic text cycling, grey coloring, and click-to-fail feedback.
 - [x] Verify compilation of the project using `dotnet build`.
 - [x] Update `DEVELOPMENT_LOG.md` and `TODO.md` at project root.
+- [x] Add direct monologue display helper in `MonologueManager.cs`.
+- [x] Optimize `Shop.cs` by caching the `CircleCollider2D` component.
+- [x] Expose `Rb` and implement Black Hole collision / repulsion in `Shop.cs`.
+- [x] Integrate Shop handling in `BlackHole.cs` `ConsumeEntity` method.
+- [x] Verify project compilation using `dotnet build`.
+- [x] Update `TODO.md` and `DEVELOPMENT_LOG.md` with final modifications.
+- [x] Fix font warning in `BallShop.cs` by removing ◆ and ◇ from rune glyphs.
+- [x] Smooth out the Shop expulsion using DOTween `DOMove` instead of physics impulse.
+- [x] Ensure parent GameObject of the Shop is destroyed to clean up shaders and components.
+- [x] Fix Shop visual glitching in `BlackHoleVisualGlitch.cs` by modifying `GRadius` dynamically instead of `localScale`.
+- [x] Verify compilation of the project using `dotnet build`.
+- [x] Update `DEVELOPMENT_LOG.md` and `TODO.md` at project root.
+
+

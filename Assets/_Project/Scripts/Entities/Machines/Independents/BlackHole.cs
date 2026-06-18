@@ -218,6 +218,7 @@ public class BlackHole : MonoBehaviour
         }
         else if (targetObject.TryGetComponent(out Shop shop))
         {
+            shop.HandleBlackHoleCollision(this);
             return;
         }
         else if (targetObject.TryGetComponent(out MachineEntity machine))

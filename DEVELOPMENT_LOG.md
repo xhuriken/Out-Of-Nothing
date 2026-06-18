@@ -9,9 +9,72 @@
 6. **LOGIQUE DE COMMIT** : NE JAMAIS commiter/pusher sans demande explicite de l'utilisateur.
 
 
+
+
+
+
+## [2026-06-18] - Shop Visual Glitch, Parent Destruction & Smooth Expulsion
+**Date** : 2026-06-18
+**Auteur** : Antigravity (AI)
+
+### 1. Correction du Warning de Police de Caractères Runic
+- **Problème** : Les glyphes `◆` (\u25C6) et `◇` (\u25C7) insérés dans la liste de runes de `BallShop.cs` provoquaient des warnings répétitifs dans la console Unity car absents du font SDF Mocha Choco.
+- **Solution** : Suppression de `◆` et `◇` de la liste de runes de `BallShop.cs`, remplacés par des caractères alphanumériques et des symboles standards supportés par la police.
+
+### 2. Éjection Fluide et Trajectoire DOTween
+- **Problème** : L'éjection physique par force d'impulsion sur le Rigidbody du Shop coupait brutalement la vitesse de drag et provoquait des saccades peu premium (cheap et brut).
+- **Solution** : Refonte de la coroutine `Co_ExpelFromBlackHole` dans `Shop.cs` pour effectuer un déplacement fluide via DOTween `DOMove` sur une distance de `3` unités, tout en maintenant le Rigidbody en mode Kinematic pendant l'animation pour une interpolation parfaite. Le champ inutilisé `_blackHoleExpelForce` a été supprimé pour nettoyer les warnings C#.
+
+### 3. Nettoyage Complet du Parent Shop à la Destruction
+- **Problème** : Détruire uniquement l'objet Shop laissait le GameObject parent intact dans la scène avec ses shaders et autres scripts associés.
+- **Solution** : Modification de la destruction dans `HandleBlackHoleCollision` pour identifier et détruire `transform.parent.gameObject` s'il existe, assurant un nettoyage complet du prefab.
+
+### 4. Glitch Visuel du Shop par Rayon (GRadius) sans Déformation
+- **Problème** : Le Shop possède le tag "Machine", ce qui fait que `BlackHoleVisualGlitch.cs` le déforme et le rétrécit en manipulant son `localScale`. Cela transformait les disques Shapes circulaires en ellipses aplaties peu esthétiques.
+- **Solution** :
+  - Ajout d'un système d'état d'attraction dans `Shop.cs` via `SetAttractionVisualState(scaleFactor, glitchOffset)`.
+  - Modification de `UpdateVisualsAndCollider()` dans `Shop.cs` pour utiliser un `activeRadius` combinant `_gRadius`, le facteur de rétrécissement et le décalage de glitch.
+  - Mise à jour de `BlackHoleVisualGlitch.cs` : si l'objet attiré possède le composant `Shop`, le script applique les modulations de glitch/rétrécissement sur son `GRadius` via `SetAttractionVisualState()`, laissant son `localScale` inchangé à `1.0` pour garder le Shop parfaitement circulaire.
+
+- **Code Modifié** :
+  - **`BallShop.cs`** [MODIFIÉ] : Retrait de `◆` et `◇` de la liste de glyphes runiques.
+  - **`Shop.cs`** [MODIFIÉ] : Ajout de `SetAttractionVisualState`, modification de `UpdateVisualsAndCollider` pour appliquer les modulations sur le rayon, destruction du parent GameObject, et éjection fluide via `DOMove`. Suppression de `_blackHoleExpelForce`.
+  - **`BlackHoleVisualGlitch.cs`** [MODIFIÉ] : Prise en charge du Shop dans `Update` et `OnDisable` pour moduler le rayon à la place de l'échelle.
+
+
+## [2026-06-18] - Shop Black Hole Repulsion & Optimization
+**Date** : 2026-06-18
+**Auteur** : Antigravity (AI)
+
+### 1. Répulsion du Shop contre le Black Hole et Avertissements Progressifs de Nothing
+- **Problème** : L'utilisateur souhaite que le Shop repousse le trou noir lorsqu'il est jeté/traîné dedans au lieu d'être détruit directement. Il souhaite également que Nothing exprime des avertissements progressifs (en anglais) lors des premier et deuxième contacts, avant de détruire le Shop et de déclencher l'implosion spectaculaire du trou noir au troisième contact.
+- **Solution** :
+  - **Gestion de la Collision dans `BlackHole.ConsumeEntity`** : Redirection des collisions avec le composant `Shop` vers sa propre logique externe (`shop.HandleBlackHoleCollision(this)`).
+  - **Logique d'Éjection Progressive dans `Shop.cs`** :
+    - Ajout d'un compteur de contacts (`_blackHoleContactCount`) et d'un cooldown (`_cooldownTimer` à `1s`) pour empêcher les déclenchements répétitifs en rafale.
+    - Désengagement instantané du drag-and-drop via `GameInputManager.Instance.ForceDrop()`.
+    - **1er Contact** : Déclenche le monologue *"Are you sure you want to do that?"* et éjecte physiquement le Shop vers l'extérieur (calculé depuis le centre du trou noir).
+    - **2ème Contact** : Déclenche le monologue *"<shake>Watch out! You are going to destroy everything!</shake>"* et éjecte à nouveau le Shop.
+    - **3ème Contact** : Appelle l'implosion `blackHole.ImploseNothing()` et détruit le Shop (Deactivate et Destroy).
+    - **Immunité et Désactivation d'Interaction** : Blocage du drag (`OnDragStart`) et du clic de l'UI (`ToggleShopActiveState`) pendant l'animation d'éjection (`_isExpelling`).
+  - **Support ScriptableObjects & Fallbacks** :
+    - Exposition des champs de dialogues (`_firstContactMonologue`, `_secondContactMonologue`) dans l'Inspecteur du Shop.
+    - Si non renseignés, le script bascule sur des chaînes de caractères brutes en anglais, affichées dynamiquement via le nouveau helper `TriggerMonologueDirect()` dans `MonologueManager`.
+
+### 2. Optimisation des Performances de Mise à Jour du Shop
+- **Problème** : `Shop.cs` appelait `GetComponent<CircleCollider2D>()` à chaque frame dans son `Update()` (via `UpdateVisualsAndCollider()`), ce qui génère une surcharge inutile sur le CPU à chaque tick d'exécution.
+- **Solution** : Caching du composant `CircleCollider2D` au démarrage dans `Awake()`, avec un garde d'initialisation en mode Éditeur Unity (`[ExecuteAlways]`) pour préserver la réactivité visuelle dans l'inspecteur.
+
+- **Code Modifié** :
+  - **`MonologueManager.cs`** [MODIFIÉ] : Ajout de la méthode publique `TriggerMonologueDirect(string text, float exposureTime)` pour jouer des lignes de texte sans requérir de ScriptableObject.
+  - **`Shop.cs`** [MODIFIÉ] : Caching du `CircleCollider2D`, exposition du Rigidbody2D (`Rb`), implémentation de `HandleBlackHoleCollision()`, de la coroutine d'expulsion physique `Co_ExpelFromBlackHole()` et des cooldowns associés.
+  - **`BlackHole.cs`** [MODIFIÉ] : Routage de la consommation du Shop vers `HandleBlackHoleCollision()` dans `ConsumeEntity()`.
+
+
 ## [2026-06-18] - Shop Hover Fix, Retracting Bug, Purchase Shake/Glow & Spawn Direction
 **Date** : 2026-06-18
 **Auteur** : Antigravity (AI)
+
 
 ### 1. Isolation des Animations de Hover des Slots du Shop (DOTween IDs)
 - **Problème** : Le survol (hover) des slots pendant l'animation d'ouverture ou de fermeture du Shop provoquait parfois l'arrêt brutal des mouvements des slots, les laissant figés au milieu du trajet. Cela survenait car sur certains prefabs, `_visualDisc` réside sur le même GameObject que `BallShop`, ce qui fait que `_visualDisc.transform.DOKill()` tuait le tween de mouvement parental.
