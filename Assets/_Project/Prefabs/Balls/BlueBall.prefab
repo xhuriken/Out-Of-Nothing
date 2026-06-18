@@ -178,7 +178,7 @@ MonoBehaviour:
   stencilReadMask: 255
   stencilWriteMask: 255
   type: 2
-  colorMode: 0
+  colorMode: 1
   colorOuterStart: {r: 0, g: 0.46707344, b: 1, a: 1}
   colorInnerEnd: {r: 0, g: 0.3269514, b: 0.7, a: 0.7}
   colorOuterEnd: {r: 0, g: 0.46707344, b: 1, a: 1}
@@ -234,7 +234,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 3d50166ab25f08441aae86be0b23a8d8, type: 2}
+  - {fileID: 2100000, guid: d72c5e047d4188246887ffb9389e25a7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

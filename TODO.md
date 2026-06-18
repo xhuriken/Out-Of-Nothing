@@ -27,5 +27,11 @@
 - [x] Fix Shop visual glitching in `BlackHoleVisualGlitch.cs` by modifying `GRadius` dynamically instead of `localScale`.
 - [x] Verify compilation of the project using `dotnet build`.
 - [x] Update `DEVELOPMENT_LOG.md` and `TODO.md` at project root.
+- [x] Edit `Assembly-CSharp.csproj` to include the 6 missing C# source files.
+- [x] Run `dotnet build` to verify compile errors are resolved.
+- [x] Verify member visibility and project integrity.
+- [x] Update `DEVELOPMENT_LOG.md` with the resolution of the csproj synchronization.
+- [x] Complete `TODO.md` checklist.
+
 
 

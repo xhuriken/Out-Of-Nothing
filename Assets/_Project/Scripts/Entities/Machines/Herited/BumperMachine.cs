@@ -132,7 +132,8 @@ public class BumperMachine : MachineEntity
 
     private void HandleBallContact(Collider2D collider, Vector2? contactNormal)
     {
-        if (collider.gameObject.CompareTag("Ball") || collider.gameObject.CompareTag("FirstBall") || collider.gameObject.TryGetComponent<BallEntity>(out _))
+        // if (collider.gameObject.CompareTag("Ball") || collider.gameObject.CompareTag("FirstBall") || collider.gameObject.TryGetComponent<BallEntity>(out _))
+        if (collider.gameObject.TryGetComponent<BallEntity>(out _))
         {
             Rigidbody2D ballRigidbody = collider.gameObject.GetComponent<Rigidbody2D>();
             BallEntity ballEntity = collider.gameObject.GetComponent<BallEntity>();

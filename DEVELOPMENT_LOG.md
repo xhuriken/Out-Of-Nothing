@@ -942,3 +942,23 @@
 
 
 
+---
+
+## [2026-06-18] - Csproj Synchronization and Merge Integration
+**Date** : 2026-06-18
+**Author** : Antigravity (AI)
+
+### 1. Assembly-CSharp.csproj Synchronization
+- **Problem**: Following the merge of the remote `incendie` branch into the local `something` branch, compiling the project with `dotnet build` failed due to missing references to newly introduced/restored source files (e.g. `JournalManager.cs`, `BallShop.cs`, etc.).
+- **Solution**: Manually edited `Assembly-CSharp.csproj` to restore the `<Compile Include="...">` tags for all 6 desynchronized C# files:
+  - `Assets/_Project/Scripts/Entities/Machines/Herited/ClickerMachine.cs`
+  - `Assets/_Project/Scripts/Entities/Machines/Independents/BallShop.cs`
+  - `Assets/_Project/Scripts/Entities/Machines/Independents/Shop.cs`
+  - `Assets/_Project/Scripts/Entities/Machines/Independents/ShopRepulsion.cs`
+  - `Assets/_Project/Scripts/UI/JournalManager.cs`
+  - `Assets/_Project/Scripts/Visual/RainbowColorCycle.cs`
+- **Verification**: Ran `dotnet build Assembly-CSharp.csproj` which now completes successfully with 0 errors. Verified project compilation stability and member visibility/accessibility.
+
+
+
+

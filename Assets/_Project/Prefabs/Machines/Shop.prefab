@@ -421,7 +421,7 @@ MonoBehaviour:
     BallData: {fileID: 11400000, guid: 80d61bba963ad264f8475d89dc001b50, type: 2}
   _priceText: {fileID: 6900451851861912925}
   _visualDisc: {fileID: 1297037082727425617}
-  _priceTextOffset: 0.8
+  _priceTextOffset: 0.9
   _hoverScaleMultiplier: 1.15
   _hoverGlowMultiplier: 1.5
   _isLocked: 1
@@ -621,8 +621,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BallShop
   _identity:
-    Price: 1
-    BallData: {fileID: 11400000, guid: 80d61bba963ad264f8475d89dc001b50, type: 2}
+    Price: 30
+    BallData: {fileID: 11400000, guid: 4cec66ca4a186e640ab24beb347eeb1b, type: 2}
   _priceText: {fileID: 7885968209763720987}
   _visualDisc: {fileID: 1203264499379848000}
   _priceTextOffset: 0.8
@@ -643,7 +643,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ShapesRuntime::Shapes.Disc
   blendMode: 1
   scaleMode: 0
-  color: {r: 0.7, g: 0, b: 0, a: 0.7}
+  color: {r: 0.6969957, g: 0.7, b: 0, a: 0.7}
   detailLevel: 2
   culling: 0
   boundsPadding: 0
@@ -659,9 +659,9 @@ MonoBehaviour:
   stencilWriteMask: 255
   type: 2
   colorMode: 1
-  colorOuterStart: {r: 1, g: 0, b: 0, a: 1}
-  colorInnerEnd: {r: 0.7, g: 0, b: 0, a: 0.7}
-  colorOuterEnd: {r: 1, g: 0, b: 0, a: 1}
+  colorOuterStart: {r: 0.9957081, g: 1, b: 0, a: 1}
+  colorInnerEnd: {r: 0.6969957, g: 0.7, b: 0, a: 0.7}
+  colorOuterEnd: {r: 0.9957081, g: 1, b: 0, a: 1}
   geometry: 0
   angUnitInput: 1
   angRadiansStart: 0
@@ -829,7 +829,7 @@ MonoBehaviour:
     BallData: {fileID: 11400000, guid: 80d61bba963ad264f8475d89dc001b50, type: 2}
   _priceText: {fileID: 3441802689475795054}
   _visualDisc: {fileID: 690747744184354454}
-  _priceTextOffset: 0.8
+  _priceTextOffset: 0.9
   _hoverScaleMultiplier: 1.15
   _hoverGlowMultiplier: 1.5
   _isLocked: 1
@@ -1033,7 +1033,7 @@ MonoBehaviour:
     BallData: {fileID: 11400000, guid: 80d61bba963ad264f8475d89dc001b50, type: 2}
   _priceText: {fileID: 7361345965232354119}
   _visualDisc: {fileID: 3567303108301727299}
-  _priceTextOffset: 0.8
+  _priceTextOffset: 0.9
   _hoverScaleMultiplier: 1.15
   _hoverGlowMultiplier: 1.5
   _isLocked: 1
@@ -1960,8 +1960,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BallShop
   _identity:
-    Price: 1
-    BallData: {fileID: 11400000, guid: 80d61bba963ad264f8475d89dc001b50, type: 2}
+    Price: 50
+    BallData: {fileID: 11400000, guid: d7cdc62acaecd73468aaebc623cf8888, type: 2}
   _priceText: {fileID: 3217601296585851382}
   _visualDisc: {fileID: 3805629412227601535}
   _priceTextOffset: 0.8
@@ -1982,7 +1982,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ShapesRuntime::Shapes.Disc
   blendMode: 1
   scaleMode: 0
-  color: {r: 0.7, g: 0, b: 0, a: 0.7}
+  color: {r: 0.58773583, g: 0.29574502, b: 0, a: 0.7}
   detailLevel: 2
   culling: 0
   boundsPadding: 0
@@ -1998,9 +1998,9 @@ MonoBehaviour:
   stencilWriteMask: 255
   type: 2
   colorMode: 1
-  colorOuterStart: {r: 1, g: 0, b: 0, a: 1}
-  colorInnerEnd: {r: 0.7, g: 0, b: 0, a: 0.7}
-  colorOuterEnd: {r: 1, g: 0, b: 0, a: 1}
+  colorOuterStart: {r: 0.8396226, g: 0.4224929, b: 0, a: 1}
+  colorInnerEnd: {r: 0.58773583, g: 0.29574502, b: 0, a: 0.7}
+  colorOuterEnd: {r: 0.8396226, g: 0.4224929, b: 0, a: 1}
   geometry: 0
   angUnitInput: 1
   angRadiansStart: 0
@@ -2396,7 +2396,7 @@ MonoBehaviour:
     BallData: {fileID: 11400000, guid: 80d61bba963ad264f8475d89dc001b50, type: 2}
   _priceText: {fileID: 221561346518119305}
   _visualDisc: {fileID: 2185897854276493639}
-  _priceTextOffset: 0.8
+  _priceTextOffset: 0.9
   _hoverScaleMultiplier: 1.15
   _hoverGlowMultiplier: 1.5
   _isLocked: 1
@@ -7910,8 +7910,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BallShop
   _identity:
-    Price: 1
-    BallData: {fileID: 11400000, guid: 80d61bba963ad264f8475d89dc001b50, type: 2}
+    Price: 20
+    BallData: {fileID: 11400000, guid: 8d01071631ac25e4fa82dc5636359ba7, type: 2}
   _priceText: {fileID: 6417296908505380795}
   _visualDisc: {fileID: 1314556844050494759}
   _priceTextOffset: 0.8
@@ -7932,7 +7932,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ShapesRuntime::Shapes.Disc
   blendMode: 1
   scaleMode: 0
-  color: {r: 0.7, g: 0, b: 0, a: 0.7}
+  color: {r: 0, g: 0.3269514, b: 0.7, a: 0.7}
   detailLevel: 2
   culling: 0
   boundsPadding: 0
@@ -7948,9 +7948,9 @@ MonoBehaviour:
   stencilWriteMask: 255
   type: 2
   colorMode: 1
-  colorOuterStart: {r: 1, g: 0, b: 0, a: 1}
-  colorInnerEnd: {r: 0.7, g: 0, b: 0, a: 0.7}
-  colorOuterEnd: {r: 1, g: 0, b: 0, a: 1}
+  colorOuterStart: {r: 0, g: 0.46707344, b: 1, a: 1}
+  colorInnerEnd: {r: 0, g: 0.3269514, b: 0.7, a: 0.7}
+  colorOuterEnd: {r: 0, g: 0.46707344, b: 1, a: 1}
   geometry: 0
   angUnitInput: 1
   angRadiansStart: 0
