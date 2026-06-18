@@ -1275,7 +1275,7 @@ MonoBehaviour:
     snap: 1
     size: 20
     spacing: 1
-    offset: 0.017564151
+    offset: 0.0044240505
     shapeModifier: 1
   fill:
     type: 0
