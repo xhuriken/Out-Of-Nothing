@@ -17,4 +17,5 @@ MonoBehaviour:
   clickCooldown: 0.3
   color: {r: 0.8396226, g: 0.4224929, b: 0, a: 1}
   radius: 0.3
+  pointValue: 3
   prefab: {fileID: 1444184337667997241, guid: 02b19a10bbff2384da5c4fdfd0ed96fe, type: 3}

@@ -570,7 +570,7 @@ MonoBehaviour:
   detailLevel: 2
   culling: 0
   boundsPadding: 0
-  renderQueue: 0
+  renderQueue: -1
   zTest: 4
   zOffsetFactor: 0
   zOffsetUnits: 0
@@ -643,7 +643,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: fe78e08f23b8ea44bafd0f2564309ce5, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

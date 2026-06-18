@@ -49,6 +49,13 @@ MonoBehaviour:
   monologueEvents:
   - {fileID: 11400000, guid: 02aa815a12aebf642a9f19337427b8b8, type: 2}
   - {fileID: 11400000, guid: 13635a60c3da7ff4b92ef6940619e10d, type: 2}
+  - {fileID: 11400000, guid: afb4567e073802c4bac33f6a0371de17, type: 2}
+  - {fileID: 11400000, guid: f96a30693e8488245ab18bc59cf0f928, type: 2}
+  - {fileID: 11400000, guid: 864b35afce5dcab47949008c847cda69, type: 2}
+  - {fileID: 11400000, guid: ce147263fd57eab49a68112097a8377b, type: 2}
+  - {fileID: 11400000, guid: c3b60b2a41f2c8c46b79459e25dd199d, type: 2}
+  - {fileID: 11400000, guid: 2fd4fd86afe6b2943a869cbcd9b21348, type: 2}
+  - {fileID: 11400000, guid: d4f001c84265c0a458a8e8311fc99015, type: 2}
   ballCountCheckInterval: 1
   randomCheckInterval: 15
   _blackHolePrefab: {fileID: 9221366279253860388, guid: 00cdc9da06a954145a5d01809e0a69c5, type: 3}

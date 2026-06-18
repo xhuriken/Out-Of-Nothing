@@ -825,7 +825,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BallShop
   _identity:
-    Price: 10
+    Price: 100
     BallData: {fileID: 11400000, guid: e518297afdf885341ab9e007c1f8491b, type: 2}
   _priceText: {fileID: 3441802689475795054}
   _visualDisc: {fileID: 690747744184354454}
@@ -1960,7 +1960,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BallShop
   _identity:
-    Price: 50
+    Price: 80
     BallData: {fileID: 11400000, guid: d7cdc62acaecd73468aaebc623cf8888, type: 2}
   _priceText: {fileID: 3217601296585851382}
   _visualDisc: {fileID: 3805629412227601535}

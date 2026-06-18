@@ -231,39 +231,50 @@ public class MonologueManager : MonoBehaviour
 
             foreach (var mEvent in monologueEvents)
             {
-                if (mEvent == null || mEvent.ConditionType != MonologueConditionType.BallCount) continue;
+                if (mEvent == null) continue;
                 if (!ShouldEvaluate(mEvent)) continue;
 
-                bool currentlyMet = AreBallRequirementsMet(mEvent);
-                bool previouslyMet = _metBallRequirements.Contains(mEvent);
-
-                // Trigger on positive transition (not-met -> met)
-                if (currentlyMet && !previouslyMet)
+                if (mEvent.ConditionType == MonologueConditionType.BallCount)
                 {
-                    TriggerMonologue(mEvent);
-                    _triggeredEvents.Add(mEvent);
+                    bool currentlyMet = AreBallRequirementsMet(mEvent);
+                    bool previouslyMet = _metBallRequirements.Contains(mEvent);
 
-                    // 10 balls event (represented by BlackHoleStart) triggers the Black Hole spawn
-                    if (mEvent == _blackHoleStartEvent || mEvent.name == "BlackHoleStart")
+                    // Trigger on positive transition (not-met -> met)
+                    if (currentlyMet && !previouslyMet)
                     {
-                        if (_blackHoleSpawnDelay > 0f)
+                        TriggerMonologue(mEvent);
+                        _triggeredEvents.Add(mEvent);
+
+                        // 10 balls event (represented by BlackHoleStart) triggers the Black Hole spawn
+                        if (mEvent == _blackHoleStartEvent || mEvent.name == "BlackHoleStart")
                         {
-                            StartCoroutine(Co_SpawnBlackHoleAfterDelay(_blackHoleSpawnDelay));
-                        }
-                        else
-                        {
-                            SpawnBlackHole();
+                            if (_blackHoleSpawnDelay > 0f)
+                            {
+                                StartCoroutine(Co_SpawnBlackHoleAfterDelay(_blackHoleSpawnDelay));
+                            }
+                            else
+                            {
+                                SpawnBlackHole();
+                            }
                         }
                     }
-                }
 
-                if (currentlyMet)
-                {
-                    _metBallRequirements.Add(mEvent);
+                    if (currentlyMet)
+                    {
+                        _metBallRequirements.Add(mEvent);
+                    }
+                    else
+                    {
+                        _metBallRequirements.Remove(mEvent);
+                    }
                 }
-                else
+                else if (mEvent.ConditionType == MonologueConditionType.PointsCount)
                 {
-                    _metBallRequirements.Remove(mEvent);
+                    if (IncrementManager.Instance != null && IncrementManager.Instance.Points >= mEvent.RequiredPoints)
+                    {
+                        TriggerMonologue(mEvent);
+                        _triggeredEvents.Add(mEvent);
+                    }
                 }
             }
         }
@@ -407,7 +418,7 @@ public class MonologueManager : MonoBehaviour
     /// </summary>
     private void Trigger20PointsEvent()
     {
-        TriggerMonologueDirect("You can cultivate others if you want.", 4f);
+       
         StartCoroutine(Co_SpawnShopAfterDelay(_shopSpawnDelay));
     }
 

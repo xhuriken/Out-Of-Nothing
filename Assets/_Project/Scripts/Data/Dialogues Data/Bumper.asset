@@ -10,17 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 937fb74a3ec7fa74f8b9cf909694c5b0, type: 3}
-  m_Name: BlackHoleStart
+  m_Name: Bumper
   m_EditorClassIdentifier: Assembly-CSharp::MonologueEventSO
   selectionMode: 0
   lines:
-  - text: Well, from nothing, we create everything. I'm hungry. Feed me now...
+  - text: Boing... Boing....
     exposureTime: 3
-  conditionType: 2
+  conditionType: 3
   triggerOnlyOnce: 1
   startDelay: 2
-  ballRequirements:
-  - ballData: {fileID: 11400000, guid: 80d61bba963ad264f8475d89dc001b50, type: 2}
-    requiredCount: 9
-  targetRecipe: {fileID: 0}
+  ballRequirements: []
+  targetRecipe: {fileID: 11400000, guid: d14d5e739237aaf479dfb4c731e0a170, type: 2}
   triggerChance: 0.3

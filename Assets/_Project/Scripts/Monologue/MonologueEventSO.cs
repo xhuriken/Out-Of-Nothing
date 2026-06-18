@@ -17,7 +17,8 @@ public enum MonologueConditionType
     GameStart,      // Triggered automatically after a delay when the game starts
     BallCount,      // Triggered when specific quantities of balls are present on the board
     CraftCompleted, // Triggered when a crafting recipe is completed
-    RandomPlaytime  // Triggered randomly during gameplay
+    RandomPlaytime, // Triggered randomly during gameplay
+    PointsCount     // Triggered when the total points/energy exceeds a threshold
 }
 
 [System.Serializable]
@@ -59,6 +60,9 @@ public class MonologueEventSO : ScriptableObject
     [Header("Condition: Random Settings")]
     [SerializeField] [Range(0f, 1f)] [Tooltip("Probability (0 to 1) of triggering at each interval.")] private float triggerChance = 0.3f;
 
+    [Header("Condition: Points Settings")]
+    [SerializeField] [Tooltip("The minimum number of points required to trigger this monologue.")] private double requiredPoints;
+
     private int _currentIndex = 0;
 
     // Public Getters for Manager Evaluation
@@ -68,6 +72,7 @@ public class MonologueEventSO : ScriptableObject
     public BallRequirement[] BallRequirements => ballRequirements;
     public CraftRecipeSO TargetRecipe => targetRecipe;
     public float TriggerChance => triggerChance;
+    public double RequiredPoints => requiredPoints;
 
     /// <summary>
     /// Gets a monologue line based on the selection mode.
