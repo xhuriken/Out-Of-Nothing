@@ -18,4 +18,4 @@ MonoBehaviour:
   color: {r: 1, g: 1, b: 1, a: 1}
   radius: 0.3
   pointValue: 1
-  prefab: {fileID: 0}
+  prefab: {fileID: 2738363371872563106, guid: f0a89e12aa7507e4d88f947f8e21a155, type: 3}
