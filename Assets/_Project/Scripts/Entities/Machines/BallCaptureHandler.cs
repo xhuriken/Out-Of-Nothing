@@ -129,35 +129,56 @@ public class BallCaptureHandler : MonoBehaviour
         BallPoolManager.Instance.ReleaseBall(CapturedBall);
         CapturedBall = null;
 
-        // Calculate ejection direction (opposite of entry) and spawn position relative to last capture position
+        // Calculate ejection direction (opposite of entry) and target position relative to last capture position
         Vector2 ejectionDir = -EntryDirection;
-        Vector3 spawnPos = _lastCapturePosition + (Vector3)ejectionDir * ejectionOffset;
+        Vector3 spawnPos = _lastCapturePosition; // Spawn at center
+        Vector3 targetExitPos = _lastCapturePosition + (Vector3)ejectionDir * ejectionOffset;
 
-        // Spawn new ball
+        // Spawn new ball at center
         BallEntity newBall = BallPoolManager.Instance.SpawnBall(newBallData, spawnPos);
         if (newBall != null)
         {
+            newBall.IsProcessing = true;
+            if (newBall.Passport != null)
+            {
+                newBall.Passport.SetLockState(true);
+            }
+
             // Temporarily ignore collisions with the machine's colliders
             IgnoreCollisionWithMachine(newBall.Collider, true);
 
-            // Temporarily increase mass to easily push other balls out of the way
-            float massMultiplier = newBall.SetTemporaryHeavyMass(0.4f, 50f);
-
-            // Apply impulse force
-            if (newBall.Rb != null)
-            {
-                newBall.Rb.linearVelocity = Vector2.zero; // Clear any default pool velocity
-                newBall.Rb.AddForce(ejectionDir * (ejectionForce * massMultiplier), ForceMode2D.Impulse);
-            }
-
-            // Restore collision ignore after delay
-            DOVirtual.DelayedCall(duration, () =>
-            {
-                if (newBall != null && this != null)
+            // Tween new ball to the exit position smoothly
+            newBall.transform.DOMove(targetExitPos, 0.15f)
+                .SetEase(Ease.OutQuad)
+                .OnComplete(() =>
                 {
-                    IgnoreCollisionWithMachine(newBall.Collider, false);
-                }
-            });
+                    if (newBall == null) return;
+
+                    newBall.IsProcessing = false;
+                    if (newBall.Passport != null)
+                    {
+                        newBall.Passport.SetLockState(false);
+                    }
+
+                    // Temporarily increase mass to easily push other balls out of the way
+                    float massMultiplier = newBall.SetTemporaryHeavyMass(0.4f, 50f);
+
+                    // Apply impulse force
+                    if (newBall.Rb != null)
+                    {
+                        newBall.Rb.linearVelocity = Vector2.zero; // Clear any default pool velocity
+                        newBall.Rb.AddForce(ejectionDir * (ejectionForce * massMultiplier), ForceMode2D.Impulse);
+                    }
+
+                    // Restore collision ignore after delay
+                    DOVirtual.DelayedCall(duration, () =>
+                    {
+                        if (newBall != null && this != null)
+                        {
+                            IgnoreCollisionWithMachine(newBall.Collider, false);
+                        }
+                    });
+                });
         }
 
         return newBall;
@@ -175,40 +196,48 @@ public class BallCaptureHandler : MonoBehaviour
         var ball = CapturedBall;
         CapturedBall = null;
 
-        // Re-enable ball
+        // Re-enable ball collider to prepare for exit movement
         if (ball.Collider != null)
         {
             ball.Collider.enabled = true;
         }
-        ball.IsProcessing = false;
-
-        if (ball.Passport != null)
-        {
-            ball.Passport.SetLockState(false);
-        }
 
         Vector2 ejectionDir = -EntryDirection;
-        ball.transform.position = _lastCapturePosition + (Vector3)ejectionDir * ejectionOffset;
+        Vector3 targetExitPos = _lastCapturePosition + (Vector3)ejectionDir * ejectionOffset;
 
         // Ignore collisions with machine
         IgnoreCollisionWithMachine(ball.Collider, true);
 
-        // Apply temporary heavy mass and ejection impulse
-        float massMultiplier = ball.SetTemporaryHeavyMass(0.4f, 50f);
-        if (ball.Rb != null)
-        {
-            ball.Rb.linearVelocity = Vector2.zero;
-            ball.Rb.AddForce(ejectionDir * (ejectionForce * massMultiplier), ForceMode2D.Impulse);
-        }
-
-        // Restore collisions after a short delay
-        DOVirtual.DelayedCall(duration, () =>
-        {
-            if (ball != null && this != null)
+        // Tween to exit position smoothly
+        ball.transform.DOMove(targetExitPos, 0.15f)
+            .SetEase(Ease.OutQuad)
+            .OnComplete(() =>
             {
-                IgnoreCollisionWithMachine(ball.Collider, false);
-            }
-        });
+                if (ball == null) return;
+
+                ball.IsProcessing = false;
+                if (ball.Passport != null)
+                {
+                    ball.Passport.SetLockState(false);
+                }
+
+                // Apply temporary heavy mass and ejection impulse
+                float massMultiplier = ball.SetTemporaryHeavyMass(0.4f, 50f);
+                if (ball.Rb != null)
+                {
+                    ball.Rb.linearVelocity = Vector2.zero;
+                    ball.Rb.AddForce(ejectionDir * (ejectionForce * massMultiplier), ForceMode2D.Impulse);
+                }
+
+                // Restore collisions after a short delay
+                DOVirtual.DelayedCall(duration, () =>
+                {
+                    if (ball != null && this != null)
+                    {
+                        IgnoreCollisionWithMachine(ball.Collider, false);
+                    }
+                });
+            });
     }
 
     public void IgnoreCollisionWithMachine(Collider2D ballCollider, bool ignore)

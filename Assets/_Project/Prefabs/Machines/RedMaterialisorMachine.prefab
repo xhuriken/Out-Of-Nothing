@@ -600,6 +600,7 @@ GameObject:
   - component: {fileID: 1088451177946880862}
   - component: {fileID: 9089209472064100971}
   - component: {fileID: 211486126333204396}
+  - component: {fileID: 8352030740824211878}
   m_Layer: 9
   m_Name: RedMaterialisorMachine
   m_TagString: Untagged
@@ -653,7 +654,11 @@ MonoBehaviour:
   _isBeingDragged: 0
   _currentEnergy: 0
   _energyRenderer: {fileID: 4782254245562662314}
-  _ejectionForce: 6
+  _animator: {fileID: 0}
+  _spawnTriggerName: Spawn
+  _animationSpeed: 1
+  _ejectionDelay: 0.2
+  _ejectionForce: 8
   _consumptionPerAction: 10
   _inputTransferSpeed: 0.5
   _redBallData: {fileID: 11400000, guid: 80d61bba963ad264f8475d89dc001b50, type: 2}
@@ -734,6 +739,28 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 3.0073776, y: 2.097498}
   m_EdgeRadius: 0
+--- !u!95 &8352030740824211878
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6162139808707930919}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: a3fe39e63d8f82e40a7a195d86950f70, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &6208145353555095486
 GameObject:
   m_ObjectHideFlags: 0
@@ -1219,7 +1246,7 @@ Animator:
   m_GameObject: {fileID: 8058754965515912436}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: c7aadd2b16f4fb64fabe8dd33921f2c3, type: 2}
+  m_Controller: {fileID: 9100000, guid: 2273f06dfda7028499f42fb2fd9a2c48, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

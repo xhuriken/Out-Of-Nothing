@@ -10,12 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a7222241c763c8b4683da70fe5681bc3, type: 3}
-  m_Name: raimbow Hole
+  m_Name: WhiteBall
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  itemName: Raimbow Hole
-  description: The Shop allows you to obtain the different balls in exchange for
-    points.
-  previewPrefab: {fileID: 6398136477132450388, guid: 1ff903ce025b07d42b274835c9659e59, type: 3}
+  itemName: White Ball
+  description: Doubles the playing area.
+  previewPrefab: {fileID: 8758211866433413932, guid: fc34e4b9e94e38b4e9c199ef794b3d11, type: 3}
   isUnlocked: 1
-  type: 1
+  type: 0
   craftRecipe: []
