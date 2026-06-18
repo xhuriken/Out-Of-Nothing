@@ -83,6 +83,12 @@ public class BallEntity : MonoBehaviour, IDraggable
         set => _isDuplicating = value;
     }
 
+    public int CurrentClickCount
+    {
+        get => _currentClickCount;
+        set => _currentClickCount = value;
+    }
+
     /// <summary>
     /// Gets or sets whether the ball is currently attracted by a black hole.
     /// </summary>
