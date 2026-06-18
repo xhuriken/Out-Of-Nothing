@@ -42,6 +42,9 @@ public class EnergyManager : MonoBehaviour
     private readonly List<ElectricArc> _arcPool = new List<ElectricArc>();
 
     private bool _isDirty;
+    private readonly HashSet<IEnergyNode> _activeNodes = new HashSet<IEnergyNode>();
+
+    public bool IsNodeActive(IEnergyNode node) => _activeNodes.Contains(node);
 
     private void Awake()
     {
@@ -125,6 +128,53 @@ public class EnergyManager : MonoBehaviour
         foreach (EnergyNetwork network in _networks)
         {
             network.CalculateAllocation(tickRate);
+        }
+
+        UpdateActiveNodes();
+    }
+
+    private void UpdateActiveNodes()
+    {
+        _activeNodes.Clear();
+
+        Queue<IEnergyNode> queue = new Queue<IEnergyNode>();
+        HashSet<IEnergyNode> visited = new HashSet<IEnergyNode>();
+
+        foreach (var node in _allNodes)
+        {
+            if (node == null || (node is UnityEngine.Object objNode && objNode == null)) continue;
+
+            if (node is IEnergyConsumer && !(node is YellowBallBehavior))
+            {
+                bool isReceiving = node.EnergyAllocationRate > 0.0001f;
+                bool isFull = node.CurrentEnergy >= node.MaxStorage - 0.001f;
+                if (isReceiving || isFull)
+                {
+                    queue.Enqueue(node);
+                    visited.Add(node);
+                }
+            }
+        }
+
+        while (queue.Count > 0)
+        {
+            IEnergyNode curr = queue.Dequeue();
+            _activeNodes.Add(curr);
+
+            foreach (var neighbor in _allNodes)
+            {
+                if (neighbor == null || neighbor == curr || (neighbor is UnityEngine.Object objNeigh && objNeigh == null)) continue;
+
+                Edge edge = new Edge(curr, neighbor);
+                if (_currentEdges.Contains(edge))
+                {
+                    if (!visited.Contains(neighbor))
+                    {
+                        visited.Add(neighbor);
+                        queue.Enqueue(neighbor);
+                    }
+                }
+            }
         }
     }
 
@@ -441,6 +491,64 @@ public class EnergyManager : MonoBehaviour
         return null;
     }
 
+    private IEnergyNode GetClosestValidNeighbor(MachineEntity machine, bool ignoreDrag)
+    {
+        IEnergyNode closest = null;
+        float minDistance = float.MaxValue;
+
+        foreach (var node in _allNodes)
+        {
+            if (node == null || node == (IEnergyNode)machine || (node is UnityEngine.Object objNode && objNode == null)) continue;
+
+            // 1. Drag check
+            if (!ignoreDrag)
+            {
+                if (node.IsBeingDragged && !(node is YellowBallBehavior)) continue;
+            }
+
+            // 2. Type check
+            if (!(node is YellowBallBehavior))
+            {
+                bool machineIsProducer = machine is IEnergyProducer;
+                bool nodeIsProducer = node is IEnergyProducer;
+                bool machineIsConsumer = machine is IEnergyConsumer;
+                bool nodeIsConsumer = node is IEnergyConsumer;
+                bool canTypeConnect = (machineIsProducer && nodeIsConsumer) || (machineIsConsumer && nodeIsProducer);
+                if (!canTypeConnect) continue;
+            }
+
+            // 3. Physical check (Hysteresis check)
+            Edge edge = new Edge(machine, node);
+            bool wasConnected = _previousEdges.Contains(edge);
+            bool isPhysicallyConnected;
+
+            if (ignoreDrag)
+            {
+                isPhysicallyConnected = EnergyCollisionUtility.AreConnected(machine, node);
+            }
+            else if (wasConnected)
+            {
+                isPhysicallyConnected = EnergyCollisionUtility.IsConnectionMaintained(machine, node);
+            }
+            else
+            {
+                isPhysicallyConnected = EnergyCollisionUtility.AreConnected(machine, node);
+            }
+
+            if (isPhysicallyConnected)
+            {
+                float dist = Vector2.Distance(machine.Position, node.Position);
+                if (dist < minDistance)
+                {
+                    minDistance = dist;
+                    closest = node;
+                }
+            }
+        }
+
+        return closest;
+    }
+
     /// <summary>
     /// Determine if 2 EnergyNode can connect each other based on type and physical overlap.
     /// </summary>
@@ -461,6 +569,19 @@ public class EnergyManager : MonoBehaviour
 
             if (a.IsBeingDragged && !aIsYellow) return false;
             if (b.IsBeingDragged && !bIsYellow) return false;
+        }
+
+        // --- NEW: Machine connection limit (max 1 connection, only to the closest neighbor) ---
+        // Exception: Generator machines (which implement IEnergyProducer) are allowed to have multiple connections.
+        if (a is MachineEntity machineA && !(machineA is IEnergyProducer))
+        {
+            IEnergyNode closest = GetClosestValidNeighbor(machineA, ignoreDrag);
+            if (closest != b) return false;
+        }
+        if (b is MachineEntity machineB && !(machineB is IEnergyProducer))
+        {
+            IEnergyNode closest = GetClosestValidNeighbor(machineB, ignoreDrag);
+            if (closest != a) return false;
         }
 
         // 2. Physical Check (Hysteresis logic)

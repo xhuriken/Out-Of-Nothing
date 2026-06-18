@@ -43,17 +43,13 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
     {
         get
         {
-            // If we already have enough energy for the next action, we stop demanding immediately.
-            // Using a small margin to avoid floating point precision issues near 1.0.
-            if (CurrentEnergy >= _consumptionPerAction - 0.0001f) return 0f;
-
-            if (IsWaiting()) return 0f;
+            if (CurrentEnergy >= MaxStorage - 0.0001f) return 0f;
             return _inputTransferSpeed;
         }
     }
 
     public float ConsumptionPerAction => _consumptionPerAction;
-    public override bool IsDemanding => !IsWaiting();
+    public override bool IsDemanding => true;
 
     protected override void Start()
     {
@@ -134,16 +130,18 @@ public class RedMaterialisatorMachine : MachineEntity, IEnergyConsumer
 
         float dashPeriod = _energyRenderer.DashSize + _energyRenderer.DashSpacing;
 
-        if (dashPeriod > 0)
+        // Only animate dashes if we are actively receiving energy
+        if (dashPeriod > 0 && EnergyAllocationRate > 0.0001f)
         {
             _currentDashOffset += Time.deltaTime * _animSpeed;
             _energyRenderer.DashOffset = _currentDashOffset % dashPeriod;
         }
 
         // 2. Just-In-Time Feedback
-        // Machine is gray ONLY if it is waiting for its scheduled pumping window.
-        // If it's full and ready to fire, it stays colored (Active).
-        _energyRenderer.Color = IsWaiting() ? Color.gray : _originalColor;
+        // Gray out if we are not full AND not receiving energy
+        bool isFull = CurrentEnergy >= MaxStorage - 0.001f;
+        bool isReceiving = EnergyAllocationRate > 0.0001f;
+        _energyRenderer.Color = (isFull || isReceiving) ? _originalColor : Color.gray;
     }
 
     private bool IsWaiting()

@@ -93,9 +93,14 @@ public class ElectricArc : MonoBehaviour
         bool startReady = _startNode is IEnergyProducer || _startNode.IsDemanding;
         bool endReady = _endNode is IEnergyProducer || _endNode.IsDemanding;
 
-        // An arc is Active (Yellow) if it's part of a powered path and both ends are ready.
-        // We removed !_isPreview to allow yellow balls to show active connections during drag.
         bool isActive = startPowered && endPowered && startReady && endReady;
+
+        // For non-preview arcs, they must be part of the active path carrying energy or leading to a full consumer
+        if (isActive && !_isPreview && EnergyManager.Instance != null)
+        {
+            isActive = EnergyManager.Instance.IsNodeActive(_startNode) && EnergyManager.Instance.IsNodeActive(_endNode);
+        }
+
         _isActive = isActive;
 
         Color targetColor = isActive ? _activeColor : _waitingColor;

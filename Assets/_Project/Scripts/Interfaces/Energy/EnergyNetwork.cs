@@ -155,15 +155,34 @@ public class EnergyNetwork
             }
         }
 
-        // 6. Finalize Machine Allocations (Pro-rata if total supply < total demand)
+        // 6. Finalize Machine Allocations (Priority based on demand size descending)
         float totalProvidedToMachines = providedBySourceToMachines + providedByCablesToMachines;
-        float machineRatio = machineDemand > 0 ? totalProvidedToMachines / machineDemand : 0f;
-        foreach (var machine in machines)
+        if (totalProvidedToMachines < machineDemand - 0.0001f)
         {
-            if (machine == null || (machine is UnityEngine.Object obj && obj == null)) continue;
-            float missing = machine.MaxStorage - machine.CurrentEnergy;
-            float pull = Mathf.Min(machine.InputTransferSpeed, missing);
-            machine.EnergyAllocationRate += (pull * machineRatio) / tickRate;
+            // Not enough energy to satisfy all demands, sort by InputTransferSpeed descending
+            machines.Sort((a, b) => b.InputTransferSpeed.CompareTo(a.InputTransferSpeed));
+
+            float remainingSupply = totalProvidedToMachines;
+            foreach (var machine in machines)
+            {
+                if (machine == null || (machine is UnityEngine.Object obj && obj == null)) continue;
+                float missing = machine.MaxStorage - machine.CurrentEnergy;
+                float pull = Mathf.Min(machine.InputTransferSpeed, missing);
+                float allocated = Mathf.Min(pull, remainingSupply);
+                remainingSupply = Mathf.Max(0f, remainingSupply - allocated);
+                machine.EnergyAllocationRate += allocated / tickRate;
+            }
+        }
+        else
+        {
+            // Allocate full demand
+            foreach (var machine in machines)
+            {
+                if (machine == null || (machine is UnityEngine.Object obj && obj == null)) continue;
+                float missing = machine.MaxStorage - machine.CurrentEnergy;
+                float pull = Mathf.Min(machine.InputTransferSpeed, missing);
+                machine.EnergyAllocationRate += pull / tickRate;
+            }
         }
 
         // 7. Finalize Generator Allocations (Pro-rata based on what was actually drawn from them)

@@ -15,7 +15,7 @@ public class BlueOscillator : MachineEntity, IEnergyConsumer
     [SerializeField] private float _transformationDuration = 1.0f;
 
     [Header("Energy Settings")]
-    [SerializeField] private float _inputTransferSpeed = 5f;
+    [SerializeField] private float _inputTransferSpeed = 0.5f;
     [SerializeField] private float _consumptionPerAction = 10f;
 
     private BallCaptureHandler _captureHandler;
@@ -25,12 +25,12 @@ public class BlueOscillator : MachineEntity, IEnergyConsumer
     {
         get
         {
-            if (CurrentEnergy >= _consumptionPerAction - 0.0001f) return 0f;
+            if (CurrentEnergy >= MaxStorage - 0.0001f) return 0f;
             return _inputTransferSpeed;
         }
     }
     public float ConsumptionPerAction => _consumptionPerAction;
-    public override bool IsDemanding => CurrentEnergy < _consumptionPerAction - 0.0001f;
+    public override bool IsDemanding => true;
 
     protected override void Start()
     {
