@@ -273,7 +273,16 @@ public class Shop : MonoBehaviour, IDraggable
     /// </summary>
     public void OnBallSelected(BallShop selectedBall)
     {
-        if (_isClosing || selectedBall == null || selectedBall.identity == null) return;
+        if (_isClosing || selectedBall == null) return;
+
+        // If the slot is locked, play insufficient funds feedback (shake and red flash) and return early.
+        if (selectedBall.IsLocked)
+        {
+            selectedBall.FlashPriceTextRed();
+            return;
+        }
+
+        if (selectedBall.identity == null) return;
 
         double price = selectedBall.identity.Price;
         if (IncrementManager.Instance != null && IncrementManager.Instance.Points >= price)

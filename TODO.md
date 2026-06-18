@@ -12,5 +12,6 @@
 - [x] Spawn purchased ball at the center of the shop (`transform.position`).
 - [x] Temporarily ignore collision between the spawned ball and the main shop's collider for `0.5f` seconds.
 - [x] Halve expulsion force in the physics calculation of `Shop.cs` (`_expelForce * 0.5f`).
+- [x] Add locked slots option with runic text cycling, grey coloring, and click-to-fail feedback.
 - [x] Verify compilation of the project using `dotnet build`.
 - [x] Update `DEVELOPMENT_LOG.md` and `TODO.md` at project root.

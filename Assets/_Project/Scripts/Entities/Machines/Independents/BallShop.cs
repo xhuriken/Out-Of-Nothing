@@ -51,6 +51,11 @@ public class BallShop : MonoBehaviour
     [Tooltip("Color glow brightness multiplier applied on mouse hover.")]
     private float _hoverGlowMultiplier = 1.5f;
 
+    [Header("Locked State Settings")]
+    [SerializeField]
+    [Tooltip("If true, this slot is locked. It displays runic symbols, appears grey, and cannot be purchased.")]
+    private bool _isLocked = false;
+
     private Vector3 _localSpawnTargetPosition;
     private Shop _shop;
     private bool _isInteractive = false;
@@ -58,6 +63,9 @@ public class BallShop : MonoBehaviour
     private float _lastFlashTime = -1f;
     private Color _originalPriceColor = Color.white;
     private bool _hasCachedOriginalColor = false;
+
+    private float _nextRuneChangeTime = 0f;
+    private const float RuneChangeInterval = 0.1f;
 
     /// <summary>
     /// Gets the parent Shop coordinator linked to this slot.
@@ -73,6 +81,11 @@ public class BallShop : MonoBehaviour
     /// Gets whether this slot is currently in its retract/hide animation.
     /// </summary>
     public bool IsHiding => _isHiding;
+
+    /// <summary>
+    /// Gets whether this slot is locked.
+    /// </summary>
+    public bool IsLocked => _isLocked;
 
     /// <summary>
     /// Gets the identity configuration for this shop slot.
@@ -94,21 +107,43 @@ public class BallShop : MonoBehaviour
         _isHiding = false;
         
         // Synchronize visual display elements
-        if (_priceText != null && _identity != null)
+        if (_priceText != null)
         {
-            _priceText.text = _identity.Price.ToString("F0");
-            if (!_hasCachedOriginalColor)
+            if (_isLocked)
             {
-                _originalPriceColor = _priceText.color;
-                _hasCachedOriginalColor = true;
+                _priceText.text = "???";
+                if (!_hasCachedOriginalColor)
+                {
+                    _originalPriceColor = Color.gray;
+                    _hasCachedOriginalColor = true;
+                }
+                _priceText.color = Color.gray;
+            }
+            else if (_identity != null)
+            {
+                _priceText.text = _identity.Price.ToString("F0");
+                if (!_hasCachedOriginalColor)
+                {
+                    _originalPriceColor = _priceText.color;
+                    _hasCachedOriginalColor = true;
+                }
             }
         }
 
-        if (_visualDisc != null && _identity != null && _identity.BallData != null)
+        if (_visualDisc != null)
         {
-            _visualDisc.ColorInner = _identity.BallData.color * 0.7f;
-            _visualDisc.ColorOuter = _identity.BallData.color;
-            _visualDisc.Radius = _identity.BallData.radius;
+            if (_isLocked)
+            {
+                _visualDisc.ColorInner = Color.gray * 0.7f;
+                _visualDisc.ColorOuter = Color.gray;
+                _visualDisc.Radius = 0.35f; // Standard default radius for locked slots
+            }
+            else if (_identity != null && _identity.BallData != null)
+            {
+                _visualDisc.ColorInner = _identity.BallData.color * 0.7f;
+                _visualDisc.ColorOuter = _identity.BallData.color;
+                _visualDisc.Radius = _identity.BallData.radius;
+            }
             
             // Set base local scale to one
             _visualDisc.transform.localScale = Vector3.one;
@@ -246,10 +281,10 @@ public class BallShop : MonoBehaviour
         }
 
         // Trigger red HDR glow intensity on the outer disc
-        if (_visualDisc != null && _identity != null && _identity.BallData != null)
+        if (_visualDisc != null)
         {
             _visualDisc.DOKill();
-            Color originalColor = _identity.BallData.color;
+            Color originalColor = _isLocked ? Color.gray : (_identity != null && _identity.BallData != null ? _identity.BallData.color : Color.gray);
             _visualDisc.ColorOuter = Color.red * 5.0f; // High intensity HDR glow red
             DOTween.To(() => _visualDisc.ColorOuter, x => _visualDisc.ColorOuter = x, originalColor, 0.5f).SetEase(Ease.OutQuad);
         }
@@ -267,6 +302,8 @@ public class BallShop : MonoBehaviour
         string hoverId = "slot_hover_" + GetInstanceID();
         Transform targetTransform = _visualDisc.transform;
 
+        Color baseColor = _isLocked ? Color.gray : (_identity != null && _identity.BallData != null ? _identity.BallData.color : Color.gray);
+
         if (hovered)
         {
             if (_shop != null && _shop.IsBeingDragged) return;
@@ -275,10 +312,7 @@ public class BallShop : MonoBehaviour
             DOTween.Kill(hoverId);
             targetTransform.DOScale(Vector3.one * _hoverScaleMultiplier, 0.2f).SetEase(Ease.OutQuad).SetId(hoverId);
 
-            if (_identity != null && _identity.BallData != null)
-            {
-                _visualDisc.ColorOuter = _identity.BallData.color * _hoverGlowMultiplier;
-            }
+            _visualDisc.ColorOuter = baseColor * _hoverGlowMultiplier;
         }
         else
         {
@@ -286,10 +320,7 @@ public class BallShop : MonoBehaviour
             DOTween.Kill(hoverId);
             targetTransform.DOScale(Vector3.one, 0.2f).SetEase(Ease.OutQuad).SetId(hoverId);
 
-            if (_identity != null && _identity.BallData != null)
-            {
-                _visualDisc.ColorOuter = _identity.BallData.color;
-            }
+            _visualDisc.ColorOuter = baseColor;
         }
     }
 
@@ -297,4 +328,33 @@ public class BallShop : MonoBehaviour
     // private void OnMouseEnter() { ... }
     // private void OnMouseExit() { ... }
     // private void OnMouseDown() { ... }
+
+    /// <summary>
+    /// Generates a random 3-character string from a specific set of runes/symbols.
+    /// </summary>
+    private string GetRandomRuneString()
+    {
+        const string glyphs = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz#@$&?*█▲▼◆◇";
+        char[] chars = new char[3];
+        for (int i = 0; i < 3; i++)
+        {
+            chars[i] = glyphs[Random.Range(0, glyphs.Length)];
+        }
+        return new string(chars);
+    }
+
+    /// <summary>
+    /// Cycles the locked slot's runic text at a periodic interval.
+    /// </summary>
+    private void Update()
+    {
+        if (_isLocked && gameObject.activeInHierarchy && _priceText != null)
+        {
+            if (Time.time >= _nextRuneChangeTime)
+            {
+                _priceText.text = GetRandomRuneString();
+                _nextRuneChangeTime = Time.time + RuneChangeInterval;
+            }
+        }
+    }
 }

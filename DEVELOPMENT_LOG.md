@@ -861,3 +861,21 @@
 - **Solution**: Halved the expel force in the physics calculation of `Shop.cs` (`_expelForce * 0.5f`) to provide a gentler, more controlled exit velocity.
 
 
+
+---
+
+## [2026-06-18] - Shop Locked Slots & Runic Text
+**Date** : 2026-06-18
+**Author** : Antigravity (AI)
+
+### 1. Locked Slots with Minecraft-style runic text
+- **Problem**: Needed a locked slot state in the Shop that appears grey, disables purchases, and animates its price indicator with a fast-cycling random set of runic characters.
+- **Solution**:
+  - Added a serialized `_isLocked` option in `BallShop.cs` (exposed via `IsLocked`).
+  - **Visuals**: On `Initialize()`, locked slots are rendered grey (outer and inner glow) with a default visual radius.
+  - **Animation**: Added `Update()` runic text generator cycling 3 random characters/symbols every `0.1s`.
+  - **Feedback**: Adjusted hover scaling and HDR color flash routines to fall back to grey if locked or if `BallData` is null.
+  - **Purchase Block**: Modified `Shop.cs` in `OnBallSelected()` to detect if a slot is locked, play failed purchase feedback (shake and red flash), and abort transactions before points check.
+
+
+
