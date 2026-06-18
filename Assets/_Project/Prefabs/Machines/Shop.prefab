@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4670304530822455820}
   - component: {fileID: 5796076856777607322}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Reflect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -103,7 +103,7 @@ GameObject:
   - component: {fileID: 1568741364564331573}
   - component: {fileID: 6667919031212728085}
   - component: {fileID: 7004557373598214118}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -204,7 +204,7 @@ GameObject:
   - component: {fileID: 2893918875856773100}
   - component: {fileID: 8569724237845803843}
   - component: {fileID: 6417296908505380795}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1158,7 +1158,7 @@ GameObject:
   - component: {fileID: 2475443076720864040}
   - component: {fileID: 6107486036868359349}
   - component: {fileID: 7263185543884443551}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1260,7 +1260,7 @@ GameObject:
   - component: {fileID: 7608174031879298497}
   - component: {fileID: 642279250932985188}
   - component: {fileID: 2515350808992639474}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1452,7 +1452,7 @@ GameObject:
   - component: {fileID: 5765040008325242684}
   - component: {fileID: 2572583321143099002}
   - component: {fileID: 6900451851861912925}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1590,7 +1590,7 @@ GameObject:
   - component: {fileID: 4765479202431656450}
   - component: {fileID: 4117523026046402979}
   - component: {fileID: 4080028546681158203}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1692,7 +1692,7 @@ GameObject:
   - component: {fileID: 7282336151734265332}
   - component: {fileID: 5009062735178588276}
   - component: {fileID: 6841865076343675558}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2088,7 +2088,7 @@ GameObject:
   - component: {fileID: 8256585583423461212}
   - component: {fileID: 4811550606712777081}
   - component: {fileID: 7198191616363056628}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2521,7 +2521,7 @@ GameObject:
   - component: {fileID: 7899456096789632498}
   - component: {fileID: 2349444013620173517}
   - component: {fileID: 161309265034825564}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2713,7 +2713,7 @@ GameObject:
   - component: {fileID: 5030183796961561212}
   - component: {fileID: 1730027935543471928}
   - component: {fileID: 8539740635763828314}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Particle System
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7697,7 +7697,7 @@ GameObject:
   - component: {fileID: 5744739527507009839}
   - component: {fileID: 8905778490403190854}
   - component: {fileID: 3217601296585851382}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8037,7 +8037,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3490291608196198206}
   - component: {fileID: 4110775010010061223}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: ShopShader
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8129,7 +8129,7 @@ GameObject:
   - component: {fileID: 1776091774046241558}
   - component: {fileID: 107932142971550878}
   - component: {fileID: 7361345965232354119}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8652,7 +8652,7 @@ GameObject:
   - component: {fileID: 7544192096295067843}
   - component: {fileID: 2249382454021149116}
   - component: {fileID: 7885968209763720987}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8787,7 +8787,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2618121710098627197}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Shop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8823,7 +8823,7 @@ GameObject:
   - component: {fileID: 4918756265116438719}
   - component: {fileID: 5346071032735336781}
   - component: {fileID: 4743936645490819667}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8966,7 +8966,7 @@ GameObject:
   - component: {fileID: 8077044611897818111}
   - component: {fileID: 1069942139668369165}
   - component: {fileID: 5085028777416737941}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9159,7 +9159,7 @@ GameObject:
   - component: {fileID: 8405045629352517808}
   - component: {fileID: 4520088412000502935}
   - component: {fileID: 544980861864086870}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9260,7 +9260,7 @@ GameObject:
   - component: {fileID: 828013819298912178}
   - component: {fileID: 3322296654158694017}
   - component: {fileID: 221561346518119305}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9403,7 +9403,7 @@ GameObject:
   - component: {fileID: 1806725430695947264}
   - component: {fileID: 2195434543791087723}
   - component: {fileID: 7056702949551356448}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: ShopObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9678,7 +9678,7 @@ GameObject:
   - component: {fileID: 259785367162632544}
   - component: {fileID: 1875708766805426932}
   - component: {fileID: 3441802689475795054}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
