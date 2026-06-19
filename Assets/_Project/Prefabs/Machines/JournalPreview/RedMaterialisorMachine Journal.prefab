@@ -53,7 +53,7 @@ MonoBehaviour:
   culling: 0
   boundsPadding: 0
   renderQueue: -1
-  zTest: 4
+  zTest: 2
   zOffsetFactor: 0
   zOffsetUnits: 0
   colorMask: 15
@@ -123,7 +123,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 7a2265fc202676141a8729ed7751f445, type: 2}
+  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -494,7 +494,7 @@ MonoBehaviour:
   culling: 0
   boundsPadding: 0
   renderQueue: -1
-  zTest: 4
+  zTest: 2
   zOffsetFactor: 0
   zOffsetUnits: 0
   colorMask: 15
@@ -564,7 +564,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 7a2265fc202676141a8729ed7751f445, type: 2}
+  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
