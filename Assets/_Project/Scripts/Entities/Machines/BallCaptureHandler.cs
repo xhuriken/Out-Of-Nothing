@@ -13,6 +13,7 @@ public class BallCaptureHandler : MonoBehaviour
 
     public BallEntity CapturedBall { get; private set; }
     public bool IsCentering { get; private set; }
+    public bool HoldAtCenter { get; set; } = true;
     public Vector2 EntryDirection { get; set; }
     private Vector3 _lastCapturePosition;
 
@@ -101,6 +102,7 @@ public class BallCaptureHandler : MonoBehaviour
         var ball = CapturedBall;
         CapturedBall = null;
         IsCentering = false;
+        HoldAtCenter = true;
 
         DOTween.Kill(ball.transform);
 
@@ -124,6 +126,7 @@ public class BallCaptureHandler : MonoBehaviour
     {
         CapturedBall = null;
         IsCentering = false;
+        HoldAtCenter = true;
     }
 
     /// <summary>
@@ -139,6 +142,7 @@ public class BallCaptureHandler : MonoBehaviour
         BallPoolManager.Instance.ReleaseBall(CapturedBall);
         CapturedBall = null;
         IsCentering = false;
+        HoldAtCenter = true;
 
         // Calculate ejection direction (opposite of entry) and target position relative to last capture position
         Vector2 ejectionDir = -EntryDirection;
@@ -272,6 +276,18 @@ public class BallCaptureHandler : MonoBehaviour
             if (col != null && col != ballCollider)
             {
                 Physics2D.IgnoreCollision(col, ballCollider, ignore);
+            }
+        }
+    }
+
+    private void LateUpdate()
+    {
+        if (CapturedBall != null && !IsCentering && HoldAtCenter)
+        {
+            CapturedBall.transform.position = _lastCapturePosition;
+            if (CapturedBall.Rb != null)
+            {
+                CapturedBall.Rb.linearVelocity = Vector2.zero;
             }
         }
     }

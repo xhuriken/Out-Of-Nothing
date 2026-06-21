@@ -214,11 +214,21 @@ public class ClickerMachine : MachineEntity, IEnergyConsumer
         // Force parent to be exactly at center
         parentBall.transform.position = centerPos;
 
+        if (_captureHandler != null)
+        {
+            _captureHandler.HoldAtCenter = false;
+        }
+
         // Squash and stretch scale preparation for duplication (mitosis feel), scaled by efficiency
         Sequence prepSeq = DOTween.Sequence();
         prepSeq.Append(parentBall.transform.DOScale(new Vector3(1.4f, 0.6f, 1f), 0.35f / efficiency).SetEase(Ease.OutQuad));
         prepSeq.Join(parentBall.transform.DOShakePosition(0.35f / efficiency, 0.08f, 30, 90f, false, false));
         yield return prepSeq.WaitForCompletion();
+
+        if (_captureHandler != null)
+        {
+            _captureHandler.HoldAtCenter = true;
+        }
 
         // Ensure parent returns to center after shake
         parentBall.transform.position = centerPos;

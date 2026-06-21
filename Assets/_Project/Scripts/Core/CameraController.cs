@@ -21,6 +21,9 @@ public class CameraController : MonoBehaviour
     [Tooltip("Smooth time for camera orthographic size transitions.")]
     [SerializeField] private float _smoothTime = 0.2f;
 
+    [Tooltip("Multiplier applied to zoom speed when holding Control.")]
+    [SerializeField] private float _ctrlZoomMultiplier = 5f;
+
     private Camera _camera;
     private float _targetOrthoSize;
 
@@ -95,7 +98,12 @@ public class CameraController : MonoBehaviour
         // Calculate new target orthographic size. 
         // We invert the sign of normalizedDelta because scrolling UP (positive) should zoom IN (reduce size).
         // Using 0.1f multiplier instead of 0.01f to make zoom speed feel snappy and responsive.
-        float change = -normalizedDelta * _zoomSpeed * 0.1f;
+        float speedMultiplier = 1f;
+        if (Keyboard.current != null && (Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed))
+        {
+            speedMultiplier = _ctrlZoomMultiplier;
+        }
+        float change = -normalizedDelta * _zoomSpeed * 0.1f * speedMultiplier;
         _targetOrthoSize = Mathf.Clamp(_targetOrthoSize + change, minZoomSize, maxDezoomSize);
 
         // Smoothly animate the transition using DOTween

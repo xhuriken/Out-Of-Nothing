@@ -40,7 +40,7 @@ public class GameCursor : MonoBehaviour
 
     private Camera _mainCamera;
     private Vector3 _velocity = Vector3.zero;
-
+    private float _initialOrthoSize = 5f;
 
     private float _largeDiscInitialRadius;
     private float _largeDiscInitialThickness;
@@ -74,7 +74,10 @@ public class GameCursor : MonoBehaviour
     private void Start()
     {
         _mainCamera = Camera.main; // TODO: Cache this properly based on project rules
-
+        if (_mainCamera != null)
+        {
+            _initialOrthoSize = _mainCamera.orthographicSize;
+        }
 
         if (_largeDisc != null)
         {
@@ -95,12 +98,27 @@ public class GameCursor : MonoBehaviour
 
     private void Update()
     {
+        if (_mainCamera == null)
+        {
+            _mainCamera = Camera.main;
+            if (_mainCamera != null)
+            {
+                _initialOrthoSize = _mainCamera.orthographicSize;
+            }
+        }
+
         if (_mainCamera == null) return;
 
         // Automatically toggle cursor visibility based on the menu state
         bool isMenuOpen = MenuController.Instance != null && MenuController.Instance.IsOpen;
         Cursor.visible = isMenuOpen;
-        transform.localScale = isMenuOpen ? Vector3.zero : Vector3.one;
+
+        float scaleFactor = 1f;
+        if (_initialOrthoSize > 0.001f)
+        {
+            scaleFactor = _mainCamera.orthographicSize / _initialOrthoSize;
+        }
+        transform.localScale = isMenuOpen ? Vector3.zero : (Vector3.one * scaleFactor);
 
         if (isMenuOpen) return; // Skip tracking and smoothing when menu is open
 

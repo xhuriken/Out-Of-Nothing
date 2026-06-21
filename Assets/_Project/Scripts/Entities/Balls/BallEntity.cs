@@ -275,6 +275,23 @@ public class BallEntity : MonoBehaviour, IDraggable
         _isBeingDragged = false;
         IsAttracted = false;
 
+        // Reset ignore collisions with all machines in the scene to prevent persistent ignore state after pool recycling
+        var machines = Object.FindObjectsOfType<MachineEntity>();
+        foreach (var machine in machines)
+        {
+            if (machine != null)
+            {
+                var machineColliders = machine.GetComponentsInChildren<Collider2D>(true);
+                foreach (var col in machineColliders)
+                {
+                    if (col != null && _collider != null)
+                    {
+                        Physics2D.IgnoreCollision(col, _collider, false);
+                    }
+                }
+            }
+        }
+
         _behavior?.OnDisableBehavior(this);
     }
 
