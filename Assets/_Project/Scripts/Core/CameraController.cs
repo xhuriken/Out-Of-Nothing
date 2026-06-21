@@ -67,6 +67,7 @@ public class CameraController : MonoBehaviour
     /// <summary>
     /// Adjusts the target orthographic size based on scroll input.
     /// Positive values zoom in, negative values zoom out.
+    /// Zoom is centered on the player's custom cursor location.
     /// </summary>
     /// <param name="scrollDelta">The scroll wheel input value.</param>
     public void AdjustZoom(float scrollDelta)
@@ -95,22 +96,58 @@ public class CameraController : MonoBehaviour
         // Ensure target ortho size starts clamped within bounds if it was out of bounds
         _targetOrthoSize = Mathf.Clamp(_targetOrthoSize, minZoomSize, maxDezoomSize);
 
+        // Get the cursor world position using the custom GameCursor, with fallbacks
+        Vector3 cursorWorldPos;
+        if (GameCursor.Instance != null)
+        {
+            cursorWorldPos = GameCursor.Instance.transform.position;
+        }
+        else if (Mouse.current != null)
+        {
+            Vector2 mouseScreenPosition = Mouse.current.position.ReadValue();
+            cursorWorldPos = _camera.ScreenToWorldPoint(mouseScreenPosition);
+        }
+        else
+        {
+            cursorWorldPos = transform.position;
+        }
+        cursorWorldPos.z = 0f;
+
         // Calculate new target orthographic size. 
         // We invert the sign of normalizedDelta because scrolling UP (positive) should zoom IN (reduce size).
-        // Using 0.1f multiplier instead of 0.01f to make zoom speed feel snappy and responsive.
         float speedMultiplier = 1f;
         if (Keyboard.current != null && (Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed))
         {
             speedMultiplier = _ctrlZoomMultiplier;
         }
         float change = -normalizedDelta * _zoomSpeed * 0.1f * speedMultiplier;
-        _targetOrthoSize = Mathf.Clamp(_targetOrthoSize + change, minZoomSize, maxDezoomSize);
+        
+        float newTargetOrthoSize = Mathf.Clamp(_targetOrthoSize + change, minZoomSize, maxDezoomSize);
 
-        // Smoothly animate the transition using DOTween
+        // Calculate target camera position to keep the cursor at the same screen viewport position
+        float sizeOld = _camera.orthographicSize;
+        if (sizeOld < 0.001f) sizeOld = 0.001f;
+
+        Vector3 cameraPos = transform.position;
+        Vector3 dir = cursorWorldPos - cameraPos;
+        Vector3 targetCameraPos = cursorWorldPos - dir * (newTargetOrthoSize / sizeOld);
+
+        // Clamp the calculated target position within GameZone boundaries
+        Vector3 clampedTargetPos = ClampCameraPosition(targetCameraPos, newTargetOrthoSize);
+
+        _targetOrthoSize = newTargetOrthoSize;
+
+        // Smoothly animate the transition using DOTween (both orthographic size and position)
         DOTween.Kill(_camera);
+        DOTween.Kill(transform);
+
         _camera.DOOrthoSize(_targetOrthoSize, _smoothTime)
             .SetEase(Ease.OutQuad)
             .SetTarget(_camera);
+
+        transform.DOMove(clampedTargetPos, _smoothTime)
+            .SetEase(Ease.OutQuad)
+            .SetTarget(transform);
     }
 
     /// <summary>
@@ -154,9 +191,16 @@ public class CameraController : MonoBehaviour
     /// </summary>
     private Vector3 ClampCameraPosition(Vector3 position)
     {
+        return ClampCameraPosition(position, _camera != null ? _camera.orthographicSize : 5f);
+    }
+
+    /// <summary>
+    /// Clamps the camera position so that the viewport remains completely within the GameZone boundaries for a given orthographic size.
+    /// </summary>
+    private Vector3 ClampCameraPosition(Vector3 position, float orthoSize)
+    {
         if (GameZone.Instance == null || _camera == null) return position;
 
-        float orthoSize = _camera.orthographicSize;
         float aspect = _camera.aspect;
 
         float minX = GameZone.Instance.MinX + orthoSize * aspect;
@@ -204,5 +248,41 @@ public class CameraController : MonoBehaviour
 
         // Take the maximum of both constraints so the entire zone is visible
         return Mathf.Max(limitHeight, limitWidth);
+    }
+
+    /// <summary>
+    /// Gets the maximum zoom size (smallest orthographic size allowed).
+    /// </summary>
+    public float MaxZoomSize => _maxZoomSize;
+
+    /// <summary>
+    /// Gets the maximum dezoom size (largest orthographic size allowed based on GameZone).
+    /// </summary>
+    public float MaxDezoomSize => GetMaxDezoomSize();
+
+    /// <summary>
+    /// Gets the current orthographic size of the camera.
+    /// </summary>
+    public float CurrentOrthoSize => _camera != null ? _camera.orthographicSize : _targetOrthoSize;
+
+    /// <summary>
+    /// Smoothly forces the camera orthographic size to a target value.
+    /// Can configure ease parameters (like amplitude and period for elastic ease).
+    /// </summary>
+    public void AnimateOrthoSize(float targetSize, float duration, Ease ease = Ease.OutQuad, float easeAmplitude = -1f, float easePeriod = -1f)
+    {
+        if (_camera == null) return;
+
+        _targetOrthoSize = targetSize;
+        DOTween.Kill(_camera);
+
+        var tween = _camera.DOOrthoSize(_targetOrthoSize, duration)
+            .SetEase(ease)
+            .SetTarget(_camera);
+
+        if (easeAmplitude >= 0f && easePeriod >= 0f)
+        {
+            tween.SetEase(ease, easeAmplitude, easePeriod);
+        }
     }
 }

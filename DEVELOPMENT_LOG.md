@@ -1134,3 +1134,63 @@
   - **Intégration du Trou Noir** : Appel de `MonologueManager.Instance.RequestShopSpawn()` dans le callback `OnComplete` de la séquence `_implodeSequence` dans [BlackHole.cs](file:///c:/Users/celestin/Unity%20Games/Out-Of-Nothing/Assets/_Project/Scripts/Entities/Machines/Independents/BlackHole.cs).
   - **Sécurité anti-duplicata** : La vérification existante `FindAnyObjectByType<Shop>() != null` empêche de spawner deux shops simultanément en cas d'appels concurrents.
 - **Verification** : Projet compilé avec succès sans erreur de compilation via `dotnet build Out-Of-Nothing.sln`.
+
+---
+
+## [2026-06-21] - Fusion de Branches & Implémentation du ZoomIndicator
+**Date** : 2026-06-21
+**Author** : Antigravity (AI)
+
+### 1. Fusion de la branche incendie dans something
+- **Problem**: Fusionner la branche `incendie` vers `something` tout en gardant spécifiquement le préfabriqué `GeneratorMachine.prefab` de la branche `incendie`, sans écraser les configurations locales `.vscode/settings.json`.
+- **Solution**:
+  - Exécution du merge avec checkout explicite de `GeneratorMachine.prefab` depuis `incendie` (`--theirs`) et `.vscode/settings.json` depuis `something` (`--ours`).
+  - Alignement de la branche `incendie` pour qu'elle soit dans le même état exact que `something` (`git reset --hard something`).
+  - Push des deux branches sur le dépôt distant.
+
+### 2. Implémentation de ZoomIndicator
+- **Problem**: Créer un indicateur visuel de zoom composé de deux lignes Shapes (background et indicator). La hauteur (Y de l'extrémité) de la ligne indicator doit varier proportionnellement au zoom actuel de la caméra, allant de `0` (dézoomé au maximum) à la hauteur finale définie par la ligne de fond background (zoomé au maximum). De plus, l'indicateur complet (groupe de formes) doit être invisible par défaut, s'afficher lors d'une action de zoom/dézoom avec une transition fluide, puis disparaître après un délai d'inactivité.
+- **Solution**:
+  - **CameraController** : Ajout de propriétés publiques (`MaxZoomSize`, `MaxDezoomSize`, `CurrentOrthoSize`) pour exposer les limites de zoom et la taille orthographique courante de la caméra.
+  - **ZoomIndicator** : Création de `ZoomIndicator.cs` dans `Assets/_Project/Scripts/UI` qui calcule en continu le ratio de zoom de la caméra (par interpolation linéaire inverse) et met à jour l'extrémité Y du composant `indicator` relativement à l'extrémité Y du composant `background`. Il intègre également la gestion automatique d'un composant `ShapeGroup` sur le même objet pour forcer sa transparence par défaut, le faire apparaître (FadeIn) avec un Tween DOTween (Ease/Durée configurables dans l'inspecteur) sur détection de mouvement de zoom, et le masquer (FadeOut) après `_hideDelay` secondes d'inactivité.
+  - **TooMuchZoom** : Gestion d'une ligne de zoom supplémentaire `_tooMuchZoomLine` représentant la zone de sur-zoom (zoom supérieur au x1 de base). Cette ligne s'étend du haut de la barre (`backgroundMaxY`) jusqu'à une coordonnée Y dynamique calculée par rapport à la taille initiale de la zone (`_defaultDezoomSize` capturée au démarrage). Au fur et à mesure que la zone s'agrandit, le ratio s'ajuste dynamiquement.
+- **Verification**: Compilation réussie sans erreurs via `dotnet build Out Of Nothing.sln`.
+
+---
+
+## [2026-06-21] - Synchronisation de Caméra & Épaisseur lors de l'Expansion de Zone (WhiteBall)
+**Date** : 2026-06-21
+**Author** : Antigravity (AI)
+
+### 1. Zoom arrière fluide de la caméra lors de l'explosion
+- **Problem**: Lors de l'explosion de la White Ball, la caméra doit reculer / zoomer en arrière à la même vitesse que l'expansion de la zone de jeu afin de s'adapter immédiatement à la nouvelle taille de la zone.
+- **Solution**:
+  - **CameraController** : Ajout d'une méthode publique `AnimateOrthoSize` qui effectue un Tween DOTween sur la taille orthographique de la caméra avec une durée et un `Ease` personnalisables.
+  - **WhiteBallBehavior** : Dans `OnDuplicate()`, appel de `AnimateOrthoSize` pour reculer la caméra vers le nouveau `MaxDezoomSize * 1.25f` de manière synchronisée avec le Tween d'expansion de `_expansionDuration` en `Ease.OutQuad`.
+
+### 2. Épaisseur de zone dynamique et cohérente
+- **Problem**: Faire grandir visuellement l'épaisseur de la bordure de zone (`_tickness`) lors de l'expansion, tout en s'assurant que le collider physique `EdgeCollider2D` s'adapte correctement en temps réel.
+- **Solution**:
+  - **GameZone** : Ajout du champ ajustable `_thicknessExpansionFactor` et modification de `ExpandScale` pour y intégrer un Tween sur `_tickness`. Ce Tween appelle `UpdateBoundaries()` à chaque frame, adaptant ainsi à la fois la forme visuelle Shapes `Rectangle` et les points physiques de l'EdgeCollider2D.
+- **Verification**: Compilation réussie avec succès via `dotnet build Out Of Nothing.sln`.
+
+---
+
+## [2026-06-21] - Zoom vers le Curseur & Personnalisation de l'Élasticité de la Caméra (WhiteBall)
+**Date** : 2026-06-21
+**Author** : Antigravity (AI)
+
+### 1. Zoom centré sur la position du Curseur Customisé (GameCursor)
+- **Problem**: Rendre le zoom caméra plus intuitif en focalisant le zoom à l'emplacement actuel du curseur personnalisé du joueur (ou de la souris), tout en s'assurant que le viewport ne traverse pas les limites physiques de la `GameZone`.
+- **Solution**:
+  - **CameraController** : Modification d' `AdjustZoom()` pour lire `GameCursor.Instance.transform.position`. Le script calcule le décalage entre la caméra et le curseur, et détermine la position cible de la caméra pour maintenir le curseur au même endroit relatif sur l'écran pendant le changement de taille.
+  - **Overload de Clamp** : Implémentation d'un overload `ClampCameraPosition(Vector3 position, float orthoSize)` pour garantir que le clamping se fasse correctement à chaque frame de la transition selon la taille orthographique courante.
+  - **Tweens Synchronisés** : Lancement simultané d'un Tween de position (`transform.DOMove`) et d'un Tween de taille (`_camera.DOOrthoSize`) pour un zoom fluide et sans dérive.
+
+### 2. Personnalisation de l'élasticité de la caméra sur explosion de WhiteBall
+- **Problem**: Rendre l'effet visuel de zoom élastique réglable via l'inspecteur pour ajuster l'amplitude de rebond (l'overshoot) et la période d'oscillation.
+- **Solution**:
+  - **CameraController** : Surcharge d' `AnimateOrthoSize()` pour accepter l'amplitude et la période d'Ease, transmises via `tween.SetEase(ease, easeAmplitude, easePeriod)` de DOTween.
+  - **WhiteBallBehavior** : Ajout de champs sérialisés `_cameraEaseType`, `_cameraElasticAmplitude` et `_cameraElasticPeriod` dans l'inspecteur pour donner un contrôle total à l'utilisateur sur la force d'élasticité du zoom arrière.
+- **Verification**: Projet compilé avec succès (0 erreur) via `dotnet build Out Of Nothing.sln`.
+

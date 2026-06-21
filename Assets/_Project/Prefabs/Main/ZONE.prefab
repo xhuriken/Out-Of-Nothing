@@ -110,6 +110,7 @@ MonoBehaviour:
   _height: 20
   _rendering: {fileID: 750939741934925205}
   _tickness: 0.1
+  _thicknessExpansionFactor: 1
   _enableDebugLogs: 1
 --- !u!114 &8671214652506943910
 MonoBehaviour:

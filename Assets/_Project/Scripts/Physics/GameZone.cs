@@ -17,7 +17,8 @@ public class GameZone : MonoBehaviour
     [SerializeField] private Rectangle _rendering;
     [SerializeField] private float _tickness = 0.1f;
 
-
+    [Tooltip("How much the thickness increases relative to the scale expansion multiplier (0 = no growth, 1 = proportional growth).")]
+    [SerializeField] private float _thicknessExpansionFactor = 1.0f;
 
     [Header("Debug")]
     [SerializeField] private bool _enableDebugLogs = false;
@@ -122,10 +123,20 @@ public class GameZone : MonoBehaviour
     public void ExpandScale(float multiplier, float duration = 1.5f)
     {
         DOTween.Kill(this);
-        DOTween.To(() => _width, x => { _width = x; UpdateBoundaries(); }, _width * multiplier, duration)
+
+        float targetWidth = _width * multiplier;
+        float targetHeight = _height * multiplier;
+        float targetThickness = _tickness * (1f + (multiplier - 1f) * _thicknessExpansionFactor);
+
+        DOTween.To(() => _width, x => { _width = x; UpdateBoundaries(); }, targetWidth, duration)
             .SetEase(Ease.OutQuad)
             .SetTarget(this);
-        DOTween.To(() => _height, x => { _height = x; UpdateBoundaries(); }, _height * multiplier, duration)
+
+        DOTween.To(() => _height, x => { _height = x; UpdateBoundaries(); }, targetHeight, duration)
+            .SetEase(Ease.OutQuad)
+            .SetTarget(this);
+
+        DOTween.To(() => _tickness, x => { _tickness = x; UpdateBoundaries(); }, targetThickness, duration)
             .SetEase(Ease.OutQuad)
             .SetTarget(this);
     }

@@ -287,7 +287,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a0b714e2c8ac314993fc01c3b608561, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WhiteBallBehavior
-  _expansionDuration: 1.5
+  _expansionDuration: 1.2
+  _cameraEaseType: 24
+  _cameraElasticAmplitude: 1
+  _cameraElasticPeriod: 0.1
 --- !u!1 &6868362421735484617
 GameObject:
   m_ObjectHideFlags: 0

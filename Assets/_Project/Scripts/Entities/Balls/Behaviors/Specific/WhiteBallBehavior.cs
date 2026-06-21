@@ -11,6 +11,16 @@ public class WhiteBallBehavior : BallBehavior
 {
     [SerializeField] private float _expansionDuration = 1.5f;
 
+    [Header("Camera Animation Settings")]
+    [Tooltip("The Ease type used for the camera zoom out animation on explosion.")]
+    [SerializeField] private Ease _cameraEaseType = Ease.OutElastic;
+
+    [Tooltip("The bounce strength/overshoot of the elastic camera animation (if using an elastic ease).")]
+    [SerializeField] private float _cameraElasticAmplitude = 1.0f;
+
+    [Tooltip("The frequency of bounces in the elastic camera animation (if using an elastic ease).")]
+    [SerializeField] private float _cameraElasticPeriod = 0.3f;
+
     public override void ExecuteFixedUpdate(BallEntity ball, float fixedDeltaTime)
     {
         if (ball.IsBeingDragged || ball.IsProcessing) return;
@@ -23,6 +33,13 @@ public class WhiteBallBehavior : BallBehavior
         {
             // Expand by 25% (1.25x) instead of doubling (2.0x)
             GameZone.Instance.ExpandScale(1.25f, _expansionDuration);
+
+            // Expel the camera at the same speed/duration to fit the new GameZone size
+            if (CameraController.Instance != null)
+            {
+                float targetOrtho = CameraController.Instance.MaxDezoomSize * 1.25f;
+                CameraController.Instance.AnimateOrthoSize(targetOrtho, _expansionDuration, _cameraEaseType, _cameraElasticAmplitude, _cameraElasticPeriod);
+            }
         }
         else
         {
