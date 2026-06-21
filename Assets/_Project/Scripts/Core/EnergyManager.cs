@@ -554,8 +554,10 @@ public class EnergyManager : MonoBehaviour
     /// </summary>
     private bool CanConnectInternal(IEnergyNode a, IEnergyNode b, bool ignoreDrag = false)
     {
-        if (a == null || (a is UnityEngine.Object objA && objA == null) ||
-            b == null || (b is UnityEngine.Object objB && objB == null))
+        // Non-electric nodes (like BumperMachine) cannot connect
+        bool aIsParticipant = a is IEnergyConsumer || a is IEnergyProducer;
+        bool bIsParticipant = b is IEnergyConsumer || b is IEnergyProducer;
+        if (!aIsParticipant || !bIsParticipant)
         {
             return false;
         }

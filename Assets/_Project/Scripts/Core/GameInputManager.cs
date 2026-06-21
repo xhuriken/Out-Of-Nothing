@@ -245,6 +245,9 @@ public class GameInputManager : MonoBehaviour
         {
             if (col == null || !col.enabled) continue;
 
+            // Exclude proxy colliders from being targets (since they only forward collision events)
+            if (col.GetComponent<MachineColliderProxy>() != null) continue;
+
             T comp = col.GetComponentInParent<T>();
             if (comp != null)
             {
@@ -336,17 +339,20 @@ public class GameInputManager : MonoBehaviour
     /// Forces the currently dragged object to be dropped. 
     /// Can be called externally by machines claiming a ball.
     /// </summary>
-    public void ForceDrop()
+    public void ForceDrop(IDraggable specificObject = null)
     {
         if (_currentDraggedObject != null)
         {
-            if (_currentDraggedObject as UnityEngine.Object != null)
+            if (specificObject == null || _currentDraggedObject == specificObject)
             {
-                _currentDraggedObject.OnDragEnd();
+                if (_currentDraggedObject as UnityEngine.Object != null)
+                {
+                    _currentDraggedObject.OnDragEnd();
+                }
+                
+                _currentDraggedObject = null;
+                GameCursor.Instance?.SetDragAnimation(false);
             }
-            
-            _currentDraggedObject = null;
-            GameCursor.Instance?.SetDragAnimation(false);
         }
     }
 }

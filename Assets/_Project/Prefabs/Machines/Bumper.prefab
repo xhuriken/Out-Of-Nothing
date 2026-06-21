@@ -501,7 +501,7 @@ MonoBehaviour:
   _isRunning: 1
   _isBeingDragged: 0
   _currentEnergy: 0
-  _repulsionForce: 15
+  _repulsionForce: 22
   _pushDirectionMode: 2
   _objectsLayerMask:
     serializedVersion: 2
@@ -510,7 +510,7 @@ MonoBehaviour:
   _animator: {fileID: 0}
   _bumpTriggerName: Bump
   _animationSpeed: 1
-  bumpForce: 15
+  bumpForce: 22
 --- !u!60 &5464616689923196930
 PolygonCollider2D:
   m_ObjectHideFlags: 0

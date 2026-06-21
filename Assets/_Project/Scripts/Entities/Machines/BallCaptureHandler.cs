@@ -12,6 +12,7 @@ public class BallCaptureHandler : MonoBehaviour
     [SerializeField] private float _disableCollisionDuration = 0.5f;
 
     public BallEntity CapturedBall { get; private set; }
+    public bool IsCentering { get; private set; }
     public Vector2 EntryDirection { get; set; }
     private Vector3 _lastCapturePosition;
 
@@ -28,11 +29,12 @@ public class BallCaptureHandler : MonoBehaviour
         if (CapturedBall != null || ball == null) return false;
 
         _lastCapturePosition = targetPosition;
+        IsCentering = true;
 
-        // Force input drop in case player is holding it
+        // Force input drop only if the player is holding this specific ball
         if (GameInputManager.Instance != null)
         {
-            GameInputManager.Instance.ForceDrop();
+            GameInputManager.Instance.ForceDrop(ball);
         }
 
         // Calculate entry direction based on velocity or spatial offset relative to target capture center
@@ -80,7 +82,11 @@ public class BallCaptureHandler : MonoBehaviour
         // Move the ball fluidly to the center/target position
         ball.transform.DOMove(targetPosition, _captureMoveDuration)
             .SetEase(_captureEase)
-            .OnComplete(() => onComplete?.Invoke());
+            .OnComplete(() =>
+            {
+                IsCentering = false;
+                onComplete?.Invoke();
+            });
 
         return true;
     }
@@ -94,6 +100,7 @@ public class BallCaptureHandler : MonoBehaviour
 
         var ball = CapturedBall;
         CapturedBall = null;
+        IsCentering = false;
 
         DOTween.Kill(ball.transform);
 
@@ -116,6 +123,7 @@ public class BallCaptureHandler : MonoBehaviour
     public void ClearReference()
     {
         CapturedBall = null;
+        IsCentering = false;
     }
 
     /// <summary>
@@ -130,6 +138,7 @@ public class BallCaptureHandler : MonoBehaviour
         // Release the captured ball back to the pool
         BallPoolManager.Instance.ReleaseBall(CapturedBall);
         CapturedBall = null;
+        IsCentering = false;
 
         // Calculate ejection direction (opposite of entry) and target position relative to last capture position
         Vector2 ejectionDir = -EntryDirection;
@@ -197,6 +206,7 @@ public class BallCaptureHandler : MonoBehaviour
 
         var ball = CapturedBall;
         CapturedBall = null;
+        IsCentering = false;
 
         // Re-enable ball collider to prepare for exit movement
         if (ball.Collider != null)

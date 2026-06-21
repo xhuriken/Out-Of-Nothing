@@ -137,6 +137,7 @@ public abstract class MachineEntity : MonoBehaviour, IDraggable, IEnergyNode
     #region Physics & Collisions
     public virtual void OnPartCollisionEnter(string partId, Collision2D collision) { }
     public virtual void OnPartTriggerEnter(string partId, Collider2D collider) { }
+    public virtual void OnPartTriggerStay(string partId, Collider2D collider) { }
     #endregion
 
     public virtual void ReleaseCapturedBalls()
