@@ -84,6 +84,10 @@ public class Shop : MonoBehaviour, IDraggable
     [Tooltip("Monologue event for the second contact.")]
     private MonologueEventSO _secondContactMonologue;
 
+    [SerializeField]
+    [Tooltip("Safety margin added to the Black Hole attraction range when expelling the Shop.")]
+    private float _blackHoleSafetyMargin = 1.5f;
+
     private int _blackHoleContactCount = 0;
     private float _attractionScaleFactor = 1f;
     private float _attractionGlitchOffset = 0f;
@@ -96,6 +100,7 @@ public class Shop : MonoBehaviour, IDraggable
     private bool _isOpening = false;
     private bool _isClosing = false;
     private bool _isBeingDragged = false;
+    private bool _wasOpenBeforeDrag = false;
     private Rigidbody2D _rb;
     private MaterialPropertyBlock _propBlock;
     private Vector3 _lastPosition;
@@ -318,6 +323,11 @@ public class Shop : MonoBehaviour, IDraggable
     {
         _attractionScaleFactor = scaleFactor;
         _attractionGlitchOffset = glitchOffset;
+
+        if (scaleFactor < 1f && _isShopActive && !_isClosing)
+        {
+            CloseShop(speedMultiplier: 2f);
+        }
     }
 
     /// <summary>
@@ -392,6 +402,13 @@ public class Shop : MonoBehaviour, IDraggable
     {
         if (_isExpelling) return false;
         _isBeingDragged = true;
+
+        _wasOpenBeforeDrag = _isShopActive;
+        if (_isShopActive)
+        {
+            CloseShop(speedMultiplier: 2f);
+        }
+
         _rb.bodyType = RigidbodyType2D.Dynamic;
         _rb.linearVelocity = Vector2.zero;
         return true;
@@ -416,6 +433,15 @@ public class Shop : MonoBehaviour, IDraggable
         _isBeingDragged = false;
         _rb.linearVelocity = Vector2.zero;
         _rb.bodyType = RigidbodyType2D.Kinematic;
+
+        if (_wasOpenBeforeDrag)
+        {
+            _wasOpenBeforeDrag = false;
+            if (!_isExpelling && _attractionScaleFactor >= 1f)
+            {
+                ActivateShop(speedMultiplier: 2f);
+            }
+        }
     }
 
     /// <summary>
@@ -466,9 +492,10 @@ public class Shop : MonoBehaviour, IDraggable
     /// <summary>
     /// Activates the shop, triggering the spawner animation for purchase items.
     /// </summary>
-    private void ActivateShop()
+    /// <param name="speedMultiplier">Speed factor for the opening animation.</param>
+    private void ActivateShop(float speedMultiplier = 1f)
     {
-        if (IsAnimating) return;
+        if (_isOpening) return;
         _isShopActive = true;
 
         if (_hideCoroutine != null)
@@ -478,15 +505,16 @@ public class Shop : MonoBehaviour, IDraggable
         }
         _isClosing = false;
 
-        _spawnCoroutine = StartCoroutine(SpawnBallShopsRoutine());
+        _spawnCoroutine = StartCoroutine(SpawnBallShopsRoutine(speedMultiplier));
     }
 
     /// <summary>
     /// Closes the shop interface, hiding all items.
     /// </summary>
-    private void HideShop()
+    /// <param name="speedMultiplier">Speed factor for the closing animation.</param>
+    private void HideShop(float speedMultiplier = 1f)
     {
-        if (IsAnimating) return;
+        if (_isClosing) return;
 
         if (_spawnCoroutine != null)
         {
@@ -495,17 +523,45 @@ public class Shop : MonoBehaviour, IDraggable
         }
         _isOpening = false;
 
-        _hideCoroutine = StartCoroutine(HideAllBallsRoutine());
+        _hideCoroutine = StartCoroutine(HideAllBallsRoutine(speedMultiplier));
+    }
+
+    /// <summary>
+    /// Closes the shop interface, interrupting any opening animation if necessary.
+    /// </summary>
+    /// <param name="speedMultiplier">Speed factor for the closing animation.</param>
+    public void CloseShop(float speedMultiplier = 1f)
+    {
+        if (!_isShopActive) return;
+
+        if (_spawnCoroutine != null)
+        {
+            StopCoroutine(_spawnCoroutine);
+            _spawnCoroutine = null;
+        }
+        _isOpening = false;
+
+        if (_hideCoroutine != null)
+        {
+            StopCoroutine(_hideCoroutine);
+            _hideCoroutine = null;
+        }
+        _isClosing = false;
+
+        _hideCoroutine = StartCoroutine(HideAllBallsRoutine(speedMultiplier));
     }
 
     /// <summary>
     /// Coroutine animating slots sliding out in a local circular pattern relative to the Shop.
     /// </summary>
-    private IEnumerator SpawnBallShopsRoutine()
+    private IEnumerator SpawnBallShopsRoutine(float speedMultiplier = 1f)
     {
         _isOpening = true;
         int count = _ballShops.Count;
         float actualRadius = _gRadius * _radius;
+        float moveDuration = _moveDuration / speedMultiplier;
+        float spawnDelay = _spawnDelay / speedMultiplier;
+
         for (int i = 0; i < count; i++)
         {
             BallShop ball = _ballShops[i];
@@ -513,12 +569,12 @@ public class Shop : MonoBehaviour, IDraggable
             float rad = angle * Mathf.Deg2Rad;
             Vector3 direction = new Vector3(Mathf.Cos(rad), Mathf.Sin(rad), 0f);
             Vector3 localTargetPos = direction * actualRadius;
-            ball.SpawnWithMoveAndScale(localTargetPos, direction, _moveDuration);
-            yield return new WaitForSeconds(_spawnDelay);
+            ball.SpawnWithMoveAndScale(localTargetPos, direction, moveDuration);
+            yield return new WaitForSeconds(spawnDelay);
         }
         
         // Wait for the final ball's deploy tween to finish
-        yield return new WaitForSeconds(_moveDuration - _spawnDelay);
+        yield return new WaitForSeconds(moveDuration - spawnDelay);
         _isOpening = false;
         _spawnCoroutine = null;
     }
@@ -526,18 +582,21 @@ public class Shop : MonoBehaviour, IDraggable
     /// <summary>
     /// Coroutine animating slots sliding back into the shop local center.
     /// </summary>
-    private IEnumerator HideAllBallsRoutine()
+    private IEnumerator HideAllBallsRoutine(float speedMultiplier = 1f)
     {
         _isClosing = true;
+        float moveDuration = _moveDuration / speedMultiplier;
+        float hideDelay = _hideDelay / speedMultiplier;
+
         for (int i = 0; i < _ballShops.Count; i++)
         {
             BallShop ball = _ballShops[i];
-            ball.HideWithMoveAndScale(Vector3.zero, _moveDuration);
-            yield return new WaitForSeconds(_hideDelay);
+            ball.HideWithMoveAndScale(Vector3.zero, moveDuration);
+            yield return new WaitForSeconds(hideDelay);
         }
         
         // Wait for the final ball's retract tween to finish
-        yield return new WaitForSeconds(_moveDuration - _hideDelay);
+        yield return new WaitForSeconds(moveDuration - hideDelay);
         _isShopActive = false;
         _isClosing = false;
         _hideCoroutine = null;
@@ -651,12 +710,12 @@ public class Shop : MonoBehaviour, IDraggable
         if (_blackHoleContactCount == 1)
         {
             TriggerMonologue(_firstContactMonologue, "Are you sure you want to do that?", 3f);
-            StartCoroutine(Co_ExpelFromBlackHole(blackHole.transform.position));
+            StartCoroutine(Co_ExpelFromBlackHole(blackHole));
         }
         else if (_blackHoleContactCount == 2)
         {
             TriggerMonologue(_secondContactMonologue, "<shake>Watch out! You are going to destroy everything!</shake>", 4f);
-            StartCoroutine(Co_ExpelFromBlackHole(blackHole.transform.position));
+            StartCoroutine(Co_ExpelFromBlackHole(blackHole));
         }
         else if (_blackHoleContactCount >= 3)
         {
@@ -698,9 +757,17 @@ public class Shop : MonoBehaviour, IDraggable
     /// <summary>
     /// Coroutine animating the shop getting smoothly expelled away from the black hole using DOTween.
     /// </summary>
-    private IEnumerator Co_ExpelFromBlackHole(Vector3 blackHolePos)
+    private IEnumerator Co_ExpelFromBlackHole(BlackHole blackHole)
     {
         _isExpelling = true;
+
+        if (blackHole == null)
+        {
+            _isExpelling = false;
+            yield break;
+        }
+
+        Vector3 blackHolePos = blackHole.transform.position;
 
         // Force Kinematic Rigidbody state for smooth DOTween movement
         _rb.bodyType = RigidbodyType2D.Kinematic;
@@ -718,7 +785,27 @@ public class Shop : MonoBehaviour, IDraggable
             direction.Normalize();
         }
 
-        Vector3 targetPos = transform.position + (Vector3)(direction * 4f);
+        // Dynamically compute safe expulsion distance outside black hole attraction range + margin
+        float currentDistance = Vector2.Distance(transform.position, blackHolePos);
+        float attractRadiusOffset = 2f; // Default fallback
+        var bhPhysics = blackHole.GetComponent<BlackHolePhysics>();
+        if (bhPhysics != null)
+        {
+            attractRadiusOffset = bhPhysics.AttractRadiusOffset;
+        }
+
+        float safeDistance = blackHole.GRadius + attractRadiusOffset + _blackHoleSafetyMargin; // Attraction range + safety margin
+        float expelDistance = Mathf.Max(currentDistance + 4f, safeDistance);
+
+        Vector3 targetPos = blackHolePos + (Vector3)(direction * expelDistance);
+
+        // Clamp target position to GameZone boundaries
+        if (GameZone.Instance != null)
+        {
+            float radius = _gRadius;
+            targetPos.x = Mathf.Clamp(targetPos.x, GameZone.Instance.MinX + radius, GameZone.Instance.MaxX - radius);
+            targetPos.y = Mathf.Clamp(targetPos.y, GameZone.Instance.MinY + radius, GameZone.Instance.MaxY - radius);
+        }
 
         // Smooth slide using DOMove
         yield return transform.DOMove(targetPos, _expelDuration)

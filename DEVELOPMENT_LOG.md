@@ -13,6 +13,33 @@
 
 
 
+## [2026-06-21] - Shop Auto-Close & Repulsion Overlap Fix
+**Date** : 2026-06-21
+**Author** : Antigravity (AI)
+
+### 1. Shop Auto-Close & Reopen behaviors
+- **Problem**: The player wants the shop to automatically close when dragged and reopen once released. Additionally, the shop should close automatically when entering the black hole's attraction area. The shop must also never spawn or land inside the attraction zone of the black hole when spawning or being repulsed (always leaving a safety margin).
+- **Solution**:
+  - Implemented `CloseShop(float speedMultiplier)` in `Shop.cs` which cancels active spawn/hide routines and retracts slot objects with an adjustable speed.
+  - Modified `OnDragStart()` to record the shop's active status into `_wasOpenBeforeDrag` and close it using the closing animation at 2x speed.
+  - Modified `OnDragEnd()` to restore the shop's active state if it was open before dragging, playing the open animation at 2x speed, unless it is being expelled or sucked into the black hole.
+  - Modified `SetAttractionVisualState()` to auto-close the shop using the closing animation at 2x speed when entering the black hole attraction range.
+  - Modified `ActivateShop()` and `HideShop()` to support transition interruption, enabling the shop to instantly reverse its animation state (e.g. start reopening while still closing).
+  - Implemented dynamic safe distance checks when spawning the shop in `MonologueManager.cs` using a customizable safety margin `_shopSpawnSafetyMargin` (defaults to 1.5f), placing it strictly outside the black hole's attraction range and mathematically clamping the final position to be inside the `GameZone` boundaries.
+  - Implemented dynamic safe distance checks in `Shop.cs` during expulsion from the black hole using a customizable safety margin `_blackHoleSafetyMargin` (defaults to 1.5f), calculating a target position that is at least 4 units away and strictly outside the attraction range, mathematically clamped to the `GameZone` boundaries.
+
+### 2. Shop Repulsion Collision & Boundaries Fix
+- **Problem**: When the shop repels kinematic machines (e.g. when dragged towards them), the machines could overlap with each other and cross outside the play boundaries.
+- **Solution**:
+  - Refactored `ShopRepulsion.cs`'s kinematic movement logic to use `Rigidbody2D.Cast` in the repulsion direction using the repulsion layer mask.
+  - The push distance is scaled down to stop the machine exactly at the contact point of any obstacle (ignoring self and the shop itself).
+  - Clamped the machine's position mathematically to the `GameZone` boundaries (`MinX` to `MaxX`, `MinY` to `MaxY`) using its `PhysicalRadius` or collider radius, keeping it strictly inside the play field.
+
+- **Code Modified**:
+  - **`Shop.cs`** [MODIFIED] : Added state tracking, `CloseShop` helper, drag start/end close/reopen behaviors, and black hole attraction auto-close.
+  - **`ShopRepulsion.cs`** [MODIFIED] : Implemented raycast sweep checks and boundary clamping for kinematic machine repulsion.
+
+
 ## [2026-06-18] - Custom Game Events: Customizable Delays, Durations & Spawning Parameters
 **Date** : 2026-06-18
 **Auteur** : Antigravity (AI)

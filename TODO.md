@@ -86,6 +86,13 @@
 - [x] Call `MonologueManager.Instance.RequestShopSpawn()` inside `OnComplete` of `_implodeSequence` in `BlackHole.cs`.
 - [x] Verify compilation with `dotnet build`.
 - [x] Update `DEVELOPMENT_LOG.md` and `TODO.md` with final modifications.
+- [x] Implement Shop dragging close & reopen behaviors in `Shop.cs` (closing and reopening with 2x speed animation, supporting transition interruption).
+- [x] Implement Shop black hole attraction auto-close behavior in `Shop.cs` (closing with 2x speed animation).
+- [x] Implement safe spawn and expulsion distances for the shop using customizable safety margin fields in MonologueManager.cs and Shop.cs, and clamp spawning inside the GameZone boundaries.
+- [x] Implement Rigidbody2D.Cast collision check and GameZone boundary clamping in `ShopRepulsion.cs`.
+- [x] Update documentation `FEATURES_DETAILED.md` for Shop and ShopRepulsion changes.
+- [x] Verify project compilation using `dotnet build`.
+- [x] Update `DEVELOPMENT_LOG.md` and `TODO.md` at project root.
 
 
 

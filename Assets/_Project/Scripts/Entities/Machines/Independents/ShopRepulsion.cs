@@ -110,8 +110,65 @@ public class ShopRepulsion : MonoBehaviour
                 {
                     // Push kinematic machines smoothly
                     float pushSpeed = _repelForce * forceMultiplier * 0.1f;
-                    Vector2 targetPos = Vector2.MoveTowards(targetRb.position, targetRb.position + pushDirection, pushSpeed * Time.fixedDeltaTime);
-                    targetRb.MovePosition(targetPos);
+                    Vector2 movement = pushDirection * (pushSpeed * Time.fixedDeltaTime);
+                    float distance = movement.magnitude;
+
+                    if (distance > 0f)
+                    {
+                        ContactFilter2D contactFilter = new ContactFilter2D();
+                        contactFilter.SetLayerMask(_repelLayerMask);
+                        contactFilter.useLayerMask = true;
+                        contactFilter.useTriggers = false;
+
+                        RaycastHit2D[] hits = new RaycastHit2D[5];
+                        int hitCount = targetRb.Cast(pushDirection, contactFilter, hits, distance);
+
+                        if (hitCount > 0)
+                        {
+                            float minFraction = 1f;
+                            for (int hitIdx = 0; hitIdx < hitCount; hitIdx++)
+                            {
+                                if (hits[hitIdx].collider.gameObject == targetRb.gameObject || hits[hitIdx].collider.gameObject == gameObject)
+                                {
+                                    continue;
+                                }
+                                if (hits[hitIdx].fraction < minFraction)
+                                {
+                                    minFraction = hits[hitIdx].fraction;
+                                }
+                            }
+                            distance *= minFraction;
+                            if (distance < 0.001f)
+                            {
+                                distance = 0f;
+                            }
+                        }
+
+                        if (distance > 0f)
+                        {
+                            Vector2 targetPos = targetRb.position + pushDirection * distance;
+                            if (GameZone.Instance != null)
+                            {
+                                float radius = 0.5f;
+                                var machine = targetRb.GetComponent<MachineEntity>();
+                                if (machine != null)
+                                {
+                                    radius = machine.PhysicalRadius;
+                                }
+                                else
+                                {
+                                    var circleCol = targetRb.GetComponent<CircleCollider2D>();
+                                    if (circleCol != null)
+                                    {
+                                        radius = circleCol.radius * targetRb.transform.lossyScale.x;
+                                    }
+                                }
+                                targetPos.x = Mathf.Clamp(targetPos.x, GameZone.Instance.MinX + radius, GameZone.Instance.MaxX - radius);
+                                targetPos.y = Mathf.Clamp(targetPos.y, GameZone.Instance.MinY + radius, GameZone.Instance.MaxY - radius);
+                            }
+                            targetRb.MovePosition(targetPos);
+                        }
+                    }
                 }
                 else
                 {

@@ -71,6 +71,10 @@ public class MonologueManager : MonoBehaviour
     [Tooltip("The Ease type for the Black Hole GRadius spawn animation.")]
     private Ease _blackHoleSpawnEase = Ease.InOutElastic;
 
+    [SerializeField]
+    [Tooltip("Safety margin added to the Black Hole attraction range when spawning the Shop.")]
+    private float _shopSpawnSafetyMargin = 1.5f;
+
     private bool _hasTriggered20PointsEvent = false;
 
     // Runtime state tracking
@@ -451,9 +455,38 @@ public class MonologueManager : MonoBehaviour
             yield break;
         }
 
-        // Choose a random position on a circle of radius 6 around Vector3.zero
+        // Choose a random position on a circle around Vector3.zero, ensuring it is outside the black hole attraction range
+        float spawnRadius = 6f;
+        BlackHole bh = FindAnyObjectByType<BlackHole>();
+        if (bh != null)
+        {
+            float bhPhysicsRange = bh.GRadius;
+            BlackHolePhysics physics = bh.GetComponent<BlackHolePhysics>();
+            if (physics != null)
+            {
+                bhPhysicsRange += physics.AttractRadiusOffset;
+            }
+            else
+            {
+                bhPhysicsRange += 2f;
+            }
+            float safeMinRadius = bhPhysicsRange + _shopSpawnSafetyMargin;
+            if (spawnRadius < safeMinRadius)
+            {
+                spawnRadius = safeMinRadius;
+            }
+        }
+
         Vector2 randomDir = UnityEngine.Random.insideUnitCircle.normalized;
-        Vector3 spawnPosition = (Vector3)(randomDir * 6f);
+        Vector3 spawnPosition = (Vector3)(randomDir * spawnRadius);
+
+        // Ensure the spawn position is strictly within the GameZone boundaries
+        if (GameZone.Instance != null)
+        {
+            float margin = 1.0f; // Safe margin for the Shop radius
+            spawnPosition.x = Mathf.Clamp(spawnPosition.x, GameZone.Instance.MinX + margin, GameZone.Instance.MaxX - margin);
+            spawnPosition.y = Mathf.Clamp(spawnPosition.y, GameZone.Instance.MinY + margin, GameZone.Instance.MaxY - margin);
+        }
 
         GameObject shopObj = Instantiate(_shopPrefab, spawnPosition, Quaternion.identity);
         Shop shop = shopObj.GetComponentInChildren<Shop>();

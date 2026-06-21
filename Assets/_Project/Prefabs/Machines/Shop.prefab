@@ -9463,6 +9463,7 @@ MonoBehaviour:
   _expelDuration: 0.6
   _firstContactMonologue: {fileID: 0}
   _secondContactMonologue: {fileID: 0}
+  _blackHoleSafetyMargin: 1.5
 --- !u!114 &6106422691913210168
 MonoBehaviour:
   m_ObjectHideFlags: 0
