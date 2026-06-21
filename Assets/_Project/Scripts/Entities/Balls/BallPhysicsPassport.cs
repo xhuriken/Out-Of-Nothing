@@ -77,7 +77,12 @@ public class BallPhysicsPassport : MonoBehaviour
     public void SetLockState(bool isLocked)
     {
         _rb.bodyType = isLocked ? RigidbodyType2D.Kinematic : RigidbodyType2D.Dynamic;
-        if (isLocked) _rb.linearVelocity = Vector2.zero;
+        if (isLocked)
+        {
+            _rb.linearVelocity = Vector2.zero;
+            _nextVelocity = Vector2.zero;
+            _hasOverrideThisFrame = false;
+        }
     }
 
     private void FixedUpdate()

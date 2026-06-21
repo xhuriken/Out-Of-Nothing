@@ -101,7 +101,7 @@ public class PressMachine : MachineEntity, IEnergyConsumer
                 Debug.Log($"[PressMachine] Line Center triggered. Capturing {useBall.Data.id}.");
                 _ballInside = useBall;
                 _ballInside.IsProcessing = true;
-                GameInputManager.Instance.ForceDrop();
+                GameInputManager.Instance.ForceDrop(useBall);
                 // TODO: Stop collision & physics
                 _ballInside.transform.DOMove(_TargetTransformBall.position, _animationDuration).SetEase(Ease.OutElastic).OnComplete(() =>
                 {
@@ -114,6 +114,11 @@ public class PressMachine : MachineEntity, IEnergyConsumer
 
             
         }
+    }
+
+    public override void OnPartTriggerStay(string partId, Collider2D collider)
+    {
+        OnPartTriggerEnter(partId, collider);
     }
 
     protected override void OnTickExecuted()

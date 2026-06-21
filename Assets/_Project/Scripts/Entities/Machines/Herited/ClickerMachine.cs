@@ -95,6 +95,17 @@ public class ClickerMachine : MachineEntity, IEnergyConsumer
                 return;
             }
 
+            // Only allow entry from the local left/right sides (angle <= 45 degrees from local X-axis)
+            Vector2 offset = (Vector2)ball.transform.position - (Vector2)CapturePosition;
+            if (offset.magnitude > 0.1f)
+            {
+                Vector2 localOffset = transform.InverseTransformDirection(offset);
+                if (Mathf.Abs(localOffset.x) < Mathf.Abs(localOffset.y))
+                {
+                    return;
+                }
+            }
+
             if (_captureHandler.CapturedBall == null && !_isProcessingAction)
             {
                 _captureHandler.Capture(ball, CapturePosition);
@@ -102,12 +113,17 @@ public class ClickerMachine : MachineEntity, IEnergyConsumer
         }
     }
 
+    public override void OnPartTriggerStay(string partId, Collider2D collider)
+    {
+        OnPartTriggerEnter(partId, collider);
+    }
+
     protected override void OnTickExecuted()
     {
         if (IsBeingDragged || !_isRunning) return;
 
         // Action check on global tick when a ball is captured
-        if (_captureHandler != null && _captureHandler.CapturedBall != null && !_isProcessingAction)
+        if (_captureHandler != null && _captureHandler.CapturedBall != null && !_isProcessingAction && !_captureHandler.IsCentering)
         {
             if (CurrentEnergy >= _consumptionPerAction - 0.0001f)
             {
@@ -128,6 +144,15 @@ public class ClickerMachine : MachineEntity, IEnergyConsumer
     private IEnumerator PerformClickerSequence(BallEntity ball)
     {
         _isProcessingAction = true;
+
+        if (ball != null)
+        {
+            ball.transform.position = CapturePosition;
+            if (ball.Rb != null)
+            {
+                ball.Rb.linearVelocity = Vector2.zero;
+            }
+        }
 
         float efficiency = NetworkEfficiency;
 

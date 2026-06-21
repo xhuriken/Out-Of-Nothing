@@ -105,6 +105,16 @@ public class BlueOscillator : MachineEntity, IEnergyConsumer
 
         var redBall = _captureHandler.CapturedBall;
         Vector3 centerPos = _targetCenterTransform.position;
+
+        if (redBall != null)
+        {
+            redBall.transform.position = centerPos;
+            if (redBall.Rb != null)
+            {
+                redBall.Rb.linearVelocity = Vector2.zero;
+            }
+        }
+
         float efficiency = NetworkEfficiency;
 
         float squeezeDur = (_transformationDuration * 0.2f) / efficiency;
@@ -185,12 +195,17 @@ public class BlueOscillator : MachineEntity, IEnergyConsumer
         }
     }
 
+    public override void OnPartTriggerStay(string partId, Collider2D collider)
+    {
+        OnPartTriggerEnter(partId, collider);
+    }
+
     protected override void OnTickExecuted()
     {
         if (IsBeingDragged || !_isRunning) return;
 
         // Synchronized action check on global tick
-        if (_captureHandler != null && _captureHandler.CapturedBall != null && !_isTransforming)
+        if (_captureHandler != null && _captureHandler.CapturedBall != null && !_isTransforming && !_captureHandler.IsCentering)
         {
             if (_captureHandler.CapturedBall.Data == _redBallData)
             {

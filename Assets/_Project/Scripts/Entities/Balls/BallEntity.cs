@@ -260,6 +260,7 @@ public class BallEntity : MonoBehaviour, IDraggable
         // Debug.Log($"[DIAGNOSTIC] Ball {gameObject.name} (ID: {(_data != null ? _data.id : "null")}) was deactivated. Stack Trace:\n{System.Environment.StackTrace}");
 
         DOTween.Kill(this);
+        DOTween.Kill(transform);
         transform.rotation = Quaternion.identity;
         transform.localScale = Vector3.one;
         if (_rb != null)

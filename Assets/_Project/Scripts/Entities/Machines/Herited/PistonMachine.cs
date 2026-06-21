@@ -160,7 +160,7 @@ public class PistonMachine : MachineEntity
                 Debug.Log($"[PistonMachine] Box triggered. Capturing {useBall.Data.id}.");
                 _ballInside = useBall;
                 _ballInside.IsProcessing = true;
-                GameInputManager.Instance.ForceDrop();
+                GameInputManager.Instance.ForceDrop(useBall);
 
                 // Use Passport to take full control
                 _ballInside.Passport.SetLockState(true);
@@ -175,6 +175,11 @@ public class PistonMachine : MachineEntity
                     });
             }
         }
+    }
+
+    public override void OnPartTriggerStay(string partId, Collider2D collider)
+    {
+        OnPartTriggerEnter(partId, collider);
     }
 
     protected override void OnTickExecuted()
