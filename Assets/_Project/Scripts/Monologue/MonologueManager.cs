@@ -520,4 +520,39 @@ public class MonologueManager : MonoBehaviour
         yield return new WaitForSeconds(delay);
         SpawnBlackHole();
     }
+
+    #region Save/Load State Restoration
+    public void RestoreState(List<string> triggeredEventNames, bool hasTriggered20PointsEvent)
+    {
+        _hasTriggered20PointsEvent = hasTriggered20PointsEvent;
+        _triggeredEvents.Clear();
+
+        if (triggeredEventNames != null)
+        {
+            foreach (var name in triggeredEventNames)
+            {
+                MonologueEventSO mEvent = monologueEvents.Find(e => e != null && e.name == name);
+                if (mEvent != null)
+                {
+                    _triggeredEvents.Add(mEvent);
+                }
+            }
+        }
+    }
+
+    public List<string> GetTriggeredEventNames()
+    {
+        List<string> list = new List<string>();
+        foreach (var mEvent in _triggeredEvents)
+        {
+            if (mEvent != null)
+            {
+                list.Add(mEvent.name);
+            }
+        }
+        return list;
+    }
+
+    public bool HasTriggered20PointsEvent => _hasTriggered20PointsEvent;
+    #endregion
 }

@@ -27,7 +27,7 @@ public class ClickerMachine : MachineEntity, IEnergyConsumer
     private BallCaptureHandler _captureHandler;
     private bool _isProcessingAction;
 
-    private Vector3 CapturePosition => _targetCenterTransform.position + transform.TransformDirection(_localCenterOffset);
+    public override Vector3 CapturePosition => (_targetCenterTransform != null ? _targetCenterTransform.position : transform.position) + transform.TransformDirection(_localCenterOffset);
 
     public float InputTransferSpeed
     {

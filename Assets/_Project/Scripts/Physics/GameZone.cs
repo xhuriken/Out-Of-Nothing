@@ -27,6 +27,15 @@ public class GameZone : MonoBehaviour
 
     public float Width => _width;
     public float Height => _height;
+    public float Thickness => _tickness;
+
+    public void SetSize(float width, float height, float thickness)
+    {
+        _width = width;
+        _height = height;
+        _tickness = thickness;
+        UpdateBoundaries();
+    }
 
     // Limits properties for easy access
     // Left = minX, Right = maxX, Top = maxY, Bottom = minY

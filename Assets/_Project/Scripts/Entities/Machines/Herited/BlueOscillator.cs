@@ -27,6 +27,8 @@ public class BlueOscillator : MachineEntity, IEnergyConsumer
     private bool _isTransforming;
     private Sequence _transformSeq;
 
+    public override Vector3 CapturePosition => _targetCenterTransform != null ? _targetCenterTransform.position : transform.position;
+
     public float InputTransferSpeed
     {
         get

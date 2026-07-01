@@ -93,6 +93,34 @@ public class BallCaptureHandler : MonoBehaviour
     }
 
     /// <summary>
+    /// Instantly restores a captured ball state without playing slide-in animations.
+    /// Used when loading a saved game.
+    /// </summary>
+    public void RestoreCapturedBall(BallEntity ball, Vector2 entryDir, Vector3 targetPosition)
+    {
+        CapturedBall = ball;
+        EntryDirection = entryDir;
+        _lastCapturePosition = targetPosition;
+        IsCentering = false;
+        HoldAtCenter = true;
+
+        if (ball != null)
+        {
+            if (ball.Collider != null)
+            {
+                ball.Collider.enabled = false;
+            }
+            ball.IsProcessing = true;
+
+            if (ball.Passport != null)
+            {
+                ball.Passport.SetLockState(true);
+            }
+            ball.transform.position = targetPosition;
+        }
+    }
+
+    /// <summary>
     /// Releases the captured ball without transforming it (resets it to original state).
     /// </summary>
     public void ReleaseCapturedBall()
