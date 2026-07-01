@@ -108,6 +108,13 @@ public class BlackHolePhysics : MonoBehaviour
             float distanceToCenter = direction.magnitude;
             float distanceToEdge = Vector2.Distance(transform.position, closestPoint);
 
+            // Nightmare Ball is completely immune to the black hole attraction and consumption
+            BallEntity ball = targetRb.GetComponent<BallEntity>();
+            if (ball != null && ball.Behavior is NightmareBall)
+            {
+                continue;
+            }
+
             // Consume only if the center has crossed the event horizon
             if (distanceToCenter <= gRadius)
             {
@@ -130,7 +137,6 @@ public class BlackHolePhysics : MonoBehaviour
                 {
                     float distanceFromHorizon = distanceToEdge - gRadius;
                     float depth = 1f - Mathf.Clamp01(distanceFromHorizon / range);
-                    BallEntity ball = targetRb.GetComponent<BallEntity>();
                     MachineEntity glitchMachine = ball == null ? machine : null;
                     _attractedObjectsThisFrame[targetRb.transform] = new AttractedObjectData 
                     { 

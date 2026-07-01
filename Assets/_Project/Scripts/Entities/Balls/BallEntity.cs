@@ -135,6 +135,25 @@ public class BallEntity : MonoBehaviour, IDraggable
         _isDuplicating = false;
         IsAttracted = false;
 
+        if (newData != null && newData.id == "NightmareBall")
+        {
+            var behaviors = GetComponents<BallBehavior>();
+            foreach (var b in behaviors)
+            {
+                if (!(b is NightmareBall))
+                {
+                    if (Application.isPlaying) Destroy(b);
+                    else DestroyImmediate(b);
+                }
+            }
+
+            _behavior = GetComponent<NightmareBall>();
+            if (_behavior == null)
+            {
+                _behavior = gameObject.AddComponent<NightmareBall>();
+            }
+        }
+
         if (_collider != null)
         {
             _collider.enabled = true;
@@ -200,6 +219,7 @@ public class BallEntity : MonoBehaviour, IDraggable
     public bool OnDragStart()
     {
         if (_isDuplicating) return false;
+        if (_behavior is NightmareBall) return false;
 
         if (_isProcessing)
         {

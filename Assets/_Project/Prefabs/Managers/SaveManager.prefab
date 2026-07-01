@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9142484171693258136}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -17.63958, y: 3.64305, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8aa7e3d2318e6604c9949be2f12c5d5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SaveManager
-  _autosaveInterval: 60
+  _autosaveInterval: 120
   _enableAutosave: 1
   _ballDataList:
   - {fileID: 11400000, guid: 8d01071631ac25e4fa82dc5636359ba7, type: 2}
@@ -53,6 +53,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 80d61bba963ad264f8475d89dc001b50, type: 2}
   - {fileID: 11400000, guid: e518297afdf885341ab9e007c1f8491b, type: 2}
   - {fileID: 11400000, guid: 4cec66ca4a186e640ab24beb347eeb1b, type: 2}
+  - {fileID: 11400000, guid: e0799b8fbacea834cac8b6338d2fd674, type: 2}
   _machinePrefabs:
   - {fileID: 7792627674517951936, guid: afd3964590030ee4da3cf9bf7190268c, type: 3}
   - {fileID: 8065190857723303819, guid: c0c1d4de894ce9f40b1337c3c8c0a4f6, type: 3}
@@ -78,4 +79,8 @@ MonoBehaviour:
   - {fileID: 9221366279253860388, guid: 0635341ecba14444ea4818868d13bd5c, type: 3}
   - {fileID: 6162139808707930919, guid: 4f7b0be5d41156a4f9e469ffb2370fd4, type: 3}
   _blackHolePrefab: {fileID: 9221366279253860388, guid: 00cdc9da06a954145a5d01809e0a69c5, type: 3}
-  _shopPrefab: {fileID: 6398136477132450388, guid: 1ff903ce025b07d42b274835c9659e59, type: 3}
+  _shopPrefab: {fileID: 8066355344277714226, guid: 76b2e03532ed69444944920d72b7ffd3, type: 3}
+  _firstBallPrefab: {fileID: 6365762943045552501, guid: 655bced4138eb6840b5814511bb1b210, type: 3}
+  _saveIndicatorPrefab: {fileID: 3595347644863620225, guid: 6b56802e63ae0c246a0670b63d4965ad, type: 3}
+  _indicatorDuration: 2.5
+  _nightmareBallPrefab: {fileID: 1867172579473571741, guid: 142df23b9e69b8341b1a8b6a9f7b6ac5, type: 3}

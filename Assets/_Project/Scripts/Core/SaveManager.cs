@@ -24,23 +24,30 @@ public class SaveManager : MonoBehaviour
     [SerializeField] private GameObject _saveIndicatorPrefab;
     [SerializeField] private float _indicatorDuration = 2.5f;
 
+    [Header("Nightmare Delete Settings")]
+    [SerializeField] private GameObject _nightmareBallPrefab;
+
     private float _autosaveTimer;
     private string _savePath;
     
     private GameObject _activeIndicator;
     private CanvasGroup _indicatorCanvasGroup;
 
+    private BlackHole _hiddenBlackHole;
+    private float _hiddenBlackHoleRadius;
+
     private void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
         Instance = this;
-        DontDestroyOnLoad(gameObject);
-
         _savePath = Path.Combine(Application.persistentDataPath, "savegame.json");
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
     }
 
     private void Start()
@@ -86,6 +93,125 @@ public class SaveManager : MonoBehaviour
         
         string activeSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
         UnityEngine.SceneManagement.SceneManager.LoadScene(activeSceneName);
+    }
+
+    /// <summary>
+    /// Closes all UI menus, shrinks the black hole in a cool animation, and spawns the Nightmare Ball at its position.
+    /// </summary>
+    public void TriggerNightmareDeleteSequence()
+    {
+        if (MenuController.Instance != null)
+        {
+            MenuController.Instance.ForceCloseEverything();
+        }
+
+        BlackHole bh = FindAnyObjectByType<BlackHole>();
+        
+        if (bh != null)
+        {
+            Vector3 spawnPos = bh.transform.position;
+            _hiddenBlackHole = bh;
+            _hiddenBlackHoleRadius = bh.GRadius;
+
+            // 1. Disable physics attraction first
+            var bhPhysics = bh.GetComponent<BlackHolePhysics>();
+            if (bhPhysics != null) bhPhysics.enabled = false;
+
+            // 2. Shrink black hole to 0 in a cool animation
+            DOTween.To(() => bh.GRadius, x => bh.GRadius = x, 0f, 1.2f)
+                .SetEase(Ease.InBack)
+                .SetUpdate(true)
+                .OnComplete(() =>
+                {
+                    bh.gameObject.SetActive(false);
+                    
+                    // 3. Spawn the Nightmare Ball exactly at the black hole's position
+                    InstantiateNightmareBall(spawnPos);
+                });
+        }
+        else
+        {
+            // Fallback: spawn at center of camera viewport
+            if (Camera.main != null)
+            {
+                Vector3 centerWorld = Camera.main.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, 10f));
+                centerWorld.z = 0f;
+                InstantiateNightmareBall(centerWorld);
+            }
+        }
+    }
+
+    private void InstantiateNightmareBall(Vector3 spawnPos)
+    {
+        GameObject nightmareObj;
+        if (_nightmareBallPrefab != null)
+        {
+            nightmareObj = Instantiate(_nightmareBallPrefab, spawnPos, Quaternion.identity);
+            BallEntity ballEnt = nightmareObj.GetComponent<BallEntity>();
+            if (ballEnt != null)
+            {
+                BallDataSO bSO = _ballDataList.Find(so => so != null && so.id == "NightmareBall");
+                if (bSO != null)
+                {
+                    ballEnt.Initialize(bSO);
+                }
+            }
+        }
+        else
+        {
+            nightmareObj = new GameObject("NightmareBall");
+            nightmareObj.transform.position = spawnPos;
+        }
+
+        if (nightmareObj.GetComponent<NightmareBall>() == null)
+        {
+            nightmareObj.AddComponent<NightmareBall>();
+        }
+    }
+
+    /// <summary>
+    /// Restores the hidden black hole back to its correct position and radius with a cool shockwave grow bounce.
+    /// </summary>
+    public void RestoreBlackHole()
+    {
+        if (_hiddenBlackHole != null)
+        {
+            _hiddenBlackHole.gameObject.SetActive(true);
+            
+            var bhPhysics = _hiddenBlackHole.GetComponent<BlackHolePhysics>();
+            if (bhPhysics != null) bhPhysics.enabled = false; // Disable physics during visual animation
+
+            _hiddenBlackHole.GRadius = 0f;
+
+            Sequence restoreSeq = DOTween.Sequence().SetUpdate(true);
+            
+            // Step 1: Explosive expansion past its target radius (up to 1.35x)
+            restoreSeq.Append(DOTween.To(() => _hiddenBlackHole.GRadius, x => _hiddenBlackHole.GRadius = x, _hiddenBlackHoleRadius * 1.35f, 0.35f)
+                .SetEase(Ease.OutQuad));
+                
+            // Step 2: Settle down to its target radius with a spring bounce
+            restoreSeq.Append(DOTween.To(() => _hiddenBlackHole.GRadius, x => _hiddenBlackHole.GRadius = x, _hiddenBlackHoleRadius, 1.0f)
+                .SetEase(Ease.OutElastic));
+
+            restoreSeq.OnComplete(() =>
+            {
+                if (bhPhysics != null) bhPhysics.enabled = true; // Re-enable physics attraction
+                _hiddenBlackHole = null;
+            });
+        }
+    }
+
+    public void StartNightmareDeleteSequence(BallEntity ball, Vector3 originalScale)
+    {
+        GameObject helperObj = new GameObject("NightmareTransitionHelper");
+        DontDestroyOnLoad(helperObj);
+        
+        NightmareTransitionHelper helper = helperObj.AddComponent<NightmareTransitionHelper>();
+        string activeSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        
+        helper.StartCoroutine(helper.Run(ball, originalScale, activeSceneName, () => {
+            DeleteSaveFile();
+        }));
     }
 
     public void SaveGame(bool isAutoSave = false)
@@ -434,11 +560,46 @@ public class SaveManager : MonoBehaviour
         }
     }
 
+    private Canvas FindMainCanvas()
+    {
+        Canvas[] canvases = FindObjectsByType<Canvas>(FindObjectsSortMode.None);
+        Canvas bestCanvas = null;
+        
+        foreach (Canvas c in canvases)
+        {
+            if (c != null && c.gameObject.activeInHierarchy)
+            {
+                if (c.renderMode == RenderMode.ScreenSpaceOverlay)
+                {
+                    // Prioritize standard UI/HUD canvases
+                    if (c.name.Contains("UI") || c.name.Contains("HUD") || c.name.Contains("Main"))
+                    {
+                        return c;
+                    }
+                    bestCanvas = c;
+                }
+            }
+        }
+
+        if (bestCanvas != null) return bestCanvas;
+
+        // Fallback to first active canvas if no ScreenSpaceOverlay is found
+        foreach (Canvas c in canvases)
+        {
+            if (c != null && c.gameObject.activeInHierarchy)
+            {
+                return c;
+            }
+        }
+
+        return null;
+    }
+
     private void CreateIndicatorUI()
     {
         if (_activeIndicator != null) return;
 
-        Canvas mainCanvas = FindAnyObjectByType<Canvas>();
+        Canvas mainCanvas = FindMainCanvas();
         if (mainCanvas == null) return;
 
         // Panel Container
@@ -451,6 +612,7 @@ public class SaveManager : MonoBehaviour
         rect.pivot = new Vector2(1f, 0f);
         rect.anchoredPosition = new Vector2(-40f, 40f);
         rect.sizeDelta = new Vector2(130f, 32f);
+        rect.localScale = Vector3.one;
 
         // Styling: Glassmorphism / Sleek dark look
         UnityEngine.UI.Image bgImage = panelObj.AddComponent<UnityEngine.UI.Image>();
@@ -490,7 +652,7 @@ public class SaveManager : MonoBehaviour
             RectTransform rectTransform = _saveIndicatorPrefab.GetComponent<RectTransform>();
             if (rectTransform != null)
             {
-                Canvas mainCanvas = FindAnyObjectByType<Canvas>();
+                Canvas mainCanvas = FindMainCanvas();
                 if (mainCanvas == null) return;
 
                 GameObject indicatorObj = Instantiate(_saveIndicatorPrefab, mainCanvas.transform, false);
@@ -500,6 +662,7 @@ public class SaveManager : MonoBehaviour
                 rect.anchorMax = new Vector2(1f, 0f);
                 rect.pivot = new Vector2(1f, 0f);
                 rect.anchoredPosition = new Vector2(-40f, 40f);
+                rect.localScale = Vector3.one;
 
                 CanvasGroup cg = indicatorObj.GetComponent<CanvasGroup>();
                 if (cg == null) cg = indicatorObj.AddComponent<CanvasGroup>();
@@ -641,6 +804,20 @@ public class SaveManager : MonoBehaviour
                 }
             }
         }
+
+        if (_nightmareBallPrefab == null)
+        {
+            string[] guids = UnityEditor.AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/_Project/Prefabs/Balls" });
+            foreach (string guid in guids)
+            {
+                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                if (System.IO.Path.GetFileNameWithoutExtension(path) == "NightmareBall")
+                {
+                    _nightmareBallPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                    break;
+                }
+            }
+        }
     }
 #endif
 }
@@ -706,7 +883,7 @@ public class WorldSpaceIndicator : MonoBehaviour
     public void Initialize(Vector3 originalScale, float duration)
     {
         _cam = Camera.main;
-        _startOrtho = _cam != null ? _cam.orthographicSize : 5f;
+        _startOrtho = 5f; // Lock baseline orthographic size to 5f for consistent screen-relative scaling
         _originalScale = originalScale;
         _duration = duration;
         
@@ -775,5 +952,135 @@ public class WorldSpaceIndicator : MonoBehaviour
 
         yield return new WaitForSecondsRealtime(0.4f);
         Destroy(gameObject);
+    }
+}
+
+public class NightmareTransitionHelper : MonoBehaviour
+{
+    public IEnumerator Run(BallEntity ball, Vector3 originalScale, string activeSceneName, System.Action deleteSaveAction)
+    {
+        // 1. Violent camera shake
+        if (Camera.main != null)
+        {
+            Camera.main.transform.DOKill();
+            Camera.main.transform.DOShakePosition(3.2f, 1.8f, 40).SetUpdate(true);
+        }
+
+        // 2. Swell up ball to consume the viewport
+        if (ball != null)
+        {
+            ball.IsProcessing = true; // freeze standard physics
+            if (ball.Rb != null)
+            {
+                ball.Rb.bodyType = RigidbodyType2D.Kinematic;
+                ball.Rb.linearVelocity = Vector2.zero;
+                ball.Rb.angularVelocity = 0f;
+            }
+            // Animate moving to center of screen while expanding
+            if (Camera.main != null)
+            {
+                Vector3 centerTarget = Camera.main.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, 10f));
+                centerTarget.z = 0f;
+                ball.transform.DOMove(centerTarget, 2f).SetEase(Ease.OutCubic).SetUpdate(true);
+            }
+            ball.transform.DOScale(originalScale * 25f, 2.5f)
+                .SetEase(Ease.InExpo)
+                .SetUpdate(true);
+        }
+
+        // 3. Spooky Flowing Darkness (Ténèbres coulantes) UI
+        GameObject overlay = gameObject; // The canvas container
+        
+        Canvas canvas = overlay.GetComponent<Canvas>();
+        if (canvas == null) canvas = overlay.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 99999;
+        
+        UnityEngine.UI.CanvasScaler scaler = overlay.GetComponent<UnityEngine.UI.CanvasScaler>();
+        if (scaler == null) scaler = overlay.AddComponent<UnityEngine.UI.CanvasScaler>();
+        scaler.uiScaleMode = UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;
+
+        // Container panel for the blobs
+        GameObject panelObj = new GameObject("DarknessPanel");
+        panelObj.transform.SetParent(overlay.transform, false);
+        RectTransform panelRect = panelObj.AddComponent<RectTransform>();
+        panelRect.anchorMin = Vector2.zero;
+        panelRect.anchorMax = Vector2.one;
+        panelRect.sizeDelta = Vector2.zero;
+
+        Sprite knobSprite = Resources.GetBuiltinResource<Sprite>("UI/Skin/Knob.psd");
+
+        int blobCount = 16;
+        System.Collections.Generic.List<RectTransform> blobs = new System.Collections.Generic.List<RectTransform>();
+        
+        for (int i = 0; i < blobCount; i++)
+        {
+            GameObject blob = new GameObject($"InkBlob_{i}");
+            blob.transform.SetParent(panelObj.transform, false);
+            
+            UnityEngine.UI.Image img = blob.AddComponent<UnityEngine.UI.Image>();
+            img.sprite = knobSprite;
+            img.color = new Color(0.02f, 0.02f, 0.02f, 1f); // Dark black ink
+
+            RectTransform rect = blob.GetComponent<RectTransform>();
+            blobs.Add(rect);
+
+            rect.anchorMin = new Vector2(Random.Range(-0.1f, 1.1f), Random.Range(-0.1f, 1.1f));
+            rect.anchorMax = rect.anchorMin;
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.sizeDelta = new Vector2(250f, 250f);
+            rect.localScale = Vector3.zero;
+
+            float delay = Random.Range(0f, 0.8f);
+            float duration = Random.Range(1.0f, 1.8f);
+            float targetScale = Random.Range(5f, 8f);
+            
+            rect.DOScale(targetScale, duration)
+                .SetDelay(delay)
+                .SetEase(Ease.InQuad)
+                .SetUpdate(true);
+        }
+
+        GameObject bgObj = new GameObject("DarknessBG");
+        bgObj.transform.SetParent(panelObj.transform, false);
+        bgObj.transform.SetAsFirstSibling();
+        
+        UnityEngine.UI.Image bgImg = bgObj.AddComponent<UnityEngine.UI.Image>();
+        bgImg.color = Color.clear;
+        RectTransform bgRect = bgObj.GetComponent<RectTransform>();
+        bgRect.anchorMin = Vector2.zero;
+        bgRect.anchorMax = Vector2.one;
+        bgRect.sizeDelta = Vector2.zero;
+
+        bgImg.DOColor(new Color(0.02f, 0.02f, 0.02f, 1f), 2.2f)
+            .SetEase(Ease.InCubic)
+            .SetUpdate(true);
+
+        yield return new WaitForSecondsRealtime(2.8f);
+
+        deleteSaveAction?.Invoke();
+
+        var loadOp = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(activeSceneName);
+        while (!loadOp.isDone)
+        {
+            yield return null;
+        }
+
+        bgImg.color = new Color(0.02f, 0.02f, 0.02f, 1f);
+        
+        foreach (var rect in blobs)
+        {
+            if (rect != null) rect.gameObject.SetActive(false);
+        }
+
+        yield return new WaitForSecondsRealtime(0.5f);
+        
+        bgImg.DOColor(Color.clear, 1.5f)
+            .SetEase(Ease.OutCubic)
+            .SetUpdate(true);
+
+        yield return new WaitForSecondsRealtime(1.5f);
+
+        Destroy(overlay);
     }
 }

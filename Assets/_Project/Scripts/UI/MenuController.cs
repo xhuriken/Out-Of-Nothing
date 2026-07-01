@@ -317,6 +317,15 @@ public class MenuController : MonoBehaviour
         closeSequence.OnComplete(() => isAnimatingMain = false);
     }
 
+    public void ForceCloseEverything()
+    {
+        wasJournalOpenBeforeMenuClose = false;
+        wasJournalDetailsOpenBeforeMenuClose = false;
+        if (isSettingsOpen) CloseSettings(() => CloseMenu());
+        else if (isJournalOpen) CloseJournal(() => CloseMenu());
+        else if (isOpen) CloseMenu();
+    }
+
     // --- GESTION DES PARAMÈTRES (SETTINGS) ---
 
     public void ToggleSettings()
