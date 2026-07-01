@@ -99,3 +99,4 @@
 
 
 
+- [x] Explain aspect-ratio independent noise mapping in UI ShaderGraph for MenuTex.shadergraph.
