@@ -13,6 +13,16 @@
 
 
 
+## [2026-06-23] - UI ShaderGraph Aspect Ratio Explanation
+**Date** : 2026-06-23
+**Auteur** : Antigravity (AI)
+
+### 1. Noise scaling independent of UI Image width
+- **Question** : The user wants to know how to make a noise texture in a UI material ShaderGraph (MenuTex) independent of the width/aspect ratio of the RectTransform.
+- **Solution** : Explained two primary ways in Unity ShaderGraph:
+  1. Using local **Position (Object Space)** scaled by a factor to act as UV coordinates, which natively corresponds to local canvas pixel coordinates and remains square and undistorted regardless of stretching.
+  2. Using **Screen Position** adjusted by the screen aspect ratio (ScreenWidth / ScreenHeight) for screen-aligned noise.
+
 ## [2026-06-21] - Shop Auto-Close & Repulsion Overlap Fix
 **Date** : 2026-06-21
 **Author** : Antigravity (AI)
