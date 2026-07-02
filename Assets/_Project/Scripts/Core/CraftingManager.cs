@@ -325,7 +325,24 @@ public class CraftingManager : MonoBehaviour
 
     private void CheckRecipes()
     {
-        _currentMatchingRecipe = _recipes.FirstOrDefault(r => r.Matches(_selectedBalls));
+        _currentMatchingRecipe = _recipes.FirstOrDefault(r => {
+            if (r == null) return false;
+            if (!r.Matches(_selectedBalls)) return false;
+
+            // Unique machine check: if the recipe results in MultiSelectorMachine, prevent crafting if one already exists
+            if (r.resultPrefab != null && r.resultPrefab.name == "MultiSelectorMachine")
+            {
+                MachineEntity[] activeMachines = FindObjectsByType<MachineEntity>(FindObjectsSortMode.None);
+                foreach (var machine in activeMachines)
+                {
+                    if (machine != null && machine.gameObject.name.Replace("(Clone)", "").Trim() == "MultiSelectorMachine")
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        });
     }
 
     private void UpdatePreview()

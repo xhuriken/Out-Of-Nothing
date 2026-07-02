@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 937fb74a3ec7fa74f8b9cf909694c5b0, type: 3}
+  m_Name: MultiSelectioneurDialogue
+  m_EditorClassIdentifier: Assembly-CSharp::MonologueEventSO
+  selectionMode: 0
+  lines:
+  - text: Shift and right click... Soooo coool...
+    exposureTime: 3
+  conditionType: 3
+  triggerOnlyOnce: 1
+  startDelay: 2
+  ballRequirements: []
+  targetRecipe: {fileID: 11400000, guid: 171ba2c7513df9f4f85dc5321329ac79, type: 2}
+  triggerChance: 0.3
+  requiredPoints: 0

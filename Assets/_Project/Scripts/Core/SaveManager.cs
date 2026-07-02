@@ -519,6 +519,26 @@ public class SaveManager : MonoBehaviour
             foreach (MachineSaveData mData in data.machines)
             {
                 GameObject machinePrefab = _machinePrefabs.Find(p => p != null && p.name == mData.prefabName);
+#if UNITY_EDITOR
+                if (machinePrefab == null)
+                {
+                    string[] guids = UnityEditor.AssetDatabase.FindAssets("t:Prefab " + mData.prefabName);
+                    if (guids == null || guids.Length == 0)
+                    {
+                        guids = UnityEditor.AssetDatabase.FindAssets(mData.prefabName);
+                    }
+                    foreach (var guid in guids)
+                    {
+                        string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                        GameObject candidate = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                        if (candidate != null && candidate.name == mData.prefabName)
+                        {
+                            machinePrefab = candidate;
+                            break;
+                        }
+                    }
+                }
+#endif
                 if (machinePrefab != null)
                 {
                     GameObject machineObj = Instantiate(machinePrefab, mData.position, Quaternion.Euler(0f, 0f, mData.rotationZ));
