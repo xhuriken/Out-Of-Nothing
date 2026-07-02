@@ -563,27 +563,41 @@ public class SaveManager : MonoBehaviour
     private Canvas FindMainCanvas()
     {
         Canvas[] canvases = FindObjectsByType<Canvas>(FindObjectsSortMode.None);
-        Canvas bestCanvas = null;
         
+        // Phase 1: Prioritize exact matches for "Canvas", "HUD", or "HUDCanvas" with ScreenSpaceOverlay
         foreach (Canvas c in canvases)
         {
-            if (c != null && c.gameObject.activeInHierarchy)
+            if (c != null && c.gameObject.activeInHierarchy && c.renderMode == RenderMode.ScreenSpaceOverlay)
             {
-                if (c.renderMode == RenderMode.ScreenSpaceOverlay)
+                if (c.name == "Canvas" || c.name == "HUD" || c.name == "HUDCanvas")
                 {
-                    // Prioritize standard UI/HUD canvases
-                    if (c.name.Contains("UI") || c.name.Contains("HUD") || c.name.Contains("Main"))
-                    {
-                        return c;
-                    }
-                    bestCanvas = c;
+                    return c;
                 }
             }
         }
 
-        if (bestCanvas != null) return bestCanvas;
+        // Phase 2: Prioritize standard UI/HUD canvases (contains HUD, Main, or UI) with ScreenSpaceOverlay
+        foreach (Canvas c in canvases)
+        {
+            if (c != null && c.gameObject.activeInHierarchy && c.renderMode == RenderMode.ScreenSpaceOverlay)
+            {
+                if (c.name.Contains("UI") || c.name.Contains("HUD") || c.name.Contains("Main"))
+                {
+                    return c;
+                }
+            }
+        }
 
-        // Fallback to first active canvas if no ScreenSpaceOverlay is found
+        // Phase 3: Fallback to first ScreenSpaceOverlay canvas found
+        foreach (Canvas c in canvases)
+        {
+            if (c != null && c.gameObject.activeInHierarchy && c.renderMode == RenderMode.ScreenSpaceOverlay)
+            {
+                return c;
+            }
+        }
+
+        // Phase 4: Fallback to any active canvas in the hierarchy
         foreach (Canvas c in canvases)
         {
             if (c != null && c.gameObject.activeInHierarchy)
@@ -595,11 +609,9 @@ public class SaveManager : MonoBehaviour
         return null;
     }
 
-    private void CreateIndicatorUI()
+    private void CreateIndicatorUI(Canvas mainCanvas)
     {
         if (_activeIndicator != null) return;
-
-        Canvas mainCanvas = FindMainCanvas();
         if (mainCanvas == null) return;
 
         // Panel Container
@@ -647,14 +659,19 @@ public class SaveManager : MonoBehaviour
 
     private void ShowSaveIndicator()
     {
+        Canvas mainCanvas = FindMainCanvas();
+        if (mainCanvas == null)
+        {
+            Debug.LogWarning("[SaveManager] Cannot show save indicator: No active canvas found in the scene.");
+            return;
+        }
+
         if (_saveIndicatorPrefab != null)
         {
             RectTransform rectTransform = _saveIndicatorPrefab.GetComponent<RectTransform>();
             if (rectTransform != null)
             {
-                Canvas mainCanvas = FindMainCanvas();
-                if (mainCanvas == null) return;
-
+                Debug.Log($"[SaveManager] Instantiating save indicator prefab on Canvas: {mainCanvas.name}");
                 GameObject indicatorObj = Instantiate(_saveIndicatorPrefab, mainCanvas.transform, false);
                 
                 RectTransform rect = indicatorObj.GetComponent<RectTransform>();
@@ -682,6 +699,7 @@ public class SaveManager : MonoBehaviour
             }
             else
             {
+                Debug.Log($"[SaveManager] Instantiating save indicator prefab as WorldSpaceIndicator (no RectTransform found).");
                 GameObject indicatorObj = Instantiate(_saveIndicatorPrefab);
                 WorldSpaceIndicator worldInd = indicatorObj.AddComponent<WorldSpaceIndicator>();
                 worldInd.Initialize(indicatorObj.transform.localScale, _indicatorDuration);
@@ -689,7 +707,8 @@ public class SaveManager : MonoBehaviour
         }
         else
         {
-            CreateIndicatorUI();
+            Debug.Log($"[SaveManager] Creating dynamic save indicator UI on Canvas: {mainCanvas.name}");
+            CreateIndicatorUI(mainCanvas);
             if (_activeIndicator == null) return;
 
             _activeIndicator.SetActive(true);

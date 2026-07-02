@@ -161,7 +161,7 @@ public class BallEntity : MonoBehaviour, IDraggable
 
         if (_rb != null)
         {
-            _rb.bodyType = RigidbodyType2D.Dynamic;
+            _rb.bodyType = (_behavior is NightmareBall) ? RigidbodyType2D.Kinematic : RigidbodyType2D.Dynamic;
             _rb.linearVelocity = Vector2.zero;
             _rb.angularVelocity = 0f;
             _rb.mass = _originalMass;

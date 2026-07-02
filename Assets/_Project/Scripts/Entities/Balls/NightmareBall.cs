@@ -25,6 +25,14 @@ public class NightmareBall : BallBehavior
         // Dragging is blocked natively in BallEntity, keep IsProcessing false so it is clickable
         ball.IsProcessing = false;
 
+        // Force Kinematic immediately so it is unpushable by other balls
+        if (ball.Rb != null)
+        {
+            ball.Rb.bodyType = RigidbodyType2D.Kinematic;
+            ball.Rb.linearVelocity = Vector2.zero;
+            ball.Rb.angularVelocity = 0f;
+        }
+
         // Spooky elastic entry animation
         ball.transform.localScale = Vector3.zero;
         ball.transform.DOScale(_originalScale, 1.2f)
@@ -194,5 +202,20 @@ public class NightmareBall : BallBehavior
     public override void OnDuplicate(BallEntity ball)
     {
         // Disable duplication for the Nightmare Ball
+    }
+
+    public override void ExecuteFixedUpdate(BallEntity ball, float fixedDeltaTime)
+    {
+        if (ball == null || _isDeleting) return;
+
+        if (ball.Rb != null)
+        {
+            if (ball.Rb.bodyType != RigidbodyType2D.Kinematic)
+            {
+                ball.Rb.bodyType = RigidbodyType2D.Kinematic;
+            }
+            ball.Rb.linearVelocity = Vector2.zero;
+            ball.Rb.angularVelocity = 0f;
+        }
     }
 }
